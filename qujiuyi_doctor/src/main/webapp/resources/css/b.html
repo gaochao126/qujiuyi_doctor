@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <script>    
+  var thisURL = document.URL;    
+  var  getval =thisURL.split('?')[1];  
+  var showval= getval.split("=")[1];  
+  function  showvalf(){  
+     alert(showval);  
+     document.getElementById('ee').value=showval;  
+  }  
+</script> 
+ </head>
+ <body>
+  <input type="text"  id ="ee" />  
+ </body>
+</html>
