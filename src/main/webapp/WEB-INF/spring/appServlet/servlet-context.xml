@@ -44,7 +44,7 @@
 
 	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver"></beans:property>
-		<beans:property name="url" value="jdbc:mysql://222.177.141.83:51101/qujiuyi?characterEncoding=utf-8"></beans:property>
+		<beans:property name="url" value="jdbc:mysql://222.177.141.83:51101/qujiuyi?characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull"></beans:property>
 		<beans:property name="username" value="root"></beans:property>
 		<beans:property name="password" value="jiuyi791"></beans:property>
 		<beans:property name="removeAbandoned" value="true"></beans:property>

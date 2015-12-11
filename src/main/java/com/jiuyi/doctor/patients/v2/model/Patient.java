@@ -1,67 +1,141 @@
 package com.jiuyi.doctor.patients.v2.model;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
-import org.springframework.jdbc.core.RowMapper;
-
-import com.jiuyi.frame.conf.DBConfigStatic;
+import com.jiuyi.frame.annotations.Age;
+import com.jiuyi.frame.annotations.ConfigPrefix;
 import com.jiuyi.frame.constants.Constants;
+import com.jiuyi.frame.front.ISerializableObj;
 import com.jiuyi.frame.front.MapObject;
 import com.jiuyi.frame.util.CollectionUtil;
-import com.jiuyi.frame.util.DateUtil;
-import com.jiuyi.frame.util.StringUtil;
 
 /**
- * @Author: xutaoyang @Date: 下午3:52:30
+ * @Author: xutaoyang @Date: 上午9:58:46
  *
  * @Description
  *
  * @Copyright @ 2015 重庆玖壹健康管理有限公司
  */
-public class Patient extends SimplePatient {
+public class Patient implements ISerializableObj {
 
-	public List<Tag> tags;
-	public int type;
-	public final String phone;
-	public final String note;
-
-	public static final RowMapper<Patient> builder = new RowMapper<Patient>() {
-		@Override
-		public Patient mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Integer patientId = rs.getInt("id");
-			String patientName = rs.getString("nickname");
-			String headPortrait = rs.getString("headPortrait");
-			String remark = rs.getString("remark");
-			String note = rs.getString("note");
-			String patientHead = StringUtil.isNullOrEmpty(headPortrait) ? "" : DBConfigStatic.getConfig(Constants.KEY_PATIENT_HEAD) + headPortrait;
-			Integer gender = rs.getInt("gender");
-			Date birthday = rs.getDate("birthday");
-			int age = birthday == null ? 0 : DateUtil.getYearGap(birthday);
-			String phone = rs.getString("phone");
-			return new Patient(patientId, patientName, remark, patientHead, gender, age, note, phone);
-		}
-	};
-
-	public Patient(Integer patientId, String patientName, String remark, String patientHead, Integer gender, Integer age, String note, String phone) {
-		super(patientId, patientName, remark, patientHead, gender, age);
-		this.note = note;
-		this.phone = phone;
-	}
-
-	public void setTags(List<Tag> tags) {
-		this.tags = CollectionUtil.emptyIfNull(tags);
-	}
+	private Integer id;
+	private String name;
+	@ConfigPrefix(Constants.KEY_PATIENT_HEAD)
+	private String headPortrait;
+	private String remark;// 医生对患者的备注名
+	private Integer gender;
+	@Age
+	private Integer age;
+	private Integer src;
+	private Integer type;
+	private String phone;
+	private String note;
+	private List<Tag> tags;
 
 	@Override
 	public MapObject serializeToMapObject() {
-		MapObject res = super.serializeToMapObject();
+		MapObject res = new MapObject();
+		res.put("age", this.age);
+		res.put("remark", this.remark);
+		res.put("gender", this.gender);
+		res.put("patientId", this.id);
+		res.put("patientName", this.name);
+		res.put("patientHead", this.headPortrait);
 		res.put("note", this.note);
 		res.put("type", this.type);
 		res.put("phone", this.phone);
 		res.putObjects("tags", tags);
+		if (src != null && src != 0) {
+			res.put("src", this.src);
+		}
 		return res;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getHeadPortrait() {
+		return headPortrait;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public Integer getGender() {
+		return gender;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public Integer getSrc() {
+		return src;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setHeadPortrait(String headPortrait) {
+		this.headPortrait = headPortrait;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public void setGender(Integer gender) {
+		this.gender = gender;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	public void setSrc(Integer src) {
+		this.src = src;
+	}
+
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = CollectionUtil.emptyIfNull(tags);
 	}
 }

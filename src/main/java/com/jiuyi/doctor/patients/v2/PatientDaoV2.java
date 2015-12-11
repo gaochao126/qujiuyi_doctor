@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 
 import com.jiuyi.doctor.patients.v2.model.ContactSrc;
 import com.jiuyi.doctor.patients.v2.model.Patient;
-import com.jiuyi.doctor.patients.v2.model.SimplePatient;
 import com.jiuyi.doctor.patients.v2.model.Tag;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.DbBase;
@@ -35,13 +34,13 @@ public class PatientDaoV2 extends DbBase {
 	private static final String SELECT_PERSONAL_PATIENTS_COUNT = "SELECT COUNT(*) FROM `t_personal_doctor` WHERE `doctorId`=?";
 	private static final String SELECT_UNFAMILIAR_COUNT = "SELECT count(patientId) FROM t_doctor_unfamiliar_patient WHERE doctorId=? ";
 
-	private static final String SELECT_SIMPLE_PATIENT = "SELECT c.*,p.nickname,p.gender,p.headPortrait,p.birthday,r.remark,r.note FROM `#tableName#` c join `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=c.doctorId WHERE c.`#where#`=?;";
+	private static final String SELECT_SIMPLE_PATIENT = "SELECT c.*,p.name,p.gender,p.headPortrait,p.birthday as age,r.remark,r.note FROM `#tableName#` c join `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=c.doctorId WHERE c.`#where#`=?;";
 	private static final String SELECT_CONTACTS = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_contacts").replace("#where#", "doctorId");
 	private static final String SELECT_UNFAMILIAR = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_unfamiliar_patient").replace("#where#", "doctorId");
 	private static final String SELECT_BLACKLIST = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_blacklist_patient").replace("#where#", "doctorId");
 	private static final String SELECT_PERSONAL_PATIENTS = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_personal_doctor").replace("#where#", "doctorId");
-	private static final String SELECT_SIMPLE_PATIENT_BY_TAG = "SELECT c.*,p.`nickname`,p.`gender`,p.`headPortrait`,p.`birthday`,r.remark,r.note FROM `t_patient_tags` c JOIN `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=? WHERE c.`tagId`=?;";
-	private static final String SELECT_SIMPLE_PATIENT_BATCH = "SELECT p.`id` patientId,p.`nickname`,p.`gender`,p.`headPortrait`,p.`birthday` FROM `t_patient` p WHERE p.`id` IN (#patientIds#)";
+	private static final String SELECT_SIMPLE_PATIENT_BY_TAG = "SELECT c.*,p.`name`,p.`gender`,p.`headPortrait`,p.`birthday` AS age,r.remark,r.note FROM `t_patient_tags` c JOIN `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=? WHERE c.`tagId`=?;";
+	private static final String SELECT_SIMPLE_PATIENT_BATCH = "SELECT p.`id`,p.`name`,p.`gender`,p.`headPortrait`,p.`birthday` AS age FROM `t_patient` p WHERE p.`id` IN (#patientIds#)";
 	private static final String SELECT_PATIENT_DETAIL = "SELECT p.*,r.remark,r.note,r.relation as type FROM `t_patient` p LEFT JOIN `t_doctor_remark_patient` r ON r.doctorId=? AND r.patientId=p.id WHERE p.id=?;";
 	private static final String SELECT_DOCTOR_PATIENT_TYPE = "SELECT `relation` from `t_doctor_remark_patient` WHERE `doctorId`=? AND `patientId`=?";
 
@@ -72,16 +71,16 @@ public class PatientDaoV2 extends DbBase {
 		return queryForInteger(SELECT_UNFAMILIAR_COUNT, doctor.getId());
 	}
 
-	protected List<SimplePatient> loadContacts(Doctor doctor) {
-		return jdbc.query(SELECT_CONTACTS, new Object[] { doctor.getId() }, SimplePatient.type_builder);
+	protected List<Patient> loadContacts(Doctor doctor) {
+		return queryForList(SELECT_CONTACTS, new Object[] { doctor.getId() }, Patient.class);
 	}
 
-	protected List<SimplePatient> loadUnfamiliar(Doctor doctor) {
-		return jdbc.query(SELECT_UNFAMILIAR, new Object[] { doctor.getId() }, SimplePatient.builder);
+	protected List<Patient> loadUnfamiliar(Doctor doctor) {
+		return queryForList(SELECT_UNFAMILIAR, new Object[] { doctor.getId() }, Patient.class);
 	}
 
-	protected List<SimplePatient> loadBlacklist(Doctor doctor) {
-		return jdbc.query(SELECT_BLACKLIST, new Object[] { doctor.getId() }, SimplePatient.builder);
+	protected List<Patient> loadBlacklist(Doctor doctor) {
+		return queryForList(SELECT_BLACKLIST, new Object[] { doctor.getId() }, Patient.class);
 	}
 
 	protected Integer loadContactSrc(Doctor doctor, Integer patientId) {
@@ -136,13 +135,13 @@ public class PatientDaoV2 extends DbBase {
 		jdbc.update(DEL_TAG, new Object[] { tagId, doctor.getId() });
 	}
 
-	protected List<SimplePatient> loadSimplePatient(List<Integer> patientIds) {
+	protected List<Patient> loadSimplePatient(List<Integer> patientIds) {
 		String cmd = SELECT_SIMPLE_PATIENT_BATCH.replace("#patientIds#", StringUtil.joinArr(patientIds, ","));
-		return jdbc.query(cmd, SimplePatient.builder);
+		return queryForList(cmd, Patient.class);
 	}
 
-	protected List<SimplePatient> loadSimplePatientByTag(Doctor doctor, Integer tagId) {
-		return jdbc.query(SELECT_SIMPLE_PATIENT_BY_TAG, new Object[] { doctor.getId(), tagId }, SimplePatient.builder);
+	protected List<Patient> loadSimplePatientByTag(Doctor doctor, Integer tagId) {
+		return queryForList(SELECT_SIMPLE_PATIENT_BY_TAG, new Object[] { doctor.getId(), tagId }, Patient.class);
 	}
 
 	protected void updateTagName(Doctor doctor, Integer tagId, String name) {
@@ -199,12 +198,12 @@ public class PatientDaoV2 extends DbBase {
 	}
 
 	/** 私人患者列表 */
-	protected List<SimplePatient> loadSimplePersonal(Doctor doctor) {
-		return jdbc.query(SELECT_PERSONAL_PATIENTS, new Object[] { doctor.getId() }, SimplePatient.builder);
+	protected List<Patient> loadSimplePersonal(Doctor doctor) {
+		return queryForList(SELECT_PERSONAL_PATIENTS, new Object[] { doctor.getId() }, Patient.class);
 	}
 
 	protected Patient loadPatientDetailInfo(Doctor doctor, Integer patientId) {
-		return queryForObject(SELECT_PATIENT_DETAIL, new Object[] { doctor.getId(), patientId }, Patient.builder);
+		return queryForObjectDefaultBuilder(SELECT_PATIENT_DETAIL, new Object[] { doctor.getId(), patientId }, Patient.class);
 	}
 
 	/** 移除患者的指定tag */

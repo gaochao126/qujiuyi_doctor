@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jiuyi.doctor.patients.v2.model.DoctorTags;
-import com.jiuyi.doctor.patients.v2.model.SimplePatient;
+import com.jiuyi.doctor.patients.v2.model.Patient;
 import com.jiuyi.doctor.patients.v2.model.Tag;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.ManagerBase;
@@ -155,7 +155,7 @@ public class TagManager extends ManagerBase<Doctor, DoctorTags> {
 			return new ServerResult(ResultConst.TAG_NOT_EXIST);
 		}
 		List<Integer> patientIds = tag.getPatientIds();
-		List<SimplePatient> patients = CollectionUtil.isNullOrEmpty(patientIds) ? new ArrayList<SimplePatient>() : dao.loadSimplePatientByTag(doctor, tagId);
+		List<Patient> patients = CollectionUtil.isNullOrEmpty(patientIds) ? new ArrayList<Patient>() : dao.loadSimplePatientByTag(doctor, tagId);
 		return new ServerResult("list", patients, true);
 	}
 
