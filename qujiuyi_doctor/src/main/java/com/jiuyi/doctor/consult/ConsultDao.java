@@ -14,7 +14,7 @@ import com.jiuyi.doctor.consult.model.Consult;
 import com.jiuyi.doctor.consult.model.DoctorChat;
 import com.jiuyi.doctor.consult.model.Order;
 import com.jiuyi.doctor.consult.model.UnreadMsg;
-import com.jiuyi.doctor.patients.v2.model.SimplePatient;
+import com.jiuyi.doctor.patients.v2.model.Patient;
 import com.jiuyi.doctor.services.ServiceStatus;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.DbBase;
@@ -37,12 +37,12 @@ public class ConsultDao extends DbBase {
 	private static final String SELECT_CONSULT = "SELECT * FROM `t_patient_consult` WHERE `id`=?";
 	private static final String SELECT_CONSULT_SATISFACATION = "SELECT AVG(`satisfaction`) FROM `t_patient_consult` WHERE `doctorId`=?";
 	private static final String SELECT_ORDER = "SELECT * FROM `t_order` WHERE `serviceId`=?";
-	private static final String SELECT_CHAT_LIST = "SELECT list.*,patient.`nickname`,patient.`headPortrait` "//
+	private static final String SELECT_CHAT_LIST = "SELECT list.*,patient.`name`,patient.`headPortrait` "//
 			+ "FROM `t_doctor_chat_list` list, `t_patient` patient "//
 			+ "WHERE patient.`id`=list.`patientId` AND `doctorId`=?";//
 
 	private static final String SELECT_CONSULT_BY_CONSULTID = "SELECT consult.*,"// 咨询信息
-			+ "patient.`nickname`,patient.`gender` AS patientGender,patient.`headPortrait`,patient.`phone`,(year(now())-year(patient.birthday)-1) + ( DATE_FORMAT(patient.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ) as patientAge,relative.name " // 患者信息
+			+ "patient.`name`,patient.`gender` AS patientGender,patient.`headPortrait`,patient.`phone`,(year(now())-year(patient.birthday)-1) + ( DATE_FORMAT(patient.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ) as patientAge,relative.name " // 患者信息
 			+ "FROM `t_patient_consult` consult " // consult
 			+ "JOIN `t_patient` patient ON patient.id=consult.patientId "// 患者信息
 			+ "LEFT JOIN `t_patient_relative` relative ON relative.id=consult.patientRelativeId "// 就诊人信息
@@ -76,7 +76,7 @@ public class ConsultDao extends DbBase {
 			+ "WHERE consult.`acceptStatus`=0 AND `type`=0 LIMIT ?,?";
 
 	// 历史记录begin
-	private static final String FINISED_PATIENT_LIST = "SELECT distinct(c.patientId),p.nickname,p.gender,p.headPortrait,p.birthday,r.remark,r.note "//
+	private static final String FINISED_PATIENT_LIST = "SELECT distinct(c.patientId),p.name,p.gender,p.headPortrait,p.birthday AS age,r.remark,r.note "//
 			+ "FROM `t_patient_consult` c " /* 咨询信息 */
 			+ "JOIN `t_patient` p ON c.patientId =p.id " /* 患者信息 */
 			+ "LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=c.doctorId "/* 备注信息 */
@@ -85,8 +85,8 @@ public class ConsultDao extends DbBase {
 	private static final String FINISHED_CONSULT_BY_PATIENTID = "SELECT consult.`id`,consult.`patientId`,consult.`createTime`,consult.`type`,consult.`acceptStatus`,consult.`consultStatus`,consult.`symptoms`,orders.`totalAmount` as money, " //
 			+ "consult.`age`,consult.`gender`,IF(cmt.`commentTime`,TRUE,FALSE) AS hasComment "//
 			+ "FROM `t_patient_consult` consult "//
-			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId " //订单
-			+ "LEFT JOIN `t_doctor_comment` cmt ON consult.id=cmt.serviceId " //评论
+			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId " // 订单
+			+ "LEFT JOIN `t_doctor_comment` cmt ON consult.id=cmt.serviceId " // 评论
 			+ "WHERE consult.`acceptStatus`=1 AND consult.`consultStatus`=2 AND consult.`patientId`=? AND consult.`doctorId`=? ";//
 
 	private static final String SELECT_FINISED_PATIENT_LIST_FREE = FINISED_PATIENT_LIST + " AND c.type=0  ORDER BY `createTime` DESC LIMIT ?,?";
@@ -211,12 +211,12 @@ public class ConsultDao extends DbBase {
 		return queryForList(SELECT_FREE_CHAT, new Object[] { startIndex(page, pageSize), pageSize }, Consult.class);
 	}
 
-	protected List<SimplePatient> loadFinishedConsultPatientsFree(Doctor doctor, Integer page, Integer pageSize) {
-		return jdbc.query(SELECT_FINISED_PATIENT_LIST_FREE, new Object[] { doctor.getId(), startIndex(page, pageSize), pageSize }, SimplePatient.builder);
+	protected List<Patient> loadFinishedConsultPatientsFree(Doctor doctor, Integer page, Integer pageSize) {
+		return queryForList(SELECT_FINISED_PATIENT_LIST_FREE, new Object[] { doctor.getId(), startIndex(page, pageSize), pageSize }, Patient.class);
 	}
 
-	protected List<SimplePatient> loadFinishedConsultPatientsPayed(Doctor doctor, Integer page, Integer pageSize) {
-		return jdbc.query(SELECT_FINISED_PATIENT_LIST_PAYED, new Object[] { doctor.getId(), startIndex(page, pageSize), pageSize }, SimplePatient.builder);
+	protected List<Patient> loadFinishedConsultPatientsPayed(Doctor doctor, Integer page, Integer pageSize) {
+		return queryForList(SELECT_FINISED_PATIENT_LIST_PAYED, new Object[] { doctor.getId(), startIndex(page, pageSize), pageSize }, Patient.class);
 	}
 
 	protected List<Consult> loadFinishedConsultByPatientFree(Doctor doctor, int patientId) {
@@ -271,14 +271,14 @@ public class ConsultDao extends DbBase {
 		return queryForList(SELECT_ALL_CONSULT_BY_PATIENTID, new Object[] { patientId, doctor.getId() }, Consult.class);
 	}
 
-	protected List<SimplePatient> searchFinishedPatientsFree(Doctor doctor, String key) {
+	protected List<Patient> searchFinishedPatientsFree(Doctor doctor, String key) {
 		String sql = SEARCH_FINISED_PATIENT_LIST_FREE.replaceAll("#key#", "'%" + key + "%'");
-		return jdbc.query(sql, new Object[] { doctor.getId(), }, SimplePatient.builder);
+		return queryForList(sql, new Object[] { doctor.getId(), }, Patient.class);
 	}
 
-	protected List<SimplePatient> searchFinishedPatientsPayed(Doctor doctor, String key) {
+	protected List<Patient> searchFinishedPatientsPayed(Doctor doctor, String key) {
 		String sql = SEARCH_FINISED_PATIENT_LIST_PAYED.replaceAll("#key#", "'%" + key + "%'");
-		return jdbc.query(sql, new Object[] { doctor.getId(), }, SimplePatient.builder);
+		return queryForList(sql, new Object[] { doctor.getId(), }, Patient.class);
 	}
 
 	protected int countChating(Doctor doctor) {

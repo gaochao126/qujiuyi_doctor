@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jiuyi.doctor.patients.v2.model.ContactSrc;
 import com.jiuyi.doctor.patients.v2.model.DoctorPatientType;
 import com.jiuyi.doctor.patients.v2.model.Patient;
-import com.jiuyi.doctor.patients.v2.model.SimplePatient;
 import com.jiuyi.doctor.patients.v2.model.Tag;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.front.ResultConst;
@@ -38,7 +37,7 @@ public class PatientManagerV2 {
 	/** 首页信息 */
 	protected ServerResult loadAll(Doctor doctor) {
 		ServerResult res = new ServerResult();
-		List<SimplePatient> contacts = dao.loadContacts(doctor);// 常用联系人
+		List<Patient> contacts = dao.loadContacts(doctor);// 常用联系人
 		Integer unfamiliarCount = dao.loadUnfamiliarCount(doctor);// 陌生患者数量
 		res.put("number", contacts.size() + unfamiliarCount);
 		res.put("unfamiliar", unfamiliarCount);

@@ -24,7 +24,7 @@ import com.jiuyi.doctor.consult.model.UnreadMsgWrapper;
 import com.jiuyi.doctor.hospitals.model.DoctorTitle;
 import com.jiuyi.doctor.patients.PatientService;
 import com.jiuyi.doctor.patients.v2.PatientServiceV2;
-import com.jiuyi.doctor.patients.v2.model.SimplePatient;
+import com.jiuyi.doctor.patients.v2.model.Patient;
 import com.jiuyi.doctor.services.ServiceStatus;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.ManagerBase;
@@ -225,7 +225,7 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		if (type < 0) {
 			return new ServerResult(ResultConst.PARAM_ERROR);
 		}
-		List<SimplePatient> patients = new ArrayList<>();
+		List<Patient> patients = new ArrayList<>();
 		List<RowData> patient_count = new ArrayList<>();
 
 		if (type == CONSULT_FREE) {
@@ -237,10 +237,10 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		}
 
 		List<MapObject> resList = new ArrayList<>(patients.size());
-		for (SimplePatient sp : patients) {
+		for (Patient sp : patients) {
 			MapObject mo = sp.serializeToMapObject();
 			/* 每个患者总共咨询次数 */
-			mo.put("count", getPatientConsultCount(sp.patientId, patient_count));
+			mo.put("count", getPatientConsultCount(sp.getId(), patient_count));
 			resList.add(mo);
 		}
 		return new ServerResult("list", resList, true);
@@ -259,7 +259,7 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		if (type < 0 || type > 1) {
 			return new ServerResult(ResultConst.PARAM_ERROR);
 		}
-		List<SimplePatient> res = null;
+		List<Patient> res = null;
 		if (type == CONSULT_FREE) {
 			res = dao.searchFinishedPatientsFree(doctor, key);
 		} else {
