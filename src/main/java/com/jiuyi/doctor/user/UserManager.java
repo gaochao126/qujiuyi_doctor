@@ -27,6 +27,7 @@ import com.jiuyi.doctor.user.model.BeforeLogin;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.user.model.DoctorStatus;
 import com.jiuyi.doctor.user.model.FillDoctor;
+import com.jiuyi.doctor.user.update.UpdateSkill;
 import com.jiuyi.doctor.user.update.UpdateUserInfo;
 import com.jiuyi.frame.conf.DBConfig;
 import com.jiuyi.frame.event.EventService;
@@ -103,8 +104,8 @@ public class UserManager implements IUserManager {
 		this.LICENSE_CARD_FILE_PATH = dbConfig.getConfig("doctor.licenseCardPath");
 		this.EXPIRE_TIME = NumberUtil.parseInt(dbConfig.getConfig("doctor.expireTime")) * 24 * 60 * 60 * 1000;
 
-		this.name_update.put("skill", new UpdateUserInfo("skill", userDao));
-		this.name_update.put("experience", new UpdateUserInfo("experience", userDao));
+		this.name_update.put("skill", new UpdateSkill("skill", userDao, 150));
+		this.name_update.put("experience", new UpdateSkill("experience", userDao, 150));
 		// this.name_update.put("gender", new UpdateUserInfo("gender",
 		// userDao));
 		// this.name_update.put("officePhone", new UpdateUserInfo("officePhone",
