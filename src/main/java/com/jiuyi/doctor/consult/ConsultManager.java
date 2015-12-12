@@ -240,7 +240,7 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		for (Patient sp : patients) {
 			MapObject mo = sp.serializeToMapObject();
 			/* 每个患者总共咨询次数 */
-			mo.put("count", getPatientConsultCount(sp.getId(), patient_count));
+			mo.put("count", getPatientConsultCount(sp.getPatientId(), patient_count));
 			resList.add(mo);
 		}
 		return new ServerResult("list", resList, true);

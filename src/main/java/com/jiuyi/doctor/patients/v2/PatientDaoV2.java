@@ -34,14 +34,14 @@ public class PatientDaoV2 extends DbBase {
 	private static final String SELECT_PERSONAL_PATIENTS_COUNT = "SELECT COUNT(*) FROM `t_personal_doctor` WHERE `doctorId`=?";
 	private static final String SELECT_UNFAMILIAR_COUNT = "SELECT count(patientId) FROM t_doctor_unfamiliar_patient WHERE doctorId=? ";
 
-	private static final String SELECT_SIMPLE_PATIENT = "SELECT c.*,p.name,p.gender,p.headPortrait,p.birthday as age,r.remark,r.note FROM `#tableName#` c join `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=c.doctorId WHERE c.`#where#`=?;";
+	private static final String SELECT_SIMPLE_PATIENT = "SELECT c.patientId,p.name,p.gender,p.headPortrait,p.birthday as age,r.remark,r.note FROM `#tableName#` c join `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=c.doctorId WHERE c.`#where#`=?;";
 	private static final String SELECT_CONTACTS = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_contacts").replace("#where#", "doctorId");
 	private static final String SELECT_UNFAMILIAR = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_unfamiliar_patient").replace("#where#", "doctorId");
 	private static final String SELECT_BLACKLIST = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_blacklist_patient").replace("#where#", "doctorId");
 	private static final String SELECT_PERSONAL_PATIENTS = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_personal_doctor").replace("#where#", "doctorId");
 	private static final String SELECT_SIMPLE_PATIENT_BY_TAG = "SELECT c.*,p.`name`,p.`gender`,p.`headPortrait`,p.`birthday` AS age,r.remark,r.note FROM `t_patient_tags` c JOIN `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=? WHERE c.`tagId`=?;";
-	private static final String SELECT_SIMPLE_PATIENT_BATCH = "SELECT p.`id`,p.`name`,p.`gender`,p.`headPortrait`,p.`birthday` AS age FROM `t_patient` p WHERE p.`id` IN (#patientIds#)";
-	private static final String SELECT_PATIENT_DETAIL = "SELECT p.*,r.remark,r.note,r.relation as type FROM `t_patient` p LEFT JOIN `t_doctor_remark_patient` r ON r.doctorId=? AND r.patientId=p.id WHERE p.id=?;";
+	private static final String SELECT_SIMPLE_PATIENT_BATCH = "SELECT p.`id` as patientId,p.`name`,p.`gender`,p.`headPortrait`,p.`birthday` AS age FROM `t_patient` p WHERE p.`id` IN (#patientIds#)";
+	private static final String SELECT_PATIENT_DETAIL = "SELECT p.id as patientId,p.*,r.remark,r.note,r.relation as type FROM `t_patient` p LEFT JOIN `t_doctor_remark_patient` r ON r.doctorId=? AND r.patientId=p.id WHERE p.id=?;";
 	private static final String SELECT_DOCTOR_PATIENT_TYPE = "SELECT `relation` from `t_doctor_remark_patient` WHERE `doctorId`=? AND `patientId`=?";
 
 	private static final String SELECT_TAGS = "SELECT * FROM `t_doctor_tags` WHERE `doctorId`=?";

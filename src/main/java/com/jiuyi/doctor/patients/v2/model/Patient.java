@@ -18,7 +18,7 @@ import com.jiuyi.frame.util.CollectionUtil;
  */
 public class Patient implements ISerializableObj {
 
-	private Integer id;
+	private Integer patientId;
 	private String name;
 	@ConfigPrefix(Constants.KEY_PATIENT_HEAD)
 	private String headPortrait;
@@ -38,7 +38,7 @@ public class Patient implements ISerializableObj {
 		res.put("age", this.age);
 		res.put("remark", this.remark);
 		res.put("gender", this.gender);
-		res.put("patientId", this.id);
+		res.put("patientId", this.patientId);
 		res.put("patientName", this.name);
 		res.put("patientHead", this.headPortrait);
 		res.put("note", this.note);
@@ -51,8 +51,16 @@ public class Patient implements ISerializableObj {
 		return res;
 	}
 
-	public Integer getId() {
-		return id;
+	public Integer getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(Integer patientId) {
+		this.patientId = patientId;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 	public String getName() {
@@ -77,10 +85,6 @@ public class Patient implements ISerializableObj {
 
 	public Integer getSrc() {
 		return src;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public void setName(String name) {

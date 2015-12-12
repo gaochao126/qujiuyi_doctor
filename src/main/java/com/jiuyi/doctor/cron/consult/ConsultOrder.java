@@ -42,7 +42,7 @@ public class ConsultOrder {
 			String orderNumber = rs.getString("orderNumber");
 			int patientId = rs.getInt("patientId");
 			int doctorId = rs.getInt("doctorId");
-			String doctorName = rs.getString("doctorName");
+			String doctorName = rs.getString("name");
 			int couponId = rs.getInt("couponId");
 			BigDecimal payAmount = rs.getBigDecimal("payAmount");
 			BigDecimal balance = rs.getBigDecimal("balance");
