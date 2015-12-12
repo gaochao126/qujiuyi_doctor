@@ -11,6 +11,7 @@ import com.jiuyi.doctor.patients.v2.model.DoctorPatientType;
 import com.jiuyi.doctor.patients.v2.model.Patient;
 import com.jiuyi.doctor.patients.v2.model.Tag;
 import com.jiuyi.doctor.user.model.Doctor;
+import com.jiuyi.frame.front.FailResult;
 import com.jiuyi.frame.front.ResultConst;
 import com.jiuyi.frame.front.ServerResult;
 
@@ -120,6 +121,9 @@ public class PatientManagerV2 {
 	protected ServerResult patientDetailInfo(Doctor doctor, Integer patientId) {
 		ServerResult res = new ServerResult();
 		Patient patient = loadPatient(doctor, patientId);
+		if (patient == null) {
+			return new FailResult("患者不存在");
+		}
 		List<Tag> allTags = tagManager.loadInfoBase(doctor).getTags();
 		List<Tag> patientTags = tagManager.loadPatientTags(doctor, patientId);
 		res.putObjects("allTags", allTags);
