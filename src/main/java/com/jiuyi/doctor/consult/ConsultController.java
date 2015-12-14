@@ -174,8 +174,8 @@ public class ConsultController extends ControllerBase {
 	 * @return
 	 */
 	@RequestMapping(CMD_FINISHED)
-	public ServerResult loadFinishedChat(@TokenUser Doctor doctor, @Param("type") int type, @Param("page") Integer page, @Param("pageSize") Integer pageSize) {
-		return manager.loadFinishedChat(doctor, type, page, pageSize);
+	public ServerResult loadFinishedChat(@TokenUser Doctor doctor, @Param("page") Integer page, @Param("pageSize") Integer pageSize) {
+		return manager.loadFinishedChat(doctor, page, pageSize);
 	}
 
 	/**

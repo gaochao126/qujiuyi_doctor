@@ -221,21 +221,12 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 	}
 
 	/** 已经完成的，患者列表 ,type=0表示免费类型，非0表示付费类型 */
-	protected ServerResult loadFinishedChat(Doctor doctor, int type, Integer page, Integer pageSize) {
-		if (type < 0) {
-			return new ServerResult(ResultConst.PARAM_ERROR);
-		}
+	protected ServerResult loadFinishedChat(Doctor doctor, Integer page, Integer pageSize) {
 		List<Patient> patients = new ArrayList<>();
 		List<RowData> patient_count = new ArrayList<>();
 
-		if (type == CONSULT_FREE) {
-			patient_count = dao.loadFinishedConsultCountFree(doctor);
-			patients = dao.loadFinishedConsultPatientsFree(doctor, page, pageSize);
-		} else {
-			patient_count = dao.loadFinishedConsultCountPayed(doctor);
-			patients = dao.loadFinishedConsultPatientsPayed(doctor, page, pageSize);
-		}
-
+		patient_count = dao.loadFinishedConsultCount(doctor);
+		patients = dao.loadFinishedConsultPatients(doctor, page, pageSize);
 		List<MapObject> resList = new ArrayList<>(patients.size());
 		for (Patient sp : patients) {
 			MapObject mo = sp.serializeToMapObject();
