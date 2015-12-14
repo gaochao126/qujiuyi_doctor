@@ -32,7 +32,7 @@ public class Consult implements ISerializableObj {
 	private String symptomsImages;
 	@ReadableDate
 	private String createTime;
-	private String nickname;
+	private String patientName;
 	private int age;
 	private int gender;
 	@ConfigPrefix(Constants.KEY_PATIENT_HEAD)
@@ -43,6 +43,32 @@ public class Consult implements ISerializableObj {
 	private String name;
 	private boolean hasComment;
 	private Date startTime;
+
+	@Override
+	public MapObject serializeToMapObject() {
+		MapObject res = new MapObject();
+		res.put("id", this.id);
+		res.put("patientId", this.patientId);
+		res.put("patientAge", this.patientAge);
+		res.put("patientGender", this.patientGender);
+		res.put("acceptStatus", this.acceptStatus);
+		res.put("consultStatus", this.consultStatus);
+		res.put("symptoms", this.symptoms);
+		res.put("symptomsImages", this.symptomsImages);
+		res.put("createTime", this.createTime);
+		res.put("patientName", this.patientName);
+		res.put("name", this.name);
+		res.put("age", this.age);
+		res.put("gender", this.gender);
+		res.put("patientHead", this.headPortrait);
+		res.put("phone", StringUtil.isNullOrEmpty(phone) ? "" : StringUtil.hideStr(this.phone, 3, 6));
+		res.put("money", this.money, 0);
+		res.put("type", this.type);
+		res.put("hasComment", this.hasComment);
+		long remainTime = this.startTime == null ? 0 : DBConfigStatic.getConfigInt("consult.autostop.time") - (System.currentTimeMillis() - this.startTime.getTime());
+		res.put("remainTime", Math.max(0, remainTime));
+		return res;
+	}
 
 	public String getId() {
 		return id;
@@ -74,10 +100,6 @@ public class Consult implements ISerializableObj {
 
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
-	}
-
-	public String getNickname() {
-		return nickname;
 	}
 
 	public int getAge() {
@@ -122,10 +144,6 @@ public class Consult implements ISerializableObj {
 
 	public void setSymptomsImages(String symptomsImages) {
 		this.symptomsImages = symptomsImages;
-	}
-
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
 	}
 
 	public void setAge(int age) {
@@ -212,30 +230,12 @@ public class Consult implements ISerializableObj {
 		this.startTime = startTime;
 	}
 
-	@Override
-	public MapObject serializeToMapObject() {
-		MapObject res = new MapObject();
-		res.put("id", this.id);
-		res.put("patientId", this.patientId);
-		res.put("patientAge", this.patientAge);
-		res.put("patientGender", this.patientGender);
-		res.put("acceptStatus", this.acceptStatus);
-		res.put("consultStatus", this.consultStatus);
-		res.put("symptoms", this.symptoms);
-		res.put("symptomsImages", this.symptomsImages);
-		res.put("createTime", this.createTime);
-		res.put("patientName", this.nickname);
-		res.put("name", this.name);
-		res.put("age", this.age);
-		res.put("gender", this.gender);
-		res.put("patientHead", this.headPortrait);
-		res.put("phone", StringUtil.isNullOrEmpty(phone) ? "" : StringUtil.hideStr(this.phone, 3, 6));
-		res.put("money", this.money, 0);
-		res.put("type", this.type);
-		res.put("hasComment", this.hasComment);
-		long remainTime = this.startTime == null ? 0 : DBConfigStatic.getConfigInt("consult.autostop.time") - (System.currentTimeMillis() - this.startTime.getTime());
-		res.put("remainTime", Math.max(0, remainTime));
-		return res;
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
 	}
 
 }

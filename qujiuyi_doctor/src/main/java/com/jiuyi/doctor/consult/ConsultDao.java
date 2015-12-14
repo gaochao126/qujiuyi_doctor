@@ -42,7 +42,7 @@ public class ConsultDao extends DbBase {
 			+ "WHERE patient.`id`=list.`patientId` AND `doctorId`=?";//
 
 	private static final String SELECT_CONSULT_BY_CONSULTID = "SELECT consult.*,"// 咨询信息
-			+ "patient.`name`,patient.`gender` AS patientGender,patient.`headPortrait`,patient.`phone`,(year(now())-year(patient.birthday)-1) + ( DATE_FORMAT(patient.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ) as patientAge,relative.name " // 患者信息
+			+ "patient.`name` as patientName,patient.`gender` AS patientGender,patient.`headPortrait`,patient.`phone`,(year(now())-year(patient.birthday)-1) + ( DATE_FORMAT(patient.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ) as patientAge,relative.name " // 患者信息
 			+ "FROM `t_patient_consult` consult " // consult
 			+ "JOIN `t_patient` patient ON patient.id=consult.patientId "// 患者信息
 			+ "LEFT JOIN `t_patient_relative` relative ON relative.id=consult.patientRelativeId "// 就诊人信息
@@ -53,7 +53,7 @@ public class ConsultDao extends DbBase {
 			/* 咨询记录信息 */
 			+ "SELECT consult.*,"
 			/* 患者信息 */
-			+ "patient.`nickname`,patient.`gender` AS patientGender,patient.`headPortrait`,patient.`phone`,(year(now())-year(patient.birthday)-1) + ( DATE_FORMAT(patient.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ) as patientAge,"
+			+ "patient.`name` as patientName,patient.`gender` AS patientGender,patient.`headPortrait`,patient.`phone`,(year(now())-year(patient.birthday)-1) + ( DATE_FORMAT(patient.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ) as patientAge,"
 			+ "orders.`totalAmount` as money "/* 金额 */
 			+ "FROM `t_patient_consult` consult " /* 咨询详情 */
 			+ "JOIN `t_patient` patient ON patient.id=consult.patientId "/* 患者信息 */
@@ -100,8 +100,8 @@ public class ConsultDao extends DbBase {
 	// 历史记录end
 
 	// 历史记录搜索begin
-	private static final String SEARCH_FINISED_PATIENT_LIST_FREE = FINISED_PATIENT_LIST + " AND c.type=0 AND (p.`nickname` LIKE #key# OR r.`remark` LIKE #key#)";
-	private static final String SEARCH_FINISED_PATIENT_LIST_PAYED = FINISED_PATIENT_LIST + " AND c.type IN(1,2) AND (p.`nickname` LIKE #key# OR r.`remark` LIKE #key#)";
+	private static final String SEARCH_FINISED_PATIENT_LIST_FREE = FINISED_PATIENT_LIST + " AND c.type=0 AND (p.`name` LIKE #key# OR r.`remark` LIKE #key#)";
+	private static final String SEARCH_FINISED_PATIENT_LIST_PAYED = FINISED_PATIENT_LIST + " AND c.type IN(1,2) AND (p.`name` LIKE #key# OR r.`remark` LIKE #key#)";
 	// 历史记录搜索end
 
 	// 咨询中，付费新申请count

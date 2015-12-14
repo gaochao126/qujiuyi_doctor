@@ -1,14 +1,10 @@
 package com.jiuyi.doctor.prescribe;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.jiuyi.doctor.prescribe.model.DoctorPrescribe;
-import com.jiuyi.doctor.prescribe.model.Medicine;
 import com.jiuyi.doctor.prescribe.model.Prescribe;
 import com.jiuyi.doctor.prescribe.model.PrescribeStatus;
 import com.jiuyi.doctor.services.ServiceStatus;
@@ -107,11 +103,6 @@ public class PrescribeManager extends ManagerBase<Doctor, DoctorPrescribe> {
 			return new ServerResult(ResultConst.NOT_SATISFY);
 		}
 		return new ServerResult("list", dao.loadPrescribeMedcines(prescribeId));
-	}
-
-	/** 获取配药申请的药品清单 */
-	protected Map<Integer, List<Medicine>> loadPrescribesMedcines(Doctor doctor, Integer[] prescribeIds) {
-		return dao.loadPrescribeMedcines(prescribeIds);
 	}
 
 	/** 拒绝配药 */
