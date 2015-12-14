@@ -37,13 +37,13 @@ public class PatientDAO extends DbBase {
 	private static final String SELECT_PATIENT_GROUP = "SELECT dp.patientId, pg.groupId FROM t_doctor_patient dp, t_patient_group pg WHERE pg.patientId = dp.patientId AND pg.groupId in (select id from t_doctor_group where doctorId=?) AND dp.doctorId=?";
 	private static final String SELECT_PATIENT = "SELECT * FROM `t_patient` p WHERE p.`id`=?";
 	private static final String PERSONAL_PATIENT = "SELECT count(`id`) FROM `t_personal_doctor` WHERE `expirationTime`>now() AND `doctorId`=? AND `patientId`=?";
-	private static final String SELECT_PERSONAL_PATIENTS_ALL = "SELECT p.`id`, p.`nickname`,p.`gender`,p.`birthday`,p.`headPortrait`,p.`phone` FROM `t_patient` p, `t_personal_doctor` dp WHERE p.`id`=dp.`patientId` AND dp.`doctorId`=?";
-	private static final String SELECT_PATIENTS = "SELECT p.`id`, p.`nickname`,p.`gender`,p.`birthday`,p.`headPortrait`,p.`phone` FROM `t_patient` p, `t_doctor_patient` dp WHERE p.`id`=dp.`patientId` AND dp.`doctorId`=?";
+	private static final String SELECT_PERSONAL_PATIENTS_ALL = "SELECT p.`id`, p.`name`,p.`gender`,p.`birthday`,p.`headPortrait`,p.`phone` FROM `t_patient` p, `t_personal_doctor` dp WHERE p.`id`=dp.`patientId` AND dp.`doctorId`=?";
+	private static final String SELECT_PATIENTS = "SELECT p.`id`, p.`name`,p.`gender`,p.`birthday`,p.`headPortrait`,p.`phone` FROM `t_patient` p, `t_doctor_patient` dp WHERE p.`id`=dp.`patientId` AND dp.`doctorId`=?";
 	private static final String SELECT_DOCTOR_GROUPS = "SELECT `id`,`name` FROM `t_doctor_group` WHERE `doctorId`=?";
 	private static final String SELECT_ALL_RETURN_VISIT = "SELECT * FROM `t_return_visit` WHERE `doctorId`=? AND `visitTime`>now()";
 	// private static final String SELECT_RETURN_VISIT =
 	// "SELECT `id`,`patientId`,`visitTime`,`description` FROM `t_return_visit` WHERE `doctorId`=? AND `patientId`=?";
-	private static final String SELECT_SEARCH_PATIENT = "SELECT `id`,`nickname`,`phone`,`gender`,`headPortrait`,`address`,`allergicHistory` FROM `t_patient` WHERE `phone`=? OR `nickname` LIKE ? LIMIT 30";
+	private static final String SELECT_SEARCH_PATIENT = "SELECT `id`,`name`,`phone`,`gender`,`headPortrait`,`address`,`allergicHistory` FROM `t_patient` WHERE `phone`=? OR `name` LIKE ? LIMIT 30";
 	private static final String SELECT_DOCTER_PATIENT = "SELECT COUNT(`patientId`) FROM `t_doctor_patient` WHERE `doctorId`=? AND `patientId`=?";
 	private static final String RECOMMEND_PATIENT = "SELECT * FROM `t_patient` LIMIT ?,?";
 	private static final String PATIENT_EXIST = "SELECT COUNT(`id`) FROM `t_patient` WHERE `id`=?";
