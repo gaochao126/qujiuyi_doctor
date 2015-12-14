@@ -91,6 +91,7 @@ public class ConsultDao extends DbBase {
 
 	private static final String SELECT_FINISED_PATIENT_LIST_FREE = FINISED_PATIENT_LIST + " AND c.type=0  ORDER BY `createTime` DESC LIMIT ?,?";
 	private static final String SELECT_FINISH_CONSULT_BY_PATIENTID_FREE = FINISHED_CONSULT_BY_PATIENTID + " AND consult.type=0 ORDER BY `createTime` DESC";
+	private static final String SELECT_FINISED_PATIENT_LIST = FINISED_PATIENT_LIST + " ORDER BY `createTime` DESC LIMIT ?,?";
 	private static final String SELECT_FINISED_PATIENT_LIST_PAYED = FINISED_PATIENT_LIST + " AND c.type IN(1,2) ORDER BY `createTime` DESC LIMIT ?,?";
 	private static final String SELECT_FINISH_CONSULT_BY_PATIENTID_PAYED = FINISHED_CONSULT_BY_PATIENTID + " AND consult.type IN(1,2) ORDER BY `createTime` DESC";
 
@@ -219,6 +220,10 @@ public class ConsultDao extends DbBase {
 		return queryForList(SELECT_FINISED_PATIENT_LIST_PAYED, new Object[] { doctor.getId(), startIndex(page, pageSize), pageSize }, Patient.class);
 	}
 
+	protected List<Patient> loadFinishedConsultPatients(Doctor doctor, Integer page, Integer pageSize) {
+		return queryForList(SELECT_FINISED_PATIENT_LIST, new Object[] { doctor.getId(), startIndex(page, pageSize), pageSize }, Patient.class);
+	}
+
 	protected List<Consult> loadFinishedConsultByPatientFree(Doctor doctor, int patientId) {
 		return queryForList(SELECT_FINISH_CONSULT_BY_PATIENTID_FREE, new Object[] { patientId, doctor.getId() }, Consult.class);
 	}
@@ -239,7 +244,7 @@ public class ConsultDao extends DbBase {
 		return queryForRowDataList(SELECT_FINISH_CONSULT_COUNT_PAYED, doctor.getId());
 	}
 
-	protected List<RowData> loadFinishedConsultCountByPatientAll(Doctor doctor) {
+	protected List<RowData> loadFinishedConsultCount(Doctor doctor) {
 		return queryForRowDataList(SELECT_FINISH_CONSULT_COUNT, doctor.getId());
 	}
 
