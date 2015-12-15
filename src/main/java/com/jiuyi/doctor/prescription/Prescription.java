@@ -5,27 +5,82 @@ package com.jiuyi.doctor.prescription;
 
 import java.util.Date;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.jiuyi.frame.annotations.ConfigPrefix;
+import com.jiuyi.frame.constants.Constants;
+import com.jiuyi.frame.front.ISerializableObj;
+import com.jiuyi.frame.front.MapObject;
+
 /**
  * 处方实体类
  * 
  * @author xutaoyang
  *
  */
-public class Prescription {
+public class Prescription implements ISerializableObj {
 
+	@NotEmpty
 	private String id;
+	/** 处方编号 */
+	private String number;
 	private int doctorId;
 	private int patientId;
 	private int patientRelativeId;
+	@NotEmpty
 	private String allergies;
+	@NotEmpty
 	private String illness;
+	@NotEmpty
 	private String diagnosis;
 	private Date createTime;
 	private Date updateTime;
 	private int status;
+	private int medicineTakeStatus;
+
+	// 就诊人信息相关
+	private int relativeAge;
+	private int relativeGender;
+	private String relativeName;
+	private String relativeUid;
+
+	// 患者相关
+	private String patientName;
+	@ConfigPrefix(Constants.KEY_PATIENT_HEAD)
+	private String patientHead;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jiuyi.frame.front.ISerializableObj#serializeToMapObject()
+	 */
+	@Override
+	public MapObject serializeToMapObject() {
+		MapObject res = new MapObject();
+		res.put("id", this.id);
+		res.put("number", this.number);
+		res.put("doctorId", this.doctorId);
+		res.put("patientId", this.patientId);
+		res.put("patientRelativeId", this.patientRelativeId);
+		res.put("allergies", this.allergies);
+		res.put("illness", this.illness);
+		res.put("diagnosis", this.diagnosis);
+		res.put("createTime", this.createTime);
+		res.put("updateTime", this.updateTime);
+		res.put("status", this.status);
+		res.put("relativeName", this.relativeName);
+		res.put("relativeUid", this.relativeUid);
+		res.put("patientName", this.patientName);
+		res.put("patientHead", this.patientHead);
+		return res;
+	}
 
 	public String getId() {
 		return id;
+	}
+
+	public String getNumber() {
+		return number;
 	}
 
 	public int getDoctorId() {
@@ -64,8 +119,28 @@ public class Prescription {
 		return status;
 	}
 
+	public String getRelativeName() {
+		return relativeName;
+	}
+
+	public String getRelativeUid() {
+		return relativeUid;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public String getPatientHead() {
+		return patientHead;
+	}
+
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 
 	public void setDoctorId(int doctorId) {
@@ -102,6 +177,46 @@ public class Prescription {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public void setRelativeName(String relativeName) {
+		this.relativeName = relativeName;
+	}
+
+	public void setRelativeUid(String relativeUid) {
+		this.relativeUid = relativeUid;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public void setPatientHead(String patientHead) {
+		this.patientHead = patientHead;
+	}
+
+	public int getRelativeAge() {
+		return relativeAge;
+	}
+
+	public int getRelativeGender() {
+		return relativeGender;
+	}
+
+	public void setRelativeAge(int relativeAge) {
+		this.relativeAge = relativeAge;
+	}
+
+	public void setRelativeGender(int relativeGender) {
+		this.relativeGender = relativeGender;
+	}
+
+	public int getMedicineTakeStatus() {
+		return medicineTakeStatus;
+	}
+
+	public void setMedicineTakeStatus(int medicineTakeStatus) {
+		this.medicineTakeStatus = medicineTakeStatus;
 	}
 
 }
