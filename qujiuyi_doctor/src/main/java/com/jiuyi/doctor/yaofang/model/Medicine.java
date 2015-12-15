@@ -6,6 +6,7 @@ package com.jiuyi.doctor.yaofang.model;
 import java.util.List;
 
 import com.jiuyi.frame.annotations.Column;
+import com.jiuyi.frame.annotations.ConfigPrefix;
 
 /**
  * @author xutaoyang
@@ -22,6 +23,10 @@ public class Medicine {
 
 	@Column("prod_usage")
 	private String usage;
+
+	@Column("img_id")
+	@ConfigPrefix("medicine.img.url")
+	private String img;
 
 	private List<MedicineImg> imgs;
 	private List<Format> formats;
@@ -64,6 +69,14 @@ public class Medicine {
 
 	public void setFormats(List<Format> formats) {
 		this.formats = formats;
+	}
+
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
 	}
 
 	@Override
