@@ -52,7 +52,7 @@ public class PrescriptionController {
 	 * @return
 	 */
 	@RequestMapping(CMD_PRESCRIBE)
-	public ServerResult prescribe(@TokenUser Doctor doctor, @Param("prescription") Prescription prescription, @Param("medicines") List<PrescriptionDetail> medicines) {
+	public ServerResult prescribe(@TokenUser Doctor doctor, @Param("prescription") Prescription prescription, @Param("medicines") List<PrescriptionMedicine> medicines) {
 		return manager.prescribe(doctor, prescription, medicines);
 	}
 

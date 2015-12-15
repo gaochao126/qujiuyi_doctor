@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.prescription.Prescription;
+import com.jiuyi.frame.util.ObjectUtil;
+import com.jiuyi.frame.util.ValidateResult;
 
 public class TestMain {
 
 	public static void main(String[] args) {
-		List<Field> fields = getAllFields(Patient.class);
-		for (Field field : fields) {
-			System.out.println(field.getName());
-		}
+		Prescription prescription = new Prescription();
+		ValidateResult res = ObjectUtil.validateRes(prescription);
+		System.out.println(res.isSuccess() + "-->" + res.getMsg());
 	}
 
 	public static List<Field> getAllFields(Class<?> clazz) {

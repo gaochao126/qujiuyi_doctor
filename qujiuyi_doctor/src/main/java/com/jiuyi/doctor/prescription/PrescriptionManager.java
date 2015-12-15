@@ -65,7 +65,7 @@ public class PrescriptionManager {
 	 * @return
 	 */
 	@Transactional
-	protected ServerResult prescribe(Doctor doctor, Prescription prescription, List<PrescriptionDetail> medicines) {
+	protected ServerResult prescribe(Doctor doctor, Prescription prescription, List<PrescriptionMedicine> medicines) {
 		ServerResult res = ObjectUtil.validateResult(prescription);
 		if (!res.isSuccess()) {
 			return res;
@@ -73,13 +73,20 @@ public class PrescriptionManager {
 		if (CollectionUtil.isNullOrEmpty(medicines)) {
 			return new FailResult("请至少选择一种药品");
 		}
-		ServerResult checkMed = ObjectUtil.validateResult(medicines);
+		ServerResult checkMed = ObjectUtil.validateList(medicines);
 		if (!checkMed.isSuccess()) {
 			return checkMed;
 		}
 		Prescription old = dao.loadPrescription(doctor, prescription.getId());
 		if (old == null) {
 			return new FailResult("该处方不存在");
+		}
+		if (PrescriptionStatus.statusCanPrescribe(old.getStatus())) {
+			return new FailResult("该状态下不能开处方");
+		}
+
+		for (PrescriptionMedicine medicine : medicines) {
+			medicine.setPrescriptionId(prescription.getId());
 		}
 
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
@@ -134,7 +141,7 @@ public class PrescriptionManager {
 	 * @return
 	 */
 	protected ServerResult loadDetail(Doctor doctor, String id) {
-		Prescription prescription = dao.loadPrescription(doctor, id);
+		Prescription prescription = dao.loadPrescriptionDetail(doctor, id);
 		if (prescription == null) {
 			return new ServerResult();
 		}
@@ -171,7 +178,7 @@ public class PrescriptionManager {
 	 */
 	private static String genPresNumber(Doctor doctor, Prescription prescription) {
 		char head = (char) (Math.random() * 26 + 65);
-		String number = String.format("%c%d%d%d", head, doctor.getId(), prescription.getPatientRelativeId(), (int) (Math.random() * 900 + 100));
+		String number = String.format("%c%d%d%d", head, doctor.getId(), prescription.getRelativeId(), (int) (Math.random() * 900 + 100));
 		return number;
 	}
 

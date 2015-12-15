@@ -3,6 +3,9 @@
  */
 package com.jiuyi.doctor.prescription;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
@@ -10,16 +13,16 @@ import org.hibernate.validator.constraints.NotEmpty;
  * @author xutaoyang
  *
  */
-public class PrescriptionDetail {
+public class PrescriptionMedicine {
 
 	private long id;
-	@NotEmpty
 	private String prescriptionId;
 	@NotEmpty
 	private String medicineId;
 	@NotEmpty
 	private String formatId;
-	@NotEmpty
+	@NotNull
+	@Min(1)
 	private Integer number;
 	@NotEmpty
 	private String instructions;

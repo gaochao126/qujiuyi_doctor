@@ -3,6 +3,8 @@
  */
 package com.jiuyi.doctor.chatserver;
 
+import com.jiuyi.frame.util.JsonUtil;
+
 /**
  * 系统消息
  * 
@@ -22,7 +24,7 @@ public class SystemMsg extends ChatServerRequestEntity {
 		putDetail("targetType", targetType.ordinal());
 		putDetail("target", target);
 		putDetail("summary", summary);
-		putDetail("content", content);
+		putDetail("content", JsonUtil.toJson(content));
 	}
 
 	public SystemMsg(UserType targetType, Integer target, String summary, Object content, String weixinMsg) {
