@@ -365,9 +365,12 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		if (consult == null) {
 			return;
 		}
-		/********* 更新consult状态 *********/
+		/* 更新consult状态 */
 		dao.onStopConsult(consult);
 
+		/* 把未读消息设为已读 */
+		
+		
 		/** 原本医生在这个时候入账，现在改为一小时后再入账（跑job），留给患者投诉时间，为了不让医生转账 */
 		// Order order = dao.loadOrderByConsultId(consult.getId());
 		// if (!patientService.isPersonalPatient(doctor, consult.getPatientId())

@@ -126,6 +126,7 @@ public class ConsultDao extends DbBase {
 	private static final String UPDATE_CHAT_STATUS = "INSERT `t_doctor_chat`(`doctorId`,`status`,`price`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `status`=?";
 	private static final String UPDATE_CHAT_PRICE = "INSERT `t_doctor_chat`(`doctorId`,`status`,`price`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `price`=?";
 	private static final String INSERT_CHAT_PRICE = "INSERT `t_doctor_chat`(`doctorId`,`status`,`price`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `status`=?,`price`=?";
+	private static final String UPDATE_CHAT_HIS_READ_STATUS = "UPDATE `t_chat_his` SET `readStatus`=1 WHERE `serviceType`=1 AND `serviceId`=?";
 
 	protected DoctorChat loadDoctorChat(Doctor doctor) {
 		return queryForObjectDefaultBuilder(SELECT_CHAT_SERVICE, new Object[] { doctor.getId() }, DoctorChat.class);
@@ -262,6 +263,10 @@ public class ConsultDao extends DbBase {
 
 	protected void onStopConsult(Consult consult) {
 		jdbc.update(ON_STOP_CONSULT, new Object[] { ConsultAcceptStatus.ACCEPTED.ordinal(), ConsultStatus.FINISHED.ordinal(), new Date(), consult.getId() });
+	}
+
+	protected void setChatHisReadStatus(Consult consult) {
+		jdbc.update(UPDATE_CHAT_HIS_READ_STATUS, consult.getId());
 	}
 
 	protected Consult loadConsultingByPatientId(Doctor doctor, int patientId) {
