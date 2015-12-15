@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="encryptor" class="org.jasypt.util.text.BasicTextEncryptor">
+		<property name="password">
+			<value>jiuyi791</value>
+		</property>
+	</bean>
+
+	<bean id="zerosalt" class="org.jasypt.salt.ZeroSaltGenerator">
+	</bean>
+
+	<bean id="zoresaltencryptor" class="org.jasypt.encryption.pbe.PooledPBEStringEncryptor">
+		<property name="password">
+			<value>jiuyi791</value>
+		</property>
+		<property name="poolSize">
+			<value>5</value>
+		</property>
+		<property name="saltGenerator">
+			<ref bean="zerosalt" />
+		</property>
+	</bean>
+</beans>

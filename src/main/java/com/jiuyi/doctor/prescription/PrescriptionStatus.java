@@ -14,13 +14,13 @@ public enum PrescriptionStatus {
 	CREATED,
 	
 	/**等待开方/患者已确认*/
-	PATIENT_CONFIRMED,
+	PATIENT_CONFIRMED(true),
 	
 	/**医生完成/患者取消*/
 	PATIENT_CANCEL,
 	
 	/**医生开方完成/患者待支付*/
-	PRESCRIBED,
+	PRESCRIBED(true),
 	
 	/**医生取消开方/患者完成*/
 	CANCEL_PRESCRIBE,
@@ -32,6 +32,25 @@ public enum PrescriptionStatus {
 	PAYEDM,
 	
 	/**过期*/
-	EXPIRED
+	EXPIRED;
 	
+	/**该状态下是否允许医生配药*/
+	private boolean canPrescribe;
+	
+	private PrescriptionStatus() {
+		this(false);
+	}
+	
+	private PrescriptionStatus(boolean canPrescribe) {
+		this.canPrescribe = canPrescribe;
+	}
+	
+	/**
+	 * 该状态是否允许医生配药
+	 * @param status
+	 * @return
+	 */
+	public static boolean statusCanPrescribe(int status){
+		return values()[status]!=null  && values()[status].canPrescribe;
+	}
 }

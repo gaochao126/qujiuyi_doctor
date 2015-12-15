@@ -22,21 +22,25 @@ import com.jiuyi.frame.base.DbBase;
 public class PrescriptionDao extends DbBase {
 
 	private static final String SELECT_PRESCRIPTION = "SELECT * FROM `t_prescription` WHERE `doctorId`=? AND `id`=?";
-	private static final String SELECT_PRESCRIPTION_DETAIL = "SELECT * FROM `t_prescription_detail` WHERE `prescriptionId`=?";
-	private static final String SELECT_PRESCRIPTION_BY_STATUS = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
-			+ "FROM `t_prescription` pres" // 处方表
+	private static final String SELECT_PRESCRIPTION_MEDS = "SELECT * FROM `t_prescription_detail` WHERE `prescriptionId`=?";
+	private static final String SELECT_PRESCRIPTION_DETAIL = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead " // select
+			+ "FROM `t_prescription` pres " // 处方表
 			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
-			+ "WHERE pres.doctorId=:doctorId AND status in :status LIMIT :startIndex,:size";// where end
+			+ "WHERE pres.`doctorId`=? AND pres.`id`=?";
+	private static final String SELECT_PRESCRIPTION_BY_STATUS = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
+			+ "FROM `t_prescription` pres " // 处方表
+			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
+			+ "WHERE pres.doctorId=:doctorId AND status in (:status) LIMIT :startIndex,:size";// where end
 
 	private static final String SEARCH_PRESCRIPTION = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
-			+ "FROM `t_prescription` pres" // 处方表
+			+ "FROM `t_prescription` pres " // 处方表
 			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
-			+ "WHERE pres.doctorId=:doctorId AND `relativeName` LIKE :key AND `status` in :status";// where end
+			+ "WHERE pres.doctorId=:doctorId AND `relativeName` LIKE :key AND `status` in (:status)";// where end
 
-	private static final String COUNT_PRESCRIPTION_BY_STATUS = "SELECT COUNT(*) FROM `t_prescription` WHERE pres.doctorId=:doctorId AND status in :status";
+	private static final String COUNT_PRESCRIPTION_BY_STATUS = "SELECT COUNT(*) FROM `t_prescription` WHERE doctorId=:doctorId AND status in (:status)";
 
 	private static final String INSERT_PRESCRIPTION = "INSERT `t_prescription`(`id`,`number`,`doctorId`,`patientId`,`createTime`,`updateTime`,`status`) VALUES(:id,:number,:doctorId,:patientId,:createTime,:updateTime,:status)";
-	private static final String UPDATE_PRESCRIPTION = "UPDAT `t_prescription` SET allergies=:allergies,illness=:illness,diagnosis=:diagnosis,status=:status WHERE `id`=:id";
+	private static final String UPDATE_PRESCRIPTION = "UPDATE `t_prescription` SET allergies=:allergies,illness=:illness,diagnosis=:diagnosis,status=:status WHERE `id`=:id";
 
 	private static final String INSERT_PRESCRIPTION_DETAIL = "INSERT `t_prescription_detail`(prescriptionId,medicineId,formatId,number,instructions) VALUE(:prescriptionId,:medicineId,:formatId,:number,:instructions)";
 
@@ -51,7 +55,11 @@ public class PrescriptionDao extends DbBase {
 	}
 
 	protected Prescription loadPrescription(Doctor doctor, String id) {
-		return queryForObject(SELECT_PRESCRIPTION, new Object[] { doctor.getId(), id }, Prescription.class);
+		return queryForObjectDefaultBuilder(SELECT_PRESCRIPTION, new Object[] { doctor.getId(), id }, Prescription.class);
+	}
+
+	protected Prescription loadPrescriptionDetail(Doctor doctor, String id) {
+		return queryForObjectDefaultBuilder(SELECT_PRESCRIPTION_DETAIL, new Object[] { doctor.getId(), id }, Prescription.class);
 	}
 
 	/**
@@ -73,16 +81,16 @@ public class PrescriptionDao extends DbBase {
 	/**
 	 * @param medicines
 	 */
-	protected void insertMedicines(Prescription prescription, List<PrescriptionDetail> medicines) {
-		namedJdbc.batchUpdate(INSERT_PRESCRIPTION_DETAIL, SqlParameterSourceUtils.createBatch(medicines.toArray(new BeanPropertySqlParameterSource[medicines.size()])));
+	protected void insertMedicines(Prescription prescription, List<PrescriptionMedicine> medicines) {
+		namedJdbc.batchUpdate(INSERT_PRESCRIPTION_DETAIL, SqlParameterSourceUtils.createBatch(medicines.toArray(new PrescriptionMedicine[medicines.size()])));
 	}
 
 	/**
 	 * @param id
 	 * @return
 	 */
-	protected List<PrescriptionDetail> loadPrescriptionMedicines(String id) {
-		return queryForList(SELECT_PRESCRIPTION_DETAIL, new Object[] { id }, PrescriptionDetail.class);
+	protected List<PrescriptionMedicine> loadPrescriptionMedicines(String id) {
+		return queryForList(SELECT_PRESCRIPTION_MEDS, new Object[] { id }, PrescriptionMedicine.class);
 	}
 
 	/**
@@ -121,7 +129,7 @@ public class PrescriptionDao extends DbBase {
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		params.addValue("doctorId", doctor.getId());
 		params.addValue("status", toSelectStatus);
-		params.addValue("key", String.format("%%s%", key));
+		params.addValue("key", "%" + key + "%");
 		return queryForList(SEARCH_PRESCRIPTION, params, Prescription.class);
 	}
 

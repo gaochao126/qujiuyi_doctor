@@ -11,6 +11,7 @@ import com.jiuyi.frame.annotations.ConfigPrefix;
 import com.jiuyi.frame.constants.Constants;
 import com.jiuyi.frame.front.ISerializableObj;
 import com.jiuyi.frame.front.MapObject;
+import com.jiuyi.frame.util.DateUtil;
 
 /**
  * 处方实体类
@@ -26,7 +27,7 @@ public class Prescription implements ISerializableObj {
 	private String number;
 	private int doctorId;
 	private int patientId;
-	private int patientRelativeId;
+	private int relativeId;
 	@NotEmpty
 	private String allergies;
 	@NotEmpty
@@ -61,13 +62,16 @@ public class Prescription implements ISerializableObj {
 		res.put("number", this.number);
 		res.put("doctorId", this.doctorId);
 		res.put("patientId", this.patientId);
-		res.put("patientRelativeId", this.patientRelativeId);
+		res.put("relativeId", this.relativeId);
 		res.put("allergies", this.allergies);
 		res.put("illness", this.illness);
 		res.put("diagnosis", this.diagnosis);
-		res.put("createTime", this.createTime);
-		res.put("updateTime", this.updateTime);
+		res.put("createTime", DateUtil.date2Str(this.createTime));
+		res.put("updateTime", DateUtil.date2Str(this.updateTime));
 		res.put("status", this.status);
+		res.put("medicineTakeStatus", this.medicineTakeStatus);
+		res.put("relativeAge", this.relativeAge);
+		res.put("relativeGender", this.relativeGender);
 		res.put("relativeName", this.relativeName);
 		res.put("relativeUid", this.relativeUid);
 		res.put("patientName", this.patientName);
@@ -89,10 +93,6 @@ public class Prescription implements ISerializableObj {
 
 	public int getPatientId() {
 		return patientId;
-	}
-
-	public int getPatientRelativeId() {
-		return patientRelativeId;
 	}
 
 	public String getAllergies() {
@@ -149,10 +149,6 @@ public class Prescription implements ISerializableObj {
 
 	public void setPatientId(int patientId) {
 		this.patientId = patientId;
-	}
-
-	public void setPatientRelativeId(int patientRelativeId) {
-		this.patientRelativeId = patientRelativeId;
 	}
 
 	public void setAllergies(String allergies) {
@@ -217,6 +213,14 @@ public class Prescription implements ISerializableObj {
 
 	public void setMedicineTakeStatus(int medicineTakeStatus) {
 		this.medicineTakeStatus = medicineTakeStatus;
+	}
+
+	public int getRelativeId() {
+		return relativeId;
+	}
+
+	public void setRelativeId(int relativeId) {
+		this.relativeId = relativeId;
 	}
 
 }
