@@ -7,7 +7,7 @@ import com.jiuyi.frame.httpclient.AbsHttpClient.IRequestEntity;
 
 public class ChatServerRequestEntity implements IRequestEntity {
 
-	private Map<String, Object> params = new HashMap<>();
+	protected Map<String, Object> params = new HashMap<>();
 
 	public ChatServerRequestEntity() {
 	}
@@ -18,6 +18,16 @@ public class ChatServerRequestEntity implements IRequestEntity {
 
 	public void putParam(String key, Object value) {
 		this.params.put(key, value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void putDetail(String key, Object val) {
+		Map<String, Object> detail = (Map<String, Object>) params.get("params");
+		if (detail == null) {
+			detail = new HashMap<>();
+			putParam("params", detail);
+		}
+		detail.put(key, val);
 	}
 
 	@Override
