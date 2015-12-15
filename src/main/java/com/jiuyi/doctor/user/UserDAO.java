@@ -143,6 +143,6 @@ public class UserDAO extends DbBase {
 	}
 
 	protected Doctor loadOfflineDoctor(int offlineId) {
-		return queryForObject(SELECT_HOSPITAL_DOCTOR, new Object[] { offlineId }, Doctor.class);
+		return queryForObjectDefaultBuilder(SELECT_HOSPITAL_DOCTOR, new Object[] { offlineId }, Doctor.class);
 	}
 }

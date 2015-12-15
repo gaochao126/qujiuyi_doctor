@@ -2,21 +2,51 @@ package com.jiuyi.doctor.yaofang;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jiuyi.doctor.yaofang.model.Format;
 import com.jiuyi.doctor.yaofang.model.Medicine;
+import com.jiuyi.frame.front.ServerResult;
+import com.jiuyi.frame.util.ObjectUtil;
 
 @Service
 public class YaofangManager {
 
 	private @Autowired YaofangDao dao;
 
-	@PostConstruct
-	public void init() {
+	/**
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	public ServerResult loadMedicines(int page, int pageSize) {
+		ServerResult res = new ServerResult();
+		List<Medicine> medicines = dao.loadMedicines(page, pageSize);
+		res.put("list", medicines);
+		return res;
+	}
+
+	/**
+	 * @param key
+	 * @return
+	 */
+	protected ServerResult search(String key) {
+		ServerResult res = new ServerResult();
+		List<Medicine> medicines = searchMedcines(key);
+		res.put("list", medicines);
+		return res;
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	protected ServerResult medicineDetail(String id) {
+		Medicine medicine = loadMedicine(id);
+		ServerResult res = new ServerResult();
+		res.putAll(ObjectUtil.introspect(medicine));
+		return res;
 	}
 
 	/**

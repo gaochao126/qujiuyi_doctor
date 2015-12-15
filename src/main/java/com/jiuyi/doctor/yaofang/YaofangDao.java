@@ -14,6 +14,7 @@ public class YaofangDao extends YaofangDB {
 
 	private static final String SELECT_MEDICINE = "SELECT * FROM `Products` WHERE `prod_id`=(:id)";
 	private static final String SELECT_BATCH_MEDICINES = "SELECT * FROM `Products` WHERE `prod_id` IN (:ids)";
+	private static final String SELECT_PAGE_MEDICINES = "SELECT * FROM `Products` WHERE `prod_id` LIMIT ?,?";
 	private static final String SEARCH_MEDICINE = "SELECT * FROM `Products` WHERE LOWER(`prod_name`) LIKE :key;";
 
 	private static final String SELECT_MEDICINE_IMGS = "SELECT * FROM `Img` WHERE `prod_id`=:id";
@@ -54,6 +55,15 @@ public class YaofangDao extends YaofangDB {
 	 */
 	protected Format loadMedicineFormat(String formatId) {
 		return queryForObject(SELECT_MEDICINE_FORMAT, new MapSqlParameterSource("id", formatId), Format.class);
+	}
+
+	/**
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	protected List<Medicine> loadMedicines(int page, int pageSize) {
+		return queryForList(SELECT_PAGE_MEDICINES, new Object[] { startIndex(page, pageSize), pageSize }, Medicine.class);
 	}
 
 }
