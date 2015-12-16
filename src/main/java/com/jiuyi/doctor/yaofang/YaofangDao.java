@@ -23,6 +23,8 @@ public class YaofangDao extends YaofangDB {
 	private static final String SELECT_MEDICINE_FORMAT = "SELECT * FROM `Formats` WHERE `format_id`=:id";
 
 	private static final String SELECT_FORMAT_MEDS = "SELECT f.*,m.prod_id,m.prod_name,m.prod_usage,m.img_id FROM `Formats` f,`Products` m WHERE m.prod_id=f.prod_id AND f.`format_id` IN (:ids)";
+	private static final String SELECT_PAGE_FORMAT_MEDS = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id FROM `Formats` f,`Products` m WHERE m.prod_id=f.prod_id LIMIT ?,?";
+	private static final String SEARCH_FORMAT_MEDS = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id FROM `Formats` f,`Products` m WHERE m.prod_id=f.prod_id AND LOWER(m.`prod_name`) LIKE :key";
 
 	public List<Medicine> searchMedicine(String key) {
 		return queryForList(SEARCH_MEDICINE, new MapSqlParameterSource("key", "%" + key.toLowerCase() + "%"), Medicine.class);
@@ -75,6 +77,23 @@ public class YaofangDao extends YaofangDB {
 	 */
 	protected List<FormatMedicine> loadFormatMeds(List<String> formatIds) {
 		return queryForList(SELECT_FORMAT_MEDS, new MapSqlParameterSource("ids", formatIds), FormatMedicine.class);
+	}
+
+	/**
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	protected List<FormatMedicine> loadFormatMedicines(int page, int pageSize) {
+		return queryForList(SELECT_PAGE_FORMAT_MEDS, new Object[] { startIndex(page, pageSize), pageSize }, FormatMedicine.class);
+	}
+
+	/**
+	 * @param key
+	 * @return
+	 */
+	protected List<FormatMedicine> searchFormatMedicines(String key) {
+		return queryForList(SEARCH_FORMAT_MEDS, new MapSqlParameterSource("key", "%" + key + "%"), FormatMedicine.class);
 	}
 
 }
