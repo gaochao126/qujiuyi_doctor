@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jiuyi.doctor.yaofang.YaofangService;
 import com.jiuyi.doctor.yaofang.model.Format;
+import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.doctor.yaofang.model.Medicine;
 import com.jiuyi.frame.util.JsonUtil;
 
@@ -49,5 +50,12 @@ public class YaofangTest extends TestCase {
 	public void testLoadFormat() {
 		Format f = service.loadMedicineFormat("219972876337");
 		System.err.println(JsonUtil.toJson(f));
+	}
+
+	@Test
+	public void testLoadFormatMeds() {
+		List<String> ids = Arrays.asList("219972876337", "220217242319");
+		List<FormatMedicine> formatMedicines = service.loadFormatMeds(ids);
+		System.err.println(JsonUtil.toJson(formatMedicines));
 	}
 }

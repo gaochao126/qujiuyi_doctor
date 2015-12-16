@@ -4,6 +4,7 @@
 package com.jiuyi.doctor.prescription;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +17,10 @@ import com.jiuyi.doctor.chatserver.SystemMsg;
 import com.jiuyi.doctor.chatserver.UserType;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.util.IdGenerator;
+import com.jiuyi.doctor.yaofang.YaofangService;
+import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.frame.front.FailResult;
+import com.jiuyi.frame.front.MapObject;
 import com.jiuyi.frame.front.ResultConst;
 import com.jiuyi.frame.front.ServerResult;
 import com.jiuyi.frame.util.CollectionUtil;
@@ -31,6 +35,8 @@ import com.jiuyi.frame.util.ObjectUtil;
 public class PrescriptionManager {
 
 	private @Autowired PrescriptionDao dao;
+
+	private @Autowired YaofangService yaofangService;
 
 	private @Autowired ChatServerService chatServerService;
 
@@ -112,13 +118,15 @@ public class PrescriptionManager {
 		}
 
 		List<Integer> toSelectStatus = new ArrayList<>();
+		Integer createdNum = 0;// 待确认数量，只有处理中列表需要这个参数
 		if (type == 0) {
-			/* 等待确认列 */
+			/* 等待确认 */
 			toSelectStatus.add(PrescriptionStatus.CREATED.ordinal());
 		} else if (type == 1) {
 			/* 处理中 */
 			toSelectStatus.add(PrescriptionStatus.PATIENT_CONFIRMED.ordinal());
 			toSelectStatus.add(PrescriptionStatus.PRESCRIBED.ordinal());
+			createdNum = dao.countByStatus(doctor, Arrays.asList(PrescriptionStatus.CREATED.ordinal()));
 		} else {
 			/* 历史记录 */
 			toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
@@ -131,6 +139,7 @@ public class PrescriptionManager {
 		Integer count = dao.countByStatus(doctor, toSelectStatus);
 		ServerResult res = new ServerResult();
 		res.putObjects("list", prescriptions);
+		res.put("createdNum", createdNum);
 		res.put("count", count);
 		return res;
 	}
@@ -145,10 +154,58 @@ public class PrescriptionManager {
 		if (prescription == null) {
 			return new ServerResult();
 		}
+		List<PrescriptionMedicine> prescriptionMedicines = dao.loadPrescriptionMedicines(id);
+		List<String> formatIds = getFormatIds(prescriptionMedicines);
+
+		/* 从大药房数据库拿到的药品和规格的详细信息 */
+		List<FormatMedicine> formatMedicines = yaofangService.loadFormatMeds(formatIds);
+
+		/* PrescriptionMedicine 里面只有药品和规格的id，需要组合详细信息返回给客户端 */
+		List<MapObject> medicineInfos = new ArrayList<>();
+		for (PrescriptionMedicine pm : prescriptionMedicines) {
+			FormatMedicine formatMedicine = getFormatMedicine(pm, formatMedicines);
+			MapObject mo = formatMedicine.serializeToMapObject();
+			mo.put("number", pm.getNumber());
+			mo.put("instructions", pm.getInstructions());
+			medicineInfos.add(mo);
+		}
 		ServerResult res = new ServerResult();
 		res.putObject(prescription);
-		res.put("medicines", dao.loadPrescriptionMedicines(id));
+		res.put("medicines", medicineInfos);
 		return res;
+	}
+
+	/**
+	 * 获取处方药品列表中的规格id，根据这些id可以到大药房数据库拿到药品规格信息，因为是跨库的，所以不能做join
+	 * 
+	 * @param prescriptionMedicines
+	 * @return
+	 */
+	private List<String> getFormatIds(List<PrescriptionMedicine> prescriptionMedicines) {
+		if (CollectionUtil.isNullOrEmpty(prescriptionMedicines)) {
+			return new ArrayList<>();
+		}
+		List<String> res = new ArrayList<>(prescriptionMedicines.size());
+		for (PrescriptionMedicine pm : prescriptionMedicines) {
+			res.add(pm.getFormatId());
+		}
+		return res;
+	}
+
+	/**
+	 * 获取处方中一个药品对应的规格详情
+	 * 
+	 * @param prescriptionMedicine
+	 * @param formatMedicines
+	 * @return
+	 */
+	private FormatMedicine getFormatMedicine(PrescriptionMedicine prescriptionMedicine, List<FormatMedicine> formatMedicines) {
+		for (FormatMedicine fm : formatMedicines) {
+			if (fm.getId().equals(prescriptionMedicine.getFormatId())) {
+				return fm;
+			}
+		}
+		return new FormatMedicine();
 	}
 
 	/**

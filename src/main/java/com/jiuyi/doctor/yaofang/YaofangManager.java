@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jiuyi.doctor.yaofang.model.Format;
+import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.doctor.yaofang.model.Medicine;
 import com.jiuyi.frame.front.ServerResult;
 import com.jiuyi.frame.util.ObjectUtil;
@@ -90,6 +91,14 @@ public class YaofangManager {
 	 */
 	protected Format loadMedicineFormat(String formatId) {
 		return dao.loadMedicineFormat(formatId);
+	}
+
+	/**
+	 * @param formatIds
+	 * @return
+	 */
+	protected List<FormatMedicine> loadFormatMeds(List<String> formatIds) {
+		return dao.loadFormatMeds(formatIds);
 	}
 
 }

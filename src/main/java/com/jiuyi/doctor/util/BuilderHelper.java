@@ -2,7 +2,7 @@ package com.jiuyi.doctor.util;
 
 import java.lang.reflect.Field;
 
-import com.jiuyi.doctor.prescription.Prescription;
+import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 
 /**
  * @Author: xutaoyang @Date: 下午7:24:38
@@ -13,7 +13,7 @@ import com.jiuyi.doctor.prescription.Prescription;
  */
 public class BuilderHelper {
 
-	private Class<?> clazz = Prescription.class;
+	private Class<?> clazz = FormatMedicine.class;
 
 	public static void main(String[] args) {
 		new BuilderHelper().beginBuild().serial();

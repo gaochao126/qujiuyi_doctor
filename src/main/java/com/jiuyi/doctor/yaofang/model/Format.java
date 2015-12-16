@@ -4,6 +4,8 @@
 package com.jiuyi.doctor.yaofang.model;
 
 import com.jiuyi.frame.annotations.Column;
+import com.jiuyi.frame.front.ISerializableObj;
+import com.jiuyi.frame.front.MapObject;
 
 /**
  * 药品规格
@@ -11,7 +13,7 @@ import com.jiuyi.frame.annotations.Column;
  * @author xutaoyang
  * 
  */
-public class Format {
+public class Format implements ISerializableObj {
 
 	@Column("format_id")
 	private String id;
@@ -25,6 +27,16 @@ public class Format {
 	/** 库存 */
 	@Column("prod_sku")
 	private int stock;
+
+	@Override
+	public MapObject serializeToMapObject() {
+		MapObject res = new MapObject();
+		res.put("formatId", this.id);
+		res.put("formatName", this.format);
+		res.put("price", this.price);
+		res.put("stock", this.stock);
+		return res;
+	}
 
 	public String getId() {
 		return id;
@@ -57,5 +69,4 @@ public class Format {
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
-
 }

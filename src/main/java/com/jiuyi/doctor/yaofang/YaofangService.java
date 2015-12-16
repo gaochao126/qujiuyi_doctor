@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jiuyi.doctor.yaofang.model.Format;
+import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.doctor.yaofang.model.Medicine;
 
 @Service
@@ -23,5 +24,9 @@ public class YaofangService {
 
 	public Format loadMedicineFormat(String formatId) {
 		return manager.loadMedicineFormat(formatId);
+	}
+
+	public List<FormatMedicine> loadFormatMeds(List<String> formatIds) {
+		return manager.loadFormatMeds(formatIds);
 	}
 }
