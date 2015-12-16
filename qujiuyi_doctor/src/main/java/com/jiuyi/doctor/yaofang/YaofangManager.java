@@ -29,13 +29,27 @@ public class YaofangManager {
 	}
 
 	/**
+	 * 把每一个规格当做独立的药品，同一种药，不同的规格返回不同的记录
+	 * 
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	public ServerResult loadFormatMedicines(int page, int pageSize) {
+		ServerResult res = new ServerResult();
+		List<FormatMedicine> medicines = dao.loadFormatMedicines(page, pageSize);
+		res.putObjects("list", medicines);
+		return res;
+	}
+
+	/**
 	 * @param key
 	 * @return
 	 */
 	protected ServerResult search(String key) {
 		ServerResult res = new ServerResult();
-		List<Medicine> medicines = searchMedcines(key);
-		res.put("list", medicines);
+		List<FormatMedicine> medicines = dao.searchFormatMedicines(key);
+		res.putObjects("list", medicines);
 		return res;
 	}
 

@@ -27,7 +27,7 @@ public class YaofangController {
 
 	@RequestMapping(CMD_LOAD_LIST)
 	public ServerResult medicineList(@Param("page") int page, @Param("pageSize") int pageSize) {
-		return manager.loadMedicines(page, pageSize);
+		return manager.loadFormatMedicines(page, pageSize);
 	}
 
 	@RequestMapping(CMD_LOAD_SEARCH)
