@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jiuyi.doctor.patients.v2.model.ContactSrc;
+import com.jiuyi.doctor.patients.v2.model.Patient;
 import com.jiuyi.doctor.user.model.Doctor;
 
 /**
@@ -32,6 +33,14 @@ public class PatientServiceV2 {
 	/** 加黑名单 */
 	public void moveInBlacklist(Doctor doctor, Integer patientId) {
 		manager.moveInBlacklist(doctor, patientId);
+	}
+
+	/**
+	 * @param patientId
+	 * @return
+	 */
+	public Patient loadPatient(int patientId) {
+		return manager.loadPatient(patientId);
 	}
 
 }

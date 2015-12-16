@@ -26,11 +26,13 @@ public class PrescriptionController {
 	private @Autowired PrescriptionManager manager;
 
 	private static final String CMD = "prescription_";
+	@Deprecated
 	private static final String CMD_CREATE = CMD + "create";
 	private static final String CMD_PRESCRIBE = CMD + "prescribe";
 	private static final String CMD_LOAD_DETAIL = CMD + "load_detail";
 	private static final String CMD_LOAD_LIST = CMD + "load_list";
 	private static final String CMD_SEARCH_HISTORY = CMD + "search";
+	private static final String CMD_UPDATE_PRESCRIPTION = CMD + "update";
 
 	/**
 	 * 创建处方，等待患者同意
@@ -39,6 +41,7 @@ public class PrescriptionController {
 	 * @param patientId
 	 * @return
 	 */
+	@Deprecated
 	@RequestMapping(CMD_CREATE)
 	public ServerResult createPrescription(@TokenUser Doctor doctor, @Param("patientId") Integer patientId) {
 		return manager.createPrescription(doctor, patientId);
@@ -54,6 +57,18 @@ public class PrescriptionController {
 	@RequestMapping(CMD_PRESCRIBE)
 	public ServerResult prescribe(@TokenUser Doctor doctor, @Param("prescription") Prescription prescription, @Param("medicines") List<PrescriptionMedicine> medicines) {
 		return manager.prescribe(doctor, prescription, medicines);
+	}
+
+	/**
+	 * 更新处方
+	 * 
+	 * @param doctor
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(CMD_UPDATE_PRESCRIPTION)
+	public ServerResult updatePrescription(@TokenUser Doctor doctor, @Param("prescription") Prescription prescription, @Param("medicines") List<PrescriptionMedicine> medicines) {
+		return manager.updatePrescription(doctor, prescription, medicines);
 	}
 
 	/**
