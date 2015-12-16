@@ -39,8 +39,23 @@ public class PrescriptionDao extends DbBase {
 
 	private static final String COUNT_PRESCRIPTION_BY_STATUS = "SELECT COUNT(*) FROM `t_prescription` WHERE doctorId=:doctorId AND status in (:status)";
 
-	private static final String INSERT_PRESCRIPTION = "INSERT `t_prescription`(`id`,`number`,`doctorId`,`patientId`,`createTime`,`updateTime`,`status`) VALUES(:id,:number,:doctorId,:patientId,:createTime,:updateTime,:status)";
-	private static final String UPDATE_PRESCRIPTION = "UPDATE `t_prescription` SET allergies=:allergies,illness=:illness,diagnosis=:diagnosis,status=:status WHERE `id`=:id";
+	private static final String INSERT_SIMPLE_PRESCRIPTION = "INSERT `t_prescription`(`id`,`number`,`doctorId`,`patientId`,`createTime`,`updateTime`,`status`) VALUES(:id,:number,:doctorId,:patientId,:createTime,:updateTime,:status)";
+
+	private static final String INSERT_PRESCRIPTION = "INSERT `t_prescription`"
+			+ "(`id`,`number`,`doctorId`,`patientId`,`relativeId`,`relativeName`,`relativeAge`,`relativeGender`,`allergies`,`illness`,`diagnosis`,`createTime`,`updateTime`,`status`) "
+			+ "VALUES(:id,:number,:doctorId,:patientId,:relativeId,:relativeName,:relativeAge,:relativeGender,:allergies,:illness,:diagnosis,:createTime,:updateTime,:status) ";
+
+	private static final String UPDATE_PRESCRIPTION = "UPDATE `t_prescription` SET " 
+			+ "relativeId=:relativeId," 
+			+ "relativeName=:relativeName," 
+			+ "relativeAge=:relativeAge," 
+			+ "relativeGender=:relativeGender," 
+			+ "allergies=:allergies,"
+			+ "illness=:illness," 
+			+ "diagnosis=:diagnosis," 
+			+ "updateTime=:updateTime," 
+			+ "status=:status "
+			+ "WHERE `id`=:id;";
 
 	private static final String INSERT_PRESCRIPTION_DETAIL = "INSERT `t_prescription_detail`(prescriptionId,medicineId,formatId,number,instructions) VALUE(:prescriptionId,:medicineId,:formatId,:number,:instructions)";
 
@@ -51,7 +66,7 @@ public class PrescriptionDao extends DbBase {
 	 * @param patientId
 	 */
 	protected void createPrescription(Doctor doctor, Prescription prescription) {
-		namedJdbc.update(INSERT_PRESCRIPTION, new BeanPropertySqlParameterSource(prescription));
+		namedJdbc.update(INSERT_SIMPLE_PRESCRIPTION, new BeanPropertySqlParameterSource(prescription));
 	}
 
 	protected Prescription loadPrescription(Doctor doctor, String id) {
@@ -68,6 +83,14 @@ public class PrescriptionDao extends DbBase {
 	 */
 	protected void deletePrescriptionMedicines(Doctor doctor, Prescription prescription) {
 		jdbc.update(DELETE_OLD_PRES_MEDS, prescription.getId());
+	}
+
+	/**
+	 * @param doctor
+	 * @param prescription
+	 */
+	protected void insertPrescription(Doctor doctor, Prescription prescription) {
+		namedJdbc.update(INSERT_PRESCRIPTION, new BeanPropertySqlParameterSource(prescription));
 	}
 
 	/**

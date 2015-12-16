@@ -5,7 +5,11 @@ package com.jiuyi.doctor.prescription;
 
 import java.util.Date;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.Range;
 
 import com.jiuyi.frame.annotations.ConfigPrefix;
 import com.jiuyi.frame.constants.Constants;
@@ -21,12 +25,12 @@ import com.jiuyi.frame.util.DateUtil;
  */
 public class Prescription implements ISerializableObj {
 
-	@NotEmpty
 	private String id;
 	/** 处方编号 */
 	private String number;
 	private int doctorId;
-	private int patientId;
+	@NotNull
+	private Integer patientId;
 	private int relativeId;
 	@NotEmpty
 	private String allergies;
@@ -40,8 +44,13 @@ public class Prescription implements ISerializableObj {
 	private int medicineTakeStatus;
 
 	// 就诊人信息相关
-	private int relativeAge;
-	private int relativeGender;
+	@NotNull
+	@Min(0)
+	private Integer relativeAge;
+	@NotNull
+	@Range(max = 2, min = 1)
+	private Integer relativeGender;
+	@NotEmpty
 	private String relativeName;
 	private String relativeUid;
 

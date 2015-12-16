@@ -136,6 +136,10 @@ public class PatientManagerV2 {
 		return dao.loadPatientDetailInfo(doctor, patientId);
 	}
 
+	protected Patient loadPatient(Integer patientId) {
+		return dao.loadPatient(patientId);
+	}
+
 	/** 设置医生与患者之间的关系（常用联系人，陌生人，黑名单等） */
 	private void setDoctorPatientType(Doctor doctor, Integer patientId, DoctorPatientType doctorPatientType) {
 		if (!DoctorPatientType.NONE.equals(doctorPatientType)) {

@@ -4,7 +4,6 @@
 package com.jiuyi.doctor.prescription;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jiuyi.doctor.chatserver.ChatServerService;
 import com.jiuyi.doctor.chatserver.SystemMsg;
 import com.jiuyi.doctor.chatserver.UserType;
+import com.jiuyi.doctor.patients.v2.PatientServiceV2;
+import com.jiuyi.doctor.patients.v2.model.Patient;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.util.IdGenerator;
 import com.jiuyi.doctor.yaofang.YaofangService;
@@ -25,6 +26,7 @@ import com.jiuyi.frame.front.ResultConst;
 import com.jiuyi.frame.front.ServerResult;
 import com.jiuyi.frame.util.CollectionUtil;
 import com.jiuyi.frame.util.ObjectUtil;
+import com.jiuyi.frame.util.StringUtil;
 
 /**
  * 
@@ -40,12 +42,19 @@ public class PrescriptionManager {
 
 	private @Autowired ChatServerService chatServerService;
 
+	private @Autowired PatientServiceV2 patientService;
+
 	/**
 	 * @param doctor
 	 * @param patientId
 	 * @return
 	 */
+	@SuppressWarnings("unused")
+	@Deprecated
 	protected ServerResult createPrescription(Doctor doctor, Integer patientId) {
+		if (true) {
+			return new ServerResult();
+		}
 		Prescription prescription = new Prescription();
 		prescription.setId(IdGenerator.genId());
 		prescription.setDoctorId(doctor.getId());
@@ -72,34 +81,62 @@ public class PrescriptionManager {
 	 */
 	@Transactional
 	protected ServerResult prescribe(Doctor doctor, Prescription prescription, List<PrescriptionMedicine> medicines) {
-		ServerResult res = ObjectUtil.validateResult(prescription);
+		ServerResult res = checkPrescription(prescription, medicines);
 		if (!res.isSuccess()) {
 			return res;
 		}
-		if (CollectionUtil.isNullOrEmpty(medicines)) {
-			return new FailResult("请至少选择一种药品");
+
+		String id = IdGenerator.genId();
+		for (PrescriptionMedicine medicine : medicines) {
+			medicine.setPrescriptionId(id);
 		}
-		ServerResult checkMed = ObjectUtil.validateList(medicines);
-		if (!checkMed.isSuccess()) {
-			return checkMed;
+		prescription.setId(id);
+		prescription.setDoctorId(doctor.getId());
+		prescription.setCreateTime(new Date());
+		prescription.setUpdateTime(new Date());
+		prescription.setMedicineTakeStatus(0);
+		prescription.setNumber(genPresNumber(doctor, prescription));
+		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
+		dao.insertPrescription(doctor, prescription);
+		dao.insertMedicines(prescription, medicines);
+		String summary = String.format("%s医生为您开了一个处方，正等待您确认付款", doctor.getName());
+		SystemMsg systemMsg = new SystemMsg(UserType.PATIENT, prescription.getPatientId(), summary, prescription, summary);
+		chatServerService.postMsg(systemMsg);
+		return new ServerResult();
+	}
+
+	/**
+	 * @param doctor
+	 * @param prescription
+	 * @param medicines
+	 * @return
+	 */
+	@Transactional
+	protected ServerResult updatePrescription(Doctor doctor, Prescription prescription, List<PrescriptionMedicine> medicines) {
+		ServerResult res = checkPrescription(prescription, medicines);
+		if (!res.isSuccess()) {
+			return res;
+		}
+		if (StringUtil.isNullOrEmpty(prescription.getId())) {
+			return new FailResult("参数id不能为空");
 		}
 		Prescription old = dao.loadPrescription(doctor, prescription.getId());
 		if (old == null) {
 			return new FailResult("该处方不存在");
 		}
-		if (PrescriptionStatus.statusCanPrescribe(old.getStatus())) {
-			return new FailResult("该状态下不能开处方");
+		if (!PrescriptionStatus.statusCanPrescribe(old.getStatus())) {
+			return new FailResult("对不起，改状态下不能修改处方！");
 		}
 
 		for (PrescriptionMedicine medicine : medicines) {
 			medicine.setPrescriptionId(prescription.getId());
 		}
-
+		prescription.setUpdateTime(new Date());
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
 		dao.deletePrescriptionMedicines(doctor, prescription);
 		dao.updatePrescription(doctor, prescription);
 		dao.insertMedicines(prescription, medicines);
-		String summary = String.format("%s医生为您开了一个处方，正等待您确认付款", doctor.getName());
+		String summary = String.format("%s医生为重新您开了一个处方，正等待您确认付款", doctor.getName());
 		SystemMsg systemMsg = new SystemMsg(UserType.PATIENT, prescription.getPatientId(), summary, prescription, summary);
 		chatServerService.postMsg(systemMsg);
 		return new ServerResult();
@@ -118,7 +155,6 @@ public class PrescriptionManager {
 		}
 
 		List<Integer> toSelectStatus = new ArrayList<>();
-		Integer createdNum = 0;// 待确认数量，只有处理中列表需要这个参数
 		if (type == 0) {
 			/* 等待确认 */
 			toSelectStatus.add(PrescriptionStatus.CREATED.ordinal());
@@ -126,7 +162,6 @@ public class PrescriptionManager {
 			/* 处理中 */
 			toSelectStatus.add(PrescriptionStatus.PATIENT_CONFIRMED.ordinal());
 			toSelectStatus.add(PrescriptionStatus.PRESCRIBED.ordinal());
-			createdNum = dao.countByStatus(doctor, Arrays.asList(PrescriptionStatus.CREATED.ordinal()));
 		} else {
 			/* 历史记录 */
 			toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
@@ -139,7 +174,6 @@ public class PrescriptionManager {
 		Integer count = dao.countByStatus(doctor, toSelectStatus);
 		ServerResult res = new ServerResult();
 		res.putObjects("list", prescriptions);
-		res.put("createdNum", createdNum);
 		res.put("count", count);
 		return res;
 	}
@@ -239,4 +273,29 @@ public class PrescriptionManager {
 		return number;
 	}
 
+	/***
+	 * 检查处方参数的合法性
+	 * 
+	 * @param prescription
+	 * @param medicines
+	 * @return
+	 */
+	private ServerResult checkPrescription(Prescription prescription, List<PrescriptionMedicine> medicines) {
+		ServerResult res = ObjectUtil.validateResult(prescription);
+		if (!res.isSuccess()) {
+			return res;
+		}
+		if (CollectionUtil.isNullOrEmpty(medicines)) {
+			return new FailResult("请至少选择一种药品");
+		}
+		ServerResult checkMed = ObjectUtil.validateList(medicines);
+		if (!checkMed.isSuccess()) {
+			return checkMed;
+		}
+		Patient patient = patientService.loadPatient(prescription.getPatientId());
+		if (patient == null) {
+			return new FailResult("该患者不存在或已注销~");
+		}
+		return new ServerResult();
+	}
 }
