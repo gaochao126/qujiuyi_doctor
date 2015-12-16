@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
+ * 处方配药信息
  * 
  * @author xutaoyang
  *
@@ -16,16 +17,17 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class PrescriptionMedicine {
 
 	private long id;
-	private String prescriptionId;
+
+	private String prescriptionId;// 处方id
 	@NotEmpty
-	private String medicineId;
+	private String medicineId;// 药品id
 	@NotEmpty
-	private String formatId;
+	private String formatId;// 规格id
 	@NotNull
 	@Min(1)
-	private Integer number;
+	private Integer number;// 数量
 	@NotEmpty
-	private String instructions;
+	private String instructions; // 用法
 
 	public long getId() {
 		return id;

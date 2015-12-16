@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import com.jiuyi.doctor.yaofang.model.Format;
+import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.doctor.yaofang.model.Medicine;
 import com.jiuyi.doctor.yaofang.model.MedicineImg;
 
@@ -20,6 +21,8 @@ public class YaofangDao extends YaofangDB {
 	private static final String SELECT_MEDICINE_IMGS = "SELECT * FROM `Img` WHERE `prod_id`=:id";
 	private static final String SELECT_MEDICINE_FORMATS = "SELECT * FROM `Formats` WHERE `prod_id`=:id";
 	private static final String SELECT_MEDICINE_FORMAT = "SELECT * FROM `Formats` WHERE `format_id`=:id";
+
+	private static final String SELECT_FORMAT_MEDS = "SELECT f.*,m.prod_id,m.prod_name,m.prod_usage,m.img_id FROM `Formats` f,`Products` m WHERE m.prod_id=f.prod_id AND f.`format_id` IN (:ids)";
 
 	public List<Medicine> searchMedicine(String key) {
 		return queryForList(SEARCH_MEDICINE, new MapSqlParameterSource("key", "%" + key.toLowerCase() + "%"), Medicine.class);
@@ -64,6 +67,14 @@ public class YaofangDao extends YaofangDB {
 	 */
 	protected List<Medicine> loadMedicines(int page, int pageSize) {
 		return queryForList(SELECT_PAGE_MEDICINES, new Object[] { startIndex(page, pageSize), pageSize }, Medicine.class);
+	}
+
+	/**
+	 * @param formatIds
+	 * @return
+	 */
+	protected List<FormatMedicine> loadFormatMeds(List<String> formatIds) {
+		return queryForList(SELECT_FORMAT_MEDS, new MapSqlParameterSource("ids", formatIds), FormatMedicine.class);
 	}
 
 }
