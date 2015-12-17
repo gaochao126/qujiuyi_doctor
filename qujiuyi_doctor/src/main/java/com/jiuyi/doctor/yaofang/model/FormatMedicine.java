@@ -32,14 +32,13 @@ public class FormatMedicine extends Format {
 
 	@Override
 	public MapObject serializeToMapObject() {
-		MapObject res = super.serializeToMapObject();
 		/** 为了让前端少建一个对象。。。这里返回的json格式和medicine detail的格式一样，所以就有了下面你看的想吐槽的代码，（逃 */
-		MapObject format = new MapObject();
-		format.put("medicineId", this.medId);
-		format.put("medicineName", this.name);
-		format.put("usage", this.usage);
-		format.put("img", this.img);
-		res.putObjects("formats", Arrays.asList(format));
+		MapObject res = new MapObject();
+		res.put("medicineId", this.medId);
+		res.put("medicineName", this.name);
+		res.put("usage", this.usage);
+		res.put("img", this.img);
+		res.putObjects("formats", Arrays.asList(super.serializeToMapObject()));
 		return res;
 
 	}

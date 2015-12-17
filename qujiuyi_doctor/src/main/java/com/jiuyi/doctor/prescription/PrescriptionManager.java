@@ -163,18 +163,12 @@ public class PrescriptionManager {
 	 * @param doctor
 	 * @param page
 	 * @param pageSize
-	 * @param type
 	 * @return
 	 */
-	protected ServerResult loadHistory(Doctor doctor, int page, int pageSize) {
-		List<Integer> toSelectStatus = new ArrayList<>();
-		toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
-		toSelectStatus.add(PrescriptionStatus.CANCEL_PRESCRIBE.ordinal());
-		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
-		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
-		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
-		List<Patient> prescriptions = dao.loadPatientsByPresStatus(doctor, toSelectStatus, page, pageSize);
-		Integer count = dao.countPatientsByPresStatus(doctor, toSelectStatus);
+	protected ServerResult loadHandlingList(Doctor doctor, int page, int pageSize) {
+		List<Integer> statusList = Arrays.asList(PrescriptionStatus.PRESCRIBED.ordinal());
+		List<Prescription> prescriptions = dao.loadByStatus(doctor, statusList, page, pageSize);
+		Integer count = dao.loadHandlingCount(doctor);
 		ServerResult res = new ServerResult();
 		res.putObjects("list", prescriptions);
 		res.put("count", count);
@@ -188,7 +182,30 @@ public class PrescriptionManager {
 	 * @param type
 	 * @return
 	 */
-	protected ServerResult loadPatientHistory(Doctor doctor, int patientId, int page, int pageSize) {
+	protected ServerResult loadHistory(Doctor doctor, int page, int pageSize) {
+		List<Integer> toSelectStatus = new ArrayList<>();
+		toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
+		toSelectStatus.add(PrescriptionStatus.CANCEL_PRESCRIBE.ordinal());
+		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
+		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
+		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
+		List<Patient> prescriptions = dao.loadPatientsByPresStatus(doctor, toSelectStatus, page, pageSize);
+		Integer count = dao.countPatientsByPresStatus(doctor, toSelectStatus);
+		count = count != null ? count : 0;
+		ServerResult res = new ServerResult();
+		res.putObjects("list", prescriptions);
+		res.put("count", count);
+		return res;
+	}
+
+	/**
+	 * @param doctor
+	 * @param page
+	 * @param pageSize
+	 * @param type
+	 * @return
+	 */
+	protected ServerResult loadPatientHistory(Doctor doctor, int patientId) {
 		List<Integer> toSelectStatus = new ArrayList<>();
 		/* 历史记录 */
 		toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
@@ -196,7 +213,7 @@ public class PrescriptionManager {
 		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
 		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
 		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
-		List<Prescription> prescriptions = dao.loadByPatientAndStatus(doctor, patientId, toSelectStatus, page, pageSize);
+		List<Prescription> prescriptions = dao.loadByPatientAndStatus(doctor, patientId, toSelectStatus);
 		ServerResult res = new ServerResult();
 		res.putObjects("list", prescriptions);
 		return res;
@@ -224,7 +241,7 @@ public class PrescriptionManager {
 			FormatMedicine formatMedicine = getFormatMedicine(pm, formatMedicines);
 			MapObject mo = formatMedicine.serializeToMapObject();
 			mo.put("number", pm.getNumber());
-			mo.put("instructions", pm.getInstructions());
+			mo.put("usage", pm.getInstructions());
 			medicineInfos.add(mo);
 		}
 		ServerResult res = new ServerResult();
@@ -368,18 +385,6 @@ public class PrescriptionManager {
 			}
 		}
 		return new ServerResult();
-	}
-
-	/**
-	 * @param doctor
-	 * @param page
-	 * @param pageSize
-	 * @return
-	 */
-	protected ServerResult loadHandlingList(Doctor doctor, int page, int pageSize) {
-		List<Integer> statusList = Arrays.asList(PrescriptionStatus.PRESCRIBED.ordinal());
-		List<Prescription> prescriptions = dao.loadByStatus(doctor, statusList, page, pageSize);
-		return new ServerResult("list", prescriptions, true);
 	}
 
 }

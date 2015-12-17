@@ -36,21 +36,23 @@ public class PrescriptionDao extends DbBase {
 	private static final String SELECT_PRESCRIPTION_BY_PATIENT_AND_STATUS = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
 			+ "FROM `t_prescription` pres " // 处方表
 			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
-			+ "WHERE pres.doctorId=:doctorId AND pres.`patientId`=:patientId AND `status` IN (:status) LIMIT :startIndex,:size";// where
-																																// end
+			+ "WHERE pres.doctorId=:doctorId AND pres.`patientId`=:patientId AND `status` IN (:status)";// where
+
 	private static final String COUNT_PRESCRIPTION_BY_STATUS = "SELECT COUNT(*) FROM `t_prescription` WHERE doctorId=:doctorId AND `status` in (:status)";
 
-	private static final String SELECT_PATIENTS_BY_STATUS = "SELECT pres.id,pres.patientId,patient.name AS name,patient.headPortrait,remark.remark "//
+	private static final String SELECT_PATIENTS_BY_STATUS = "SELECT pres.id,pres.patientId,patient.name AS name,patient.headPortrait,patient.gender,remark.remark "//
 			+ "FROM `t_prescription` pres "//
 			+ "JOIN `t_patient` patient ON pres.`patientId`=patient.id "//
 			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.doctorId=pres.doctorId AND remark.patientId=pres.patientId " + "WHERE pres.`status` IN (:status) AND pres.doctorId=:doctorId "
 			+ "GROUP BY pres.patientId " + "LIMIT :startIndex,:pageSize ";
 
-	private static final String SERACH_PATIENTS_BY_STATUS = "SELECT pres.id,pres.patientId,patient.name AS name,patient.headPortrait,remark.remark " //
+	private static final String SERACH_PATIENTS_BY_STATUS = "SELECT pres.id,pres.patientId,patient.name AS name,patient.headPortrait,patient.gender,remark.remark " //
 			+ "FROM `t_prescription` pres "//
 			+ "JOIN `t_patient` patient ON pres.`patientId`=patient.id "//
 			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.doctorId=pres.doctorId AND remark.patientId=pres.patientId "
 			+ "WHERE pres.`status` IN (:status) AND pres.doctorId=:doctorId AND (patient.name LIKE :key OR remark.remark LIKE :key) " + "GROUP BY pres.patientId ";
+
+	private static final String COUTN_HANDLING_PRES = "SELECT COUNT(*) FROM `t_prescription` WHERE `status`=? AND `doctorId`=?";
 
 	private static final String COUNT_PATIENTS_BY_STATUS = "SELECT COUNT(DISTINCT(pres.patientId)) FROM `t_prescription` pres WHERE pres.`status` IN (:status) AND pres.doctorId=:doctorId;";
 
@@ -142,13 +144,11 @@ public class PrescriptionDao extends DbBase {
 	 * @param toSelectStatus
 	 * @return
 	 */
-	protected List<Prescription> loadByPatientAndStatus(Doctor doctor, Integer patientId, List<Integer> toSelectStatus, int page, int pageSize) {
+	protected List<Prescription> loadByPatientAndStatus(Doctor doctor, Integer patientId, List<Integer> toSelectStatus) {
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		params.addValue("doctorId", doctor.getId());
 		params.addValue("patientId", patientId);
 		params.addValue("status", toSelectStatus);
-		params.addValue("startIndex", startIndex(page, pageSize));
-		params.addValue("size", pageSize);
 		return queryForList(SELECT_PRESCRIPTION_BY_PATIENT_AND_STATUS, params, Prescription.class);
 	}
 
@@ -204,6 +204,14 @@ public class PrescriptionDao extends DbBase {
 		paramSource.addValue("doctorId", doctor.getId());
 		paramSource.addValue("status", toSelectStatus);
 		return namedJdbc.queryForObject(COUNT_PATIENTS_BY_STATUS, paramSource, Integer.class);
+	}
+
+	/**
+	 * @param doctor
+	 * @return
+	 */
+	protected Integer loadHandlingCount(Doctor doctor) {
+		return queryForInteger(COUTN_HANDLING_PRES, PrescriptionStatus.PRESCRIBED.ordinal(), doctor.getId());
 	}
 
 }
