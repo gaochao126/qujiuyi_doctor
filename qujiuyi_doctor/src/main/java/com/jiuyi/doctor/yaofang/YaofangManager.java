@@ -9,7 +9,6 @@ import com.jiuyi.doctor.yaofang.model.Format;
 import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.doctor.yaofang.model.Medicine;
 import com.jiuyi.frame.front.ServerResult;
-import com.jiuyi.frame.util.ObjectUtil;
 
 @Service
 public class YaofangManager {
@@ -60,7 +59,7 @@ public class YaofangManager {
 	protected ServerResult medicineDetail(String id) {
 		Medicine medicine = loadMedicine(id);
 		ServerResult res = new ServerResult();
-		res.putAll(ObjectUtil.introspect(medicine));
+		res.putObject(medicine);
 		return res;
 	}
 
