@@ -3,6 +3,7 @@
  */
 package com.jiuyi.doctor.prescription;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.validation.constraints.Min;
@@ -42,6 +43,7 @@ public class Prescription implements ISerializableObj {
 	private Date updateTime;
 	private int status;
 	private int medicineTakeStatus;
+	private BigDecimal price;
 
 	// 就诊人信息相关
 	@NotNull
@@ -85,6 +87,7 @@ public class Prescription implements ISerializableObj {
 		res.put("relativeUid", this.relativeUid);
 		res.put("patientName", this.patientName);
 		res.put("patientHead", this.patientHead);
+		res.put("price", this.price);
 		return res;
 	}
 
@@ -100,8 +103,12 @@ public class Prescription implements ISerializableObj {
 		return doctorId;
 	}
 
-	public int getPatientId() {
+	public Integer getPatientId() {
 		return patientId;
+	}
+
+	public int getRelativeId() {
+		return relativeId;
 	}
 
 	public String getAllergies() {
@@ -126,6 +133,22 @@ public class Prescription implements ISerializableObj {
 
 	public int getStatus() {
 		return status;
+	}
+
+	public int getMedicineTakeStatus() {
+		return medicineTakeStatus;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public Integer getRelativeAge() {
+		return relativeAge;
+	}
+
+	public Integer getRelativeGender() {
+		return relativeGender;
 	}
 
 	public String getRelativeName() {
@@ -156,8 +179,12 @@ public class Prescription implements ISerializableObj {
 		this.doctorId = doctorId;
 	}
 
-	public void setPatientId(int patientId) {
+	public void setPatientId(Integer patientId) {
 		this.patientId = patientId;
+	}
+
+	public void setRelativeId(int relativeId) {
+		this.relativeId = relativeId;
 	}
 
 	public void setAllergies(String allergies) {
@@ -184,6 +211,22 @@ public class Prescription implements ISerializableObj {
 		this.status = status;
 	}
 
+	public void setMedicineTakeStatus(int medicineTakeStatus) {
+		this.medicineTakeStatus = medicineTakeStatus;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public void setRelativeAge(Integer relativeAge) {
+		this.relativeAge = relativeAge;
+	}
+
+	public void setRelativeGender(Integer relativeGender) {
+		this.relativeGender = relativeGender;
+	}
+
 	public void setRelativeName(String relativeName) {
 		this.relativeName = relativeName;
 	}
@@ -198,38 +241,6 @@ public class Prescription implements ISerializableObj {
 
 	public void setPatientHead(String patientHead) {
 		this.patientHead = patientHead;
-	}
-
-	public int getRelativeAge() {
-		return relativeAge;
-	}
-
-	public int getRelativeGender() {
-		return relativeGender;
-	}
-
-	public void setRelativeAge(int relativeAge) {
-		this.relativeAge = relativeAge;
-	}
-
-	public void setRelativeGender(int relativeGender) {
-		this.relativeGender = relativeGender;
-	}
-
-	public int getMedicineTakeStatus() {
-		return medicineTakeStatus;
-	}
-
-	public void setMedicineTakeStatus(int medicineTakeStatus) {
-		this.medicineTakeStatus = medicineTakeStatus;
-	}
-
-	public int getRelativeId() {
-		return relativeId;
-	}
-
-	public void setRelativeId(int relativeId) {
-		this.relativeId = relativeId;
 	}
 
 }

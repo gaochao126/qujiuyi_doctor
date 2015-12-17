@@ -3,6 +3,7 @@
  */
 package com.jiuyi.doctor.prescription;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,6 +87,13 @@ public class PrescriptionManager {
 			return res;
 		}
 
+		/** 价格信息 需要从大药房数据库取，库存验证 */
+		List<String> formatIds = getFormatIds(medicines);
+		List<FormatMedicine> formatMedicines = yaofangService.loadFormatMeds(formatIds);
+		ServerResult checkStock = checkMedicines(formatIds, formatMedicines);
+		if (!checkStock.isSuccess()) {
+			return checkStock;
+		}
 		String id = IdGenerator.genId();
 		for (PrescriptionMedicine medicine : medicines) {
 			medicine.setPrescriptionId(id);
@@ -95,6 +103,7 @@ public class PrescriptionManager {
 		prescription.setCreateTime(new Date());
 		prescription.setUpdateTime(new Date());
 		prescription.setMedicineTakeStatus(0);
+		prescription.setPrice(calcTotalPrice(formatMedicines));
 		prescription.setNumber(genPresNumber(doctor, prescription));
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
 		dao.insertPrescription(doctor, prescription);
@@ -125,13 +134,21 @@ public class PrescriptionManager {
 			return new FailResult("该处方不存在");
 		}
 		if (!PrescriptionStatus.statusCanPrescribe(old.getStatus())) {
-			return new FailResult("对不起，改状态下不能修改处方！");
+			return new FailResult("对不起，该状态下不能修改处方！");
 		}
 
+		/** 计算价格，库存验证 */
+		List<String> formatIds = getFormatIds(medicines);
+		List<FormatMedicine> formatMedicines = yaofangService.loadFormatMeds(formatIds);
+		ServerResult checkStock = checkMedicines(formatIds, formatMedicines);
+		if (!checkStock.isSuccess()) {
+			return checkStock;
+		}
 		for (PrescriptionMedicine medicine : medicines) {
 			medicine.setPrescriptionId(prescription.getId());
 		}
 		prescription.setUpdateTime(new Date());
+		prescription.setPrice(calcTotalPrice(formatMedicines));
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
 		dao.deletePrescriptionMedicines(doctor, prescription);
 		dao.updatePrescription(doctor, prescription);
@@ -210,6 +227,24 @@ public class PrescriptionManager {
 	}
 
 	/**
+	 * @param doctor
+	 * @param key
+	 * @return
+	 */
+	protected ServerResult searchHistory(Doctor doctor, String key) {
+		ServerResult res = new ServerResult();
+		List<Integer> toSelectStatus = new ArrayList<>();
+		toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
+		toSelectStatus.add(PrescriptionStatus.CANCEL_PRESCRIBE.ordinal());
+		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
+		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
+		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
+		List<Prescription> prescriptions = dao.searchPrescription(doctor, key, toSelectStatus);
+		res.putObjects("list", prescriptions);
+		return res;
+	}
+
+	/**
 	 * 获取处方药品列表中的规格id，根据这些id可以到大药房数据库拿到药品规格信息，因为是跨库的，所以不能做join
 	 * 
 	 * @param prescriptionMedicines
@@ -243,20 +278,17 @@ public class PrescriptionManager {
 	}
 
 	/**
-	 * @param doctor
-	 * @param key
+	 * 计算药单价格
+	 * 
+	 * @param prescriptionMedicine
+	 * @param formatMedicines
 	 * @return
 	 */
-	protected ServerResult searchHistory(Doctor doctor, String key) {
-		ServerResult res = new ServerResult();
-		List<Integer> toSelectStatus = new ArrayList<>();
-		toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
-		toSelectStatus.add(PrescriptionStatus.CANCEL_PRESCRIBE.ordinal());
-		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
-		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
-		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
-		List<Prescription> prescriptions = dao.searchPrescription(doctor, key, toSelectStatus);
-		res.putObjects("list", prescriptions);
+	private BigDecimal calcTotalPrice(List<FormatMedicine> formatMedicines) {
+		BigDecimal res = new BigDecimal(0);
+		for (FormatMedicine fm : formatMedicines) {
+			res.add(fm.getPrice());
+		}
 		return res;
 	}
 
@@ -288,6 +320,9 @@ public class PrescriptionManager {
 		if (CollectionUtil.isNullOrEmpty(medicines)) {
 			return new FailResult("请至少选择一种药品");
 		}
+		if (medicines.size() > 20) {
+			return new FailResult("药品种类过多，请去掉不必要的药品");
+		}
 		ServerResult checkMed = ObjectUtil.validateList(medicines);
 		if (!checkMed.isSuccess()) {
 			return checkMed;
@@ -295,6 +330,35 @@ public class PrescriptionManager {
 		Patient patient = patientService.loadPatient(prescription.getPatientId());
 		if (patient == null) {
 			return new FailResult("该患者不存在或已注销~");
+		}
+		return new ServerResult();
+	}
+
+	/**
+	 * 检测规格id合法性，库存
+	 * 
+	 * @param formatMedicines
+	 * @return
+	 */
+	private ServerResult checkMedicines(List<String> formatIds, List<FormatMedicine> formatMedicines) {
+		/* 检测规格id是否存在 */
+		for (String formatId : formatIds) {
+			boolean formatIdExist = false;
+			for (FormatMedicine fm : formatMedicines) {
+				if (formatId.equals(fm.getId())) {
+					formatIdExist = true;
+				}
+			}
+			if (!formatIdExist) {
+				return new FailResult(String.format("id为《%s》的药品规格不存在", formatId));
+			}
+		}
+
+		/* 检测库存 */
+		for (FormatMedicine fm : formatMedicines) {
+			if (fm.getStock() < 1) {
+				return new FailResult(String.format("%s《%s》库存不足，请选用其他药品或规格", fm.getName(), fm.getFormat()));
+			}
 		}
 		return new ServerResult();
 	}

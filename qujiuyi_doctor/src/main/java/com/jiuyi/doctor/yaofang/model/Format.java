@@ -3,6 +3,8 @@
  */
 package com.jiuyi.doctor.yaofang.model;
 
+import java.math.BigDecimal;
+
 import com.jiuyi.frame.annotations.Column;
 import com.jiuyi.frame.front.ISerializableObj;
 import com.jiuyi.frame.front.MapObject;
@@ -22,7 +24,7 @@ public class Format implements ISerializableObj {
 	private String format;
 
 	@Column("prod_price")
-	private double price;
+	private BigDecimal price;
 
 	/** 库存 */
 	@Column("prod_sku")
@@ -46,7 +48,7 @@ public class Format implements ISerializableObj {
 		return format;
 	}
 
-	public double getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
@@ -62,11 +64,12 @@ public class Format implements ISerializableObj {
 		this.format = format;
 	}
 
-	public void setPrice(double price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
+
 }
