@@ -29,10 +29,12 @@ public class PrescriptionController {
 	@Deprecated
 	private static final String CMD_CREATE = CMD + "create";
 	private static final String CMD_PRESCRIBE = CMD + "prescribe";
-	private static final String CMD_LOAD_DETAIL = CMD + "load_detail";
-	private static final String CMD_LOAD_LIST = CMD + "load_list";
-	private static final String CMD_SEARCH_HISTORY = CMD + "search";
 	private static final String CMD_UPDATE_PRESCRIPTION = CMD + "update";
+	private static final String CMD_HANDLING_PRESCRIPTION = CMD + "handling";
+	private static final String CMD_LOAD_DETAIL = CMD + "load_detail";
+	private static final String CMD_LOAD_HISTORY = CMD + "load_his";
+	private static final String CMD_PATIENT_HISTORY = CMD + "patient_his";
+	private static final String CMD_SEARCH_HISTORY = CMD + "search";
 
 	/**
 	 * 创建处方，等待患者同意
@@ -72,6 +74,32 @@ public class PrescriptionController {
 	}
 
 	/**
+	 * 获取处方患者列表
+	 * 
+	 * @param doctor
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping(CMD_LOAD_HISTORY)
+	public ServerResult loadHistory(@TokenUser Doctor doctor, @Param("page") int page, @Param("pageSize") int pageSize) {
+		return manager.loadHistory(doctor, page, pageSize);
+	}
+
+	/**
+	 * 获取正在处理的处方列表
+	 * 
+	 * @param doctor
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping(CMD_HANDLING_PRESCRIPTION)
+	public ServerResult loadHandlingList(@TokenUser Doctor doctor, @Param("page") int page, @Param("pageSize") int pageSize) {
+		return manager.loadHandlingList(doctor, page, pageSize);
+	}
+
+	/**
 	 * 获取处方列表
 	 * 
 	 * @param doctor
@@ -81,9 +109,9 @@ public class PrescriptionController {
 	 *            0待用户确认，1处理中，2历史记录
 	 * @return
 	 */
-	@RequestMapping(CMD_LOAD_LIST)
-	public ServerResult loadList(@TokenUser Doctor doctor, @Param("page") int page, @Param("pageSize") int pageSize, @Param("type") int type) {
-		return manager.loadList(doctor, page, pageSize, type);
+	@RequestMapping(CMD_PATIENT_HISTORY)
+	public ServerResult loadPatientList(@TokenUser Doctor doctor, @Param("patientId") int patientId, @Param("page") int page, @Param("pageSize") int pageSize) {
+		return manager.loadPatientHistory(doctor, patientId, page, pageSize);
 	}
 
 	/**
