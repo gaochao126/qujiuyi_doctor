@@ -5,6 +5,7 @@ package com.jiuyi.doctor.prescription;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,6 @@ import com.jiuyi.doctor.yaofang.YaofangService;
 import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.frame.front.FailResult;
 import com.jiuyi.frame.front.MapObject;
-import com.jiuyi.frame.front.ResultConst;
 import com.jiuyi.frame.front.ServerResult;
 import com.jiuyi.frame.util.CollectionUtil;
 import com.jiuyi.frame.util.ObjectUtil;
@@ -166,32 +166,39 @@ public class PrescriptionManager {
 	 * @param type
 	 * @return
 	 */
-	protected ServerResult loadList(Doctor doctor, int page, int pageSize, int type) {
-		if (type < 0 || type > 2 || page < 1 || pageSize < 1) {
-			return new ServerResult(ResultConst.PARAM_ERROR);
-		}
-
+	protected ServerResult loadHistory(Doctor doctor, int page, int pageSize) {
 		List<Integer> toSelectStatus = new ArrayList<>();
-		if (type == 0) {
-			/* 等待确认 */
-			toSelectStatus.add(PrescriptionStatus.CREATED.ordinal());
-		} else if (type == 1) {
-			/* 处理中 */
-			toSelectStatus.add(PrescriptionStatus.PATIENT_CONFIRMED.ordinal());
-			toSelectStatus.add(PrescriptionStatus.PRESCRIBED.ordinal());
-		} else {
-			/* 历史记录 */
-			toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
-			toSelectStatus.add(PrescriptionStatus.CANCEL_PRESCRIBE.ordinal());
-			toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
-			toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
-			toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
-		}
-		List<Prescription> prescriptions = dao.loadByStatus(doctor, toSelectStatus, page, pageSize);
-		Integer count = dao.countByStatus(doctor, toSelectStatus);
+		toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
+		toSelectStatus.add(PrescriptionStatus.CANCEL_PRESCRIBE.ordinal());
+		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
+		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
+		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
+		List<Patient> prescriptions = dao.loadPatientsByPresStatus(doctor, toSelectStatus, page, pageSize);
+		Integer count = dao.countPatientsByPresStatus(doctor, toSelectStatus);
 		ServerResult res = new ServerResult();
 		res.putObjects("list", prescriptions);
 		res.put("count", count);
+		return res;
+	}
+
+	/**
+	 * @param doctor
+	 * @param page
+	 * @param pageSize
+	 * @param type
+	 * @return
+	 */
+	protected ServerResult loadPatientHistory(Doctor doctor, int patientId, int page, int pageSize) {
+		List<Integer> toSelectStatus = new ArrayList<>();
+		/* 历史记录 */
+		toSelectStatus.add(PrescriptionStatus.PATIENT_CANCEL.ordinal());
+		toSelectStatus.add(PrescriptionStatus.CANCEL_PRESCRIBE.ordinal());
+		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
+		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
+		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
+		List<Prescription> prescriptions = dao.loadByPatientAndStatus(doctor, patientId, toSelectStatus, page, pageSize);
+		ServerResult res = new ServerResult();
+		res.putObjects("list", prescriptions);
 		return res;
 	}
 
@@ -239,7 +246,7 @@ public class PrescriptionManager {
 		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
 		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
 		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
-		List<Prescription> prescriptions = dao.searchPrescription(doctor, key, toSelectStatus);
+		List<Patient> prescriptions = dao.searchPrescription(doctor, key, toSelectStatus);
 		res.putObjects("list", prescriptions);
 		return res;
 	}
@@ -362,4 +369,17 @@ public class PrescriptionManager {
 		}
 		return new ServerResult();
 	}
+
+	/**
+	 * @param doctor
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	protected ServerResult loadHandlingList(Doctor doctor, int page, int pageSize) {
+		List<Integer> statusList = Arrays.asList(PrescriptionStatus.PRESCRIBED.ordinal());
+		List<Prescription> prescriptions = dao.loadByStatus(doctor, statusList, page, pageSize);
+		return new ServerResult("list", prescriptions, true);
+	}
+
 }

@@ -33,9 +33,7 @@ public class Prescription implements ISerializableObj {
 	@NotNull
 	private Integer patientId;
 	private int relativeId;
-	@NotEmpty
 	private String allergies;
-	@NotEmpty
 	private String illness;
 	@NotEmpty
 	private String diagnosis;

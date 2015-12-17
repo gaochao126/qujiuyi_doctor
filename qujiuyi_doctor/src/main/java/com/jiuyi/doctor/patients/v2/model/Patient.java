@@ -3,6 +3,7 @@ package com.jiuyi.doctor.patients.v2.model;
 import java.util.List;
 
 import com.jiuyi.frame.annotations.Age;
+import com.jiuyi.frame.annotations.Column;
 import com.jiuyi.frame.annotations.ConfigPrefix;
 import com.jiuyi.frame.constants.Constants;
 import com.jiuyi.frame.front.ISerializableObj;
@@ -27,6 +28,7 @@ public class Patient implements ISerializableObj {
 	@Age
 	private Integer age;
 	private Integer src;
+	@Column("relation")
 	private Integer type;
 	private String phone;
 	private String note;

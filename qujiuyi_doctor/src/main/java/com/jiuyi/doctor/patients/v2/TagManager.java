@@ -180,4 +180,16 @@ public class TagManager extends ManagerBase<Doctor, DoctorTags> {
 		return new DoctorTags(tags);
 	}
 
+	/**
+	 * @param doctor
+	 * @param phone
+	 * @return
+	 */
+	protected ServerResult loadPatientsByPhone(Doctor doctor, String phone) {
+		ServerResult res = new ServerResult();
+		Patient patient = dao.loadPatientByPhone(doctor, phone);
+		res.putObject(patient);
+		return res;
+	}
+
 }

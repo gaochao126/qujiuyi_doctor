@@ -31,6 +31,7 @@ public class PatientControllerV2 extends ControllerBase {
 	private static final String CMD_DELETE_TAG = CMD + "del_tag";// 删除标签
 	private static final String CMD_SET_TAG = CMD + "set_tag";// 设置患者的标签
 	private static final String CMD_LOAD_PATIENT_BY_TAG = CMD + "load_by_tag";// 获取标签下的患者
+	private static final String CMD_LOAD_PATIENT_BY_PHONE = CMD + "load_by_phone";// 根据电话搜索全平台的患者
 
 	private static final String CMD_UNFAMILIAR = CMD + "unfamiliar";// 陌生患者
 	private static final String CMD_BLACKLIST = CMD + "blacklist";// 陌生患者
@@ -83,6 +84,11 @@ public class PatientControllerV2 extends ControllerBase {
 	@RequestMapping(CMD_LOAD_PATIENT_BY_TAG)
 	public ServerResult loadPatientsByTag(@TokenUser Doctor doctor, @Param("tagId") Integer tagId) {
 		return tagManager.loadPatientsByTag(doctor, tagId);
+	}
+
+	@RequestMapping(CMD_LOAD_PATIENT_BY_PHONE)
+	public ServerResult loadPatientsByPhone(@TokenUser Doctor doctor, @Param("phone") String phone) {
+		return tagManager.loadPatientsByPhone(doctor, phone);
 	}
 
 	@RequestMapping(CMD_UNFAMILIAR)
