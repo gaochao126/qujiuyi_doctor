@@ -100,18 +100,16 @@ public class PrescriptionController {
 	}
 
 	/**
-	 * 获取处方列表
+	 * 获取患者的处方列表
 	 * 
 	 * @param doctor
 	 * @param page
 	 * @param pageSize
-	 * @param type
-	 *            0待用户确认，1处理中，2历史记录
 	 * @return
 	 */
 	@RequestMapping(CMD_PATIENT_HISTORY)
-	public ServerResult loadPatientList(@TokenUser Doctor doctor, @Param("patientId") int patientId, @Param("page") int page, @Param("pageSize") int pageSize) {
-		return manager.loadPatientHistory(doctor, patientId, page, pageSize);
+	public ServerResult loadPatientList(@TokenUser Doctor doctor, @Param("patientId") int patientId) {
+		return manager.loadPatientHistory(doctor, patientId);
 	}
 
 	/**
