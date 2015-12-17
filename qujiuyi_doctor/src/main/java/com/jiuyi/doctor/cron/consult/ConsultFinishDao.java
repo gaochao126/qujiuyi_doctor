@@ -23,7 +23,7 @@ public class ConsultFinishDao extends DbBase {
 			+ "LEFT JOIN t_third_pay_order o ON consult.id = o.serviceId " + "LEFT JOIN t_doctor doctor ON consult.doctorId = doctor.id "
 			+ "WHERE consult.acceptStatus=0 AND `type`=1 AND unix_timestamp(consult.createTime)+?<unix_timestamp(now());";
 
-	private static final String UPDATE_ORDER_STATUS = "UPDATE `t_third_pay_order` SET `accountArrivalStatus`=1 WHERE `orderNumber`=?";
+	private static final String UPDATE_ORDER_STATUS = "UPDATE `t_third_pay_order` SET `accountArrivalStatus`=1 WHERE `id`=?";
 	private static final String COMING_TO_BALANCE = "UPDATE `t_doctor_account` SET `balance`=`balance`+?,`totalIncome`=`totalIncome`+?, `coming`=`coming`-? WHERE `doctorId`=?";
 	private static final String INSERT_ACCOUNT_DETAIL = "INSERT `t_doctor_account_detail`(`doctorId`,`src`,`srcType`,`type`,`money`) VALUE(?,?,?,?,?)";
 

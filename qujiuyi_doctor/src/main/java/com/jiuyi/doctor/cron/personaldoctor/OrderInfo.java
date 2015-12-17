@@ -15,12 +15,12 @@ import org.springframework.jdbc.core.RowMapper;
  */
 public class OrderInfo {
 
-	public final String orderNumber;
+	public final int orderId;
 	public final int doctorId;
 	public final BigDecimal money;
 
-	public OrderInfo(String orderNumber, int doctorId, BigDecimal money) {
-		this.orderNumber = orderNumber;
+	public OrderInfo(int orderId, int doctorId, BigDecimal money) {
+		this.orderId = orderId;
 		this.doctorId = doctorId;
 		this.money = money;
 	}
@@ -28,10 +28,10 @@ public class OrderInfo {
 	public static final RowMapper<OrderInfo> builder = new RowMapper<OrderInfo>() {
 		@Override
 		public OrderInfo mapRow(ResultSet rs, int rowNum) throws SQLException {
-			String orderNumber = rs.getString("orderNumber");
+			int orderId = rs.getInt("orderId");
 			int doctorId = rs.getInt("doctorId");
 			BigDecimal money = rs.getBigDecimal("totalAmount");
-			return new OrderInfo(orderNumber, doctorId, money);
+			return new OrderInfo(orderId, doctorId, money);
 		}
 	};
 }
