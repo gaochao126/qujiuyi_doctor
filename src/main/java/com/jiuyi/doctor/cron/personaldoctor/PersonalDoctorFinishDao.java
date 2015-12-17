@@ -18,8 +18,8 @@ import com.jiuyi.frame.base.DbBase;
 @Repository
 public class PersonalDoctorFinishDao extends DbBase {
 
-	private static final String SELECT = "SELECT o.`orderNumber`, o.`doctorId`,o.`totalAmount` FROM t_personal_doctor personal,t_order o WHERE o.accountArrivalStatus=0 AND personal.id=o.serviceId AND unix_timestamp(personal.expirationTime)+?<=unix_timestamp(now());";
-	private static final String UPDATE_ORDER_STATUS = "UPDATE `t_order` SET `accountArrivalStatus`=1 WHERE `orderNumber`=?";
+	private static final String SELECT = "SELECT o.`orderNumber`, o.`doctorId`,o.`totalAmount` FROM t_personal_doctor personal,t_third_pay_order o WHERE o.accountArrivalStatus=0 AND personal.id=o.serviceId AND unix_timestamp(personal.expirationTime)+?<=unix_timestamp(now());";
+	private static final String UPDATE_ORDER_STATUS = "UPDATE `t_third_pay_order` SET `accountArrivalStatus`=1 WHERE `orderNumber`=?";
 	private static final String COMING_TO_BALANCE = "UPDATE `t_doctor_account` SET `balance`=`balance`+?, `totalIncome`=`totalIncome`+?, `coming`=`coming`-? WHERE `doctorId`=?";
 	private static final String INSERT_ACCOUNT_DETAIL = "INSERT `t_doctor_account_detail`(`doctorId`,`src`,`srcType`,`type`,`money`) VALUE(?,?,?,?,?)";
 

@@ -16,37 +16,34 @@ import org.springframework.jdbc.core.RowMapper;
 public class ConsultOrder {
 
 	public final String consultId;
-	public final String orderNumber;
+	public final int orderId;
 	public final int patientId;
 	public final int doctorId;
 	public final String doctorName;
 	public final int couponId;
-	public final BigDecimal payAmount;
-	public final BigDecimal balance;
+	public final BigDecimal totalAmount;
 
-	public ConsultOrder(String consultId, String orderNumber, int patientId, int doctorId, String doctorName, int couponId, BigDecimal payAmount, BigDecimal balance) {
+	public ConsultOrder(String consultId, int orderId, int patientId, int doctorId, String doctorName, int couponId, BigDecimal totalAmount) {
 		this.consultId = consultId;
-		this.orderNumber = orderNumber;
+		this.orderId = orderId;
 		this.patientId = patientId;
 		this.doctorId = doctorId;
 		this.doctorName = doctorName;
 		this.couponId = couponId;
-		this.payAmount = payAmount;
-		this.balance = balance;
+		this.totalAmount = totalAmount;
 	}
 
 	public static final RowMapper<ConsultOrder> builder = new RowMapper<ConsultOrder>() {
 		@Override
 		public ConsultOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			String consultId = rs.getString("id");
-			String orderNumber = rs.getString("orderNumber");
+			int orderId = rs.getInt("orderId");
 			int patientId = rs.getInt("patientId");
 			int doctorId = rs.getInt("doctorId");
 			String doctorName = rs.getString("name");
 			int couponId = rs.getInt("couponId");
-			BigDecimal payAmount = rs.getBigDecimal("payAmount");
-			BigDecimal balance = rs.getBigDecimal("balance");
-			return new ConsultOrder(consultId, orderNumber, patientId, doctorId, doctorName, couponId, payAmount, balance);
+			BigDecimal totalAmount = rs.getBigDecimal("totalAmount");
+			return new ConsultOrder(consultId, orderId, patientId, doctorId, doctorName, couponId, totalAmount);
 		}
 	};
 }
