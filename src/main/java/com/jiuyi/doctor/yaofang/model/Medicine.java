@@ -7,13 +7,15 @@ import java.util.List;
 
 import com.jiuyi.frame.annotations.Column;
 import com.jiuyi.frame.annotations.ConfigPrefix;
+import com.jiuyi.frame.front.ISerializableObj;
+import com.jiuyi.frame.front.MapObject;
 
 /**
  * @author xutaoyang
  * 
  *         大药房里面的药品信息
  */
-public class Medicine {
+public class Medicine implements ISerializableObj {
 
 	@Column("prod_id")
 	private String id;
@@ -30,6 +32,17 @@ public class Medicine {
 
 	private List<MedicineImg> imgs;
 	private List<Format> formats;
+
+	@Override
+	public MapObject serializeToMapObject() {
+		MapObject res = new MapObject();
+		res.put("medicineId", id);
+		res.put("medicineName", name);
+		res.put("usage", usage);
+		res.put("img", img);
+		res.putObjects("formats", formats);
+		return res;
+	}
 
 	public String getId() {
 		return id;
