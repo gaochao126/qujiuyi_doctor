@@ -42,6 +42,7 @@ public class Prescription implements ISerializableObj {
 	private int status;
 	private int medicineTakeStatus;
 	private BigDecimal price;
+	private int type;
 
 	// 就诊人信息相关
 	@NotNull
@@ -86,6 +87,8 @@ public class Prescription implements ISerializableObj {
 		res.put("patientName", this.patientName);
 		res.put("patientHead", this.patientHead);
 		res.put("price", this.price);
+		res.put("type", this.type);
+		res.put("typeName", PrescriptionType.getNameById(this.type));
 		return res;
 	}
 
@@ -239,6 +242,14 @@ public class Prescription implements ISerializableObj {
 
 	public void setPatientHead(String patientHead) {
 		this.patientHead = patientHead;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 
 }

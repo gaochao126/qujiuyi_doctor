@@ -52,7 +52,7 @@ public class PrescriptionDao extends DbBase {
 			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.doctorId=pres.doctorId AND remark.patientId=pres.patientId "
 			+ "WHERE pres.`status` IN (:status) AND pres.doctorId=:doctorId AND (patient.name LIKE :key OR remark.remark LIKE :key) " + "GROUP BY pres.patientId ";
 
-	private static final String COUTN_HANDLING_PRES = "SELECT COUNT(*) FROM `t_prescription` WHERE `status`=? AND `doctorId`=?";
+	private static final String COUNT_HANDLING_PRES = "SELECT COUNT(*) FROM `t_prescription` WHERE `status`=? AND `doctorId`=?";
 
 	private static final String COUNT_PATIENTS_BY_STATUS = "SELECT COUNT(DISTINCT(pres.patientId)) FROM `t_prescription` pres WHERE pres.`status` IN (:status) AND pres.doctorId=:doctorId;";
 
@@ -211,7 +211,7 @@ public class PrescriptionDao extends DbBase {
 	 * @return
 	 */
 	protected Integer loadHandlingCount(Doctor doctor) {
-		return queryForInteger(COUTN_HANDLING_PRES, PrescriptionStatus.PRESCRIBED.ordinal(), doctor.getId());
+		return queryForInteger(COUNT_HANDLING_PRES, PrescriptionStatus.PRESCRIBED.ordinal(), doctor.getId());
 	}
 
 }
