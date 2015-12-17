@@ -42,8 +42,8 @@ public class PrescriptionDao extends DbBase {
 	private static final String INSERT_SIMPLE_PRESCRIPTION = "INSERT `t_prescription`(`id`,`number`,`doctorId`,`patientId`,`createTime`,`updateTime`,`status`) VALUES(:id,:number,:doctorId,:patientId,:createTime,:updateTime,:status)";
 
 	private static final String INSERT_PRESCRIPTION = "INSERT `t_prescription`"
-			+ "(`id`,`number`,`doctorId`,`patientId`,`relativeId`,`relativeName`,`relativeAge`,`relativeGender`,`allergies`,`illness`,`diagnosis`,`createTime`,`updateTime`,`status`) "
-			+ "VALUES(:id,:number,:doctorId,:patientId,:relativeId,:relativeName,:relativeAge,:relativeGender,:allergies,:illness,:diagnosis,:createTime,:updateTime,:status) ";
+			+ "(`id`,`number`,`doctorId`,`patientId`,`relativeId`,`relativeName`,`relativeAge`,`relativeGender`,`allergies`,`illness`,`diagnosis`,`createTime`,`updateTime`,`status`,`price`) "
+			+ "VALUES(:id,:number,:doctorId,:patientId,:relativeId,:relativeName,:relativeAge,:relativeGender,:allergies,:illness,:diagnosis,:createTime,:updateTime,:status,:price) ";
 
 	private static final String UPDATE_PRESCRIPTION = "UPDATE `t_prescription` SET " 
 			+ "relativeId=:relativeId," 
@@ -54,6 +54,7 @@ public class PrescriptionDao extends DbBase {
 			+ "illness=:illness," 
 			+ "diagnosis=:diagnosis," 
 			+ "updateTime=:updateTime," 
+			+ "price=:price," 
 			+ "status=:status "
 			+ "WHERE `id`=:id;";
 
