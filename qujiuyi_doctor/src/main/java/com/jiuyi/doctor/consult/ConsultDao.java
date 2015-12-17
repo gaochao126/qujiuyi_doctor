@@ -8,11 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import com.jiuyi.doctor.consult.enums.ConsultAcceptStatus;
 import com.jiuyi.doctor.consult.enums.ConsultStatus;
-import com.jiuyi.doctor.consult.enums.OrderStatus;
 import com.jiuyi.doctor.consult.model.ChatRecord;
 import com.jiuyi.doctor.consult.model.Consult;
 import com.jiuyi.doctor.consult.model.DoctorChat;
-import com.jiuyi.doctor.consult.model.Order;
 import com.jiuyi.doctor.consult.model.UnreadMsg;
 import com.jiuyi.doctor.patients.v2.model.Patient;
 import com.jiuyi.doctor.services.ServiceStatus;
@@ -36,7 +34,6 @@ public class ConsultDao extends DbBase {
 	private static final String SELECT_CONSULT_BY_PATIENTID = "SELECT * FROM `t_patient_consult` WHERE `consultStatus`=1 AND `patientId`=? AND `doctorId`=?";
 	private static final String SELECT_CONSULT = "SELECT * FROM `t_patient_consult` WHERE `id`=?";
 	private static final String SELECT_CONSULT_SATISFACATION = "SELECT AVG(`satisfaction`) FROM `t_patient_consult` WHERE `doctorId`=?";
-	private static final String SELECT_ORDER = "SELECT * FROM `t_order` WHERE `serviceId`=?";
 	private static final String SELECT_CHAT_LIST = "SELECT list.*,patient.`name`,patient.`headPortrait` "//
 			+ "FROM `t_doctor_chat_list` list, `t_patient` patient "//
 			+ "WHERE patient.`id`=list.`patientId` AND `doctorId`=?";//
@@ -57,7 +54,7 @@ public class ConsultDao extends DbBase {
 			+ "orders.`totalAmount` as money "/* 金额 */
 			+ "FROM `t_patient_consult` consult " /* 咨询详情 */
 			+ "JOIN `t_patient` patient ON patient.id=consult.patientId "/* 患者信息 */
-			+ "LEFT JOIN `t_order` orders ON consult.id=orders.serviceId ";/* 可能无订单信息，用left join */
+			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.serviceId=2";/* 可能无订单信息，用left join */
 
 	private static final String SELECT_ALL_CHAT = CONSULT_FULL_INFO /* 所有咨询 */
 			+ "WHERE consult.`doctorId`=? ORDER BY `createTime` DESC";
@@ -85,7 +82,7 @@ public class ConsultDao extends DbBase {
 	private static final String FINISHED_CONSULT_BY_PATIENTID = "SELECT consult.`id`,consult.`patientId`,consult.`createTime`,consult.`type`,consult.`acceptStatus`,consult.`consultStatus`,consult.`symptoms`,orders.`totalAmount` as money, " //
 			+ "consult.`age`,consult.`gender`,IF(cmt.`commentTime`,TRUE,FALSE) AS hasComment "//
 			+ "FROM `t_patient_consult` consult "//
-			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId " // 订单
+			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.serviceId=2" // 订单
 			+ "LEFT JOIN `t_doctor_comment` cmt ON consult.id=cmt.serviceId " // 评论
 			+ "WHERE consult.`acceptStatus`=1 AND consult.`consultStatus`=2 AND consult.`patientId`=? AND consult.`doctorId`=? ";//
 
@@ -112,7 +109,6 @@ public class ConsultDao extends DbBase {
 
 	private static final String SELECT_UNREAD_MSG = "SELECT `sender`,`chatType`,`chatContent`,`chatTime`,`serviceId` FROM `t_chat_his` WHERE `receiver`=? AND `receiverType`=1 AND `readStatus`=0";
 	private static final String INSERT_CHAT_LIST = "REPLACE INTO `t_doctor_chat_list`(`doctorId`,`patientId`) VALUE(?,?)";
-	private static final String INSERT_PATIENT_REFUND = "INSERT `t_patient_refund`(`patientId`,`orderNumber`) VALUE(?,?)";
 	private static final String INSERT_PATIENT_ACCOUNT_DETAIL = "INSERT `t_patient_account_detail`(`patientId`,`type`,`transactionNum`,`amount`,`createTime`) VALUE(?,?,?,?,?)";
 
 	private static final String ON_START_CONSULT = "UPDATE `t_patient_consult` SET `doctorId`=?, `acceptStatus`=?,`consultStatus`=?,`startTime`=? WHERE `id`=?";
@@ -120,7 +116,6 @@ public class ConsultDao extends DbBase {
 	private static final String ON_STOP_CONSULT = "UPDATE `t_patient_consult` SET `acceptStatus`=?,`consultStatus`=?,`endTime`=? WHERE `id`=?";
 	private static final String UPDATE_CONSULT_ACCEPT_STATUS = "UPDATE `t_patient_consult` SET `acceptStatus`=? WHERE `id`=?";
 	private static final String UPDATE_CONSULT_STATUS = "UPDATE `t_patient_consult` SET `consultStatus`=? WHERE `id`=?";
-	private static final String UPDATE_ORDER_STATUS = "UPDATE `t_order` SET `status`=? WHERE `id`=?";
 	private static final String UPDATE_COUPON_STATUS = "UPDATE `t_coupon` SET `status`=? WHERE `id`=?";
 	private static final String INC_PATIENT_BALANCE = "UPDATE `t_patient` SET `balance`=`balance`+ ? WHERE `id`=?";
 	private static final String UPDATE_CHAT_STATUS = "INSERT `t_doctor_chat`(`doctorId`,`status`,`price`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `status`=?";
@@ -142,10 +137,6 @@ public class ConsultDao extends DbBase {
 
 	protected void updateChatPrice(Doctor doctor, Integer price) {
 		jdbc.update(UPDATE_CHAT_PRICE, doctor.getId(), ServiceStatus.CLOSED.ordinal(), price, price);
-	}
-
-	protected Order loadOrderByConsultId(String consultId) {
-		return queryForObject(SELECT_ORDER, new Object[] { consultId }, Order.builder);
 	}
 
 	protected List<UnreadMsg> loadUnreadMsgs(Doctor doctor) {
@@ -175,10 +166,6 @@ public class ConsultDao extends DbBase {
 
 	protected void insertPatientAccountDetail(int patientId, String orderNumber, BigDecimal money) {
 		jdbc.update(INSERT_PATIENT_ACCOUNT_DETAIL, new Object[] { patientId, 5, orderNumber, money, new Date() });
-	}
-
-	protected void updateOrderStatus(int orderId, OrderStatus status) {
-		jdbc.update(UPDATE_ORDER_STATUS, new Object[] { status.ordinal(), orderId });
 	}
 
 	protected void updateConsultAcceptStatus(String consultId, ConsultAcceptStatus status) {
@@ -247,10 +234,6 @@ public class ConsultDao extends DbBase {
 
 	protected List<RowData> loadFinishedConsultCount(Doctor doctor) {
 		return queryForRowDataList(SELECT_FINISH_CONSULT_COUNT, doctor.getId());
-	}
-
-	protected void addPatientRefund(Order order) {
-		jdbc.update(INSERT_PATIENT_REFUND, new Object[] { order.getPatientId(), order.getOrderNumber() });
 	}
 
 	protected void onRefuseConsult(String consultId, String reason) {

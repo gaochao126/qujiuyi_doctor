@@ -18,10 +18,12 @@ import com.jiuyi.doctor.consult.model.ChatAcceptRequest;
 import com.jiuyi.doctor.consult.model.ChatRecord;
 import com.jiuyi.doctor.consult.model.Consult;
 import com.jiuyi.doctor.consult.model.DoctorChat;
-import com.jiuyi.doctor.consult.model.Order;
 import com.jiuyi.doctor.consult.model.UnreadMsg;
 import com.jiuyi.doctor.consult.model.UnreadMsgWrapper;
 import com.jiuyi.doctor.hospitals.model.DoctorTitle;
+import com.jiuyi.doctor.order.OrderService;
+import com.jiuyi.doctor.order.OrderType;
+import com.jiuyi.doctor.order.ThirdPayOrder;
 import com.jiuyi.doctor.patients.PatientService;
 import com.jiuyi.doctor.patients.v2.PatientServiceV2;
 import com.jiuyi.doctor.patients.v2.model.Patient;
@@ -59,6 +61,8 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 	private @Autowired PatientServiceV2 patientServiceV2;
 
 	private @Autowired CommentService commentService;
+
+	private @Autowired OrderService orderService;
 
 	private static final String RESPONSE_CONSULT = "consultResponse";
 	private static final String STOP_CONSULT = "endConsultRequest";
@@ -141,7 +145,7 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 
 		/* 付费图文咨询 */
 		if (consult.getType() == ConsultType.COMMON.ordinal()) {
-			Order order = dao.loadOrderByConsultId(consultId);
+			ThirdPayOrder order = orderService.loadOrderByTypeAndServiceId(OrderType.CONSULT, consultId);
 			if (order != null) {
 				BigDecimal money = order.getTotalAmount();// 存入 医生即将到账
 				accountService.incComing(doctor, money);
@@ -170,22 +174,6 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		 */
 
 		dao.onRefuseConsult(consultId, reason);
-
-		/** 退款 */
-		if (consult.getType() == ConsultType.COMMON.ordinal()) {
-			Order order = dao.loadOrderByConsultId(consultId);
-			if (order != null) {
-				BigDecimal refundMoney = order.getBalance().add(order.getPayAmount());
-				if (order.getCouponId() != 0) {
-					dao.updateCouponStatus(order.getCouponId(), 0);
-				}
-				if (refundMoney.doubleValue() != 0) {
-					dao.incPatientBalance(order.getPatientId(), refundMoney);
-					dao.insertPatientAccountDetail(order.getPatientId(), order.getOrderNumber(), refundMoney);
-				}
-			}
-		}
-
 		ChatAcceptRequest request = new ChatAcceptRequest(RESPONSE_CONSULT, doctor, consult, false);
 		chatServer.postMsg(request);
 		return new ServerResult();
@@ -369,8 +357,7 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		dao.onStopConsult(consult);
 
 		/* 把未读消息设为已读 */
-		
-		
+
 		/** 原本医生在这个时候入账，现在改为一小时后再入账（跑job），留给患者投诉时间，为了不让医生转账 */
 		// Order order = dao.loadOrderByConsultId(consult.getId());
 		// if (!patientService.isPersonalPatient(doctor, consult.getPatientId())
