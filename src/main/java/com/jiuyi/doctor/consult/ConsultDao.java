@@ -1,6 +1,5 @@
 package com.jiuyi.doctor.consult;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -109,7 +108,6 @@ public class ConsultDao extends DbBase {
 
 	private static final String SELECT_UNREAD_MSG = "SELECT `sender`,`chatType`,`chatContent`,`chatTime`,`serviceId` FROM `t_chat_his` WHERE `receiver`=? AND `receiverType`=1 AND `readStatus`=0";
 	private static final String INSERT_CHAT_LIST = "REPLACE INTO `t_doctor_chat_list`(`doctorId`,`patientId`) VALUE(?,?)";
-	private static final String INSERT_PATIENT_ACCOUNT_DETAIL = "INSERT `t_patient_account_detail`(`patientId`,`type`,`transactionNum`,`amount`,`createTime`) VALUE(?,?,?,?,?)";
 
 	private static final String ON_START_CONSULT = "UPDATE `t_patient_consult` SET `doctorId`=?, `acceptStatus`=?,`consultStatus`=?,`startTime`=? WHERE `id`=?";
 	private static final String ON_REFUSE_CONSULT = "UPDATE `t_patient_consult` SET `acceptStatus`=?,`consultStatus`=?,`endTime`=?,`refuseReason`=? WHERE `id`=?";
@@ -117,7 +115,6 @@ public class ConsultDao extends DbBase {
 	private static final String UPDATE_CONSULT_ACCEPT_STATUS = "UPDATE `t_patient_consult` SET `acceptStatus`=? WHERE `id`=?";
 	private static final String UPDATE_CONSULT_STATUS = "UPDATE `t_patient_consult` SET `consultStatus`=? WHERE `id`=?";
 	private static final String UPDATE_COUPON_STATUS = "UPDATE `t_coupon` SET `status`=? WHERE `id`=?";
-	private static final String INC_PATIENT_BALANCE = "UPDATE `t_patient` SET `balance`=`balance`+ ? WHERE `id`=?";
 	private static final String UPDATE_CHAT_STATUS = "INSERT `t_doctor_chat`(`doctorId`,`status`,`price`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `status`=?";
 	private static final String UPDATE_CHAT_PRICE = "INSERT `t_doctor_chat`(`doctorId`,`status`,`price`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `price`=?";
 	private static final String INSERT_CHAT_PRICE = "INSERT `t_doctor_chat`(`doctorId`,`status`,`price`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `status`=?,`price`=?";
@@ -158,14 +155,6 @@ public class ConsultDao extends DbBase {
 
 	protected void updateCouponStatus(int couponId, int status) {
 		jdbc.update(UPDATE_COUPON_STATUS, new Object[] { couponId, status });
-	}
-
-	protected void incPatientBalance(int patientId, BigDecimal add) {
-		jdbc.update(INC_PATIENT_BALANCE, new Object[] { add, patientId });
-	}
-
-	protected void insertPatientAccountDetail(int patientId, String orderNumber, BigDecimal money) {
-		jdbc.update(INSERT_PATIENT_ACCOUNT_DETAIL, new Object[] { patientId, 5, orderNumber, money, new Date() });
 	}
 
 	protected void updateConsultAcceptStatus(String consultId, ConsultAcceptStatus status) {
