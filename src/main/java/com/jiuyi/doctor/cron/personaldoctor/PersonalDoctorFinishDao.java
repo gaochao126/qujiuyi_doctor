@@ -18,8 +18,8 @@ import com.jiuyi.frame.base.DbBase;
 @Repository
 public class PersonalDoctorFinishDao extends DbBase {
 
-	private static final String SELECT = "SELECT o.`orderNumber`, o.`doctorId`,o.`totalAmount` FROM t_personal_doctor personal,t_third_pay_order o WHERE o.accountArrivalStatus=0 AND personal.id=o.serviceId AND unix_timestamp(personal.expirationTime)+?<=unix_timestamp(now());";
-	private static final String UPDATE_ORDER_STATUS = "UPDATE `t_third_pay_order` SET `accountArrivalStatus`=1 WHERE `orderNumber`=?";
+	private static final String SELECT = "SELECT o.`id` as orderId, o.`doctorId`,o.`totalAmount` FROM t_personal_doctor personal,t_third_pay_order o WHERE o.accountArrivalStatus=0 AND personal.id=o.serviceId AND o.orderType=4 AND unix_timestamp(personal.expirationTime)+?<=unix_timestamp(now());";
+	private static final String UPDATE_ORDER_STATUS = "UPDATE `t_third_pay_order` SET `accountArrivalStatus`=1 WHERE `id`=?";
 	private static final String COMING_TO_BALANCE = "UPDATE `t_doctor_account` SET `balance`=`balance`+?, `totalIncome`=`totalIncome`+?, `coming`=`coming`-? WHERE `doctorId`=?";
 	private static final String INSERT_ACCOUNT_DETAIL = "INSERT `t_doctor_account_detail`(`doctorId`,`src`,`srcType`,`type`,`money`) VALUE(?,?,?,?,?)";
 
@@ -39,7 +39,7 @@ public class PersonalDoctorFinishDao extends DbBase {
 	public void updateOrderStatus(List<OrderInfo> orderList) {
 		List<Object[]> args = new ArrayList<>(orderList.size());
 		for (OrderInfo order : orderList) {
-			args.add(new Object[] { order.orderNumber });
+			args.add(new Object[] { order.orderId });
 		}
 		jdbc.batchUpdate(UPDATE_ORDER_STATUS, args);
 	}
@@ -57,7 +57,7 @@ public class PersonalDoctorFinishDao extends DbBase {
 	public void insertAccoutDetail(List<OrderInfo> orderList) {
 		List<Object[]> args = new ArrayList<>(orderList.size());
 		for (OrderInfo order : orderList) {
-			args.add(new Object[] { order.doctorId, order.orderNumber, 2, 1, order.money });
+			args.add(new Object[] { order.doctorId, order.orderId, 2, 1, order.money });
 		}
 		jdbc.batchUpdate(INSERT_ACCOUNT_DETAIL, args);
 	}
