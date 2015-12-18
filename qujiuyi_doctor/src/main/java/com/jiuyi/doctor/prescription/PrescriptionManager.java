@@ -319,7 +319,7 @@ public class PrescriptionManager {
 	private BigDecimal calcTotalPrice(List<FormatMedicine> formatMedicines) {
 		BigDecimal res = new BigDecimal(0);
 		for (FormatMedicine fm : formatMedicines) {
-			res.add(fm.getPrice());
+			res = res.add(fm.getPrice());
 		}
 		return res;
 	}
