@@ -66,7 +66,7 @@ public class PrescriptionDao extends DbBase {
 			+ "relativeGender=:relativeGender," + "allergies=:allergies," + "illness=:illness," + "diagnosis=:diagnosis," + "updateTime=:updateTime," + "price=:price," + "`status`=:status "
 			+ "WHERE `id`=:id;";
 
-	private static final String INSERT_PRESCRIPTION_DETAIL = "INSERT `t_prescription_detail`(prescriptionId,medicineId,formatId,number,usage) VALUE(:prescriptionId,:medicineId,:formatId,:number,:usage)";
+	private static final String INSERT_PRESCRIPTION_DETAIL = "INSERT `t_prescription_detail`(prescriptionId,medicineId,formatId,number,`instructions`) VALUE(:prescriptionId,:medicineId,:formatId,:number,:instructions)";
 
 	private static final String DELETE_OLD_PRES_MEDS = "DELETE FROM `t_prescription_detail` WHERE `prescriptionId`=?";
 

@@ -27,7 +27,7 @@ public class PrescriptionMedicine {
 	@Min(1)
 	private Integer number;// 数量
 	@NotEmpty
-	private String usage; // 用法
+	private String instructions; // 用法
 
 	public long getId() {
 		return id;
@@ -69,12 +69,12 @@ public class PrescriptionMedicine {
 		this.number = number;
 	}
 
-	public String getUsage() {
-		return usage;
+	public String getInstructions() {
+		return instructions;
 	}
 
-	public void setUsage(String usage) {
-		this.usage = usage;
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
 	}
 
 }

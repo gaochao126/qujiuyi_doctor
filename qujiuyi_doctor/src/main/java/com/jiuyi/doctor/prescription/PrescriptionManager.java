@@ -154,7 +154,7 @@ public class PrescriptionManager {
 		dao.deletePrescriptionMedicines(doctor, prescription);
 		dao.updatePrescription(doctor, prescription);
 		dao.insertMedicines(prescription, medicines);
-		String summary = String.format("%s医生为重新您开了一个处方，正等待您确认付款", doctor.getName());
+		String summary = String.format("%s医生重新为您开了一个处方，正等待您确认付款", doctor.getName());
 		SystemMsg systemMsg = new SystemMsg(UserType.PATIENT, prescription.getPatientId(), summary, prescription, summary);
 		chatServerService.postMsg(systemMsg);
 		return new ServerResult();
@@ -242,7 +242,7 @@ public class PrescriptionManager {
 			FormatMedicine formatMedicine = getFormatMedicine(pm, formatMedicines);
 			MapObject mo = formatMedicine.serializeToMapObject();
 			mo.put("number", pm.getNumber());
-			mo.put("usage", pm.getUsage());
+			mo.put("instructions", pm.getInstructions());
 			medicineInfos.add(mo);
 		}
 		ServerResult res = new ServerResult();
