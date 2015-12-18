@@ -59,10 +59,10 @@ public class PrescriptionDao extends DbBase {
 	private static final String INSERT_SIMPLE_PRESCRIPTION = "INSERT `t_prescription`(`id`,`number`,`doctorId`,`patientId`,`createTime`,`updateTime`,`status`) VALUES(:id,:number,:doctorId,:patientId,:createTime,:updateTime,:status)";
 
 	private static final String INSERT_PRESCRIPTION = "INSERT `t_prescription`"
-			+ "(`id`,`number`,`doctorId`,`patientId`,`relativeId`,`relativeName`,`relativeAge`,`relativeGender`,`allergies`,`illness`,`diagnosis`,`createTime`,`updateTime`,`status`,`price`,`type`) "
-			+ "VALUES(:id,:number,:doctorId,:patientId,:relativeId,:relativeName,:relativeAge,:relativeGender,:allergies,:illness,:diagnosis,:createTime,:updateTime,:status,:price,:type) ";
+			+ "(`id`,`number`,`doctorId`,`patientId`,`relativeId`,`relativeName`,`relativeBirthday`,`relativeGender`,`allergies`,`illness`,`diagnosis`,`createTime`,`updateTime`,`status`,`price`,`type`) "
+			+ "VALUES(:id,:number,:doctorId,:patientId,:relativeId,:relativeName,:relativeBirthday,:relativeGender,:allergies,:illness,:diagnosis,:createTime,:updateTime,:status,:price,:type) ";
 
-	private static final String UPDATE_PRESCRIPTION = "UPDATE `t_prescription` SET " + "relativeId=:relativeId," + "relativeName=:relativeName," + "relativeAge=:relativeAge,"
+	private static final String UPDATE_PRESCRIPTION = "UPDATE `t_prescription` SET " + "relativeId=:relativeId," + "relativeName=:relativeName," + "relativeBirthday=:relativeBirthday,"
 			+ "relativeGender=:relativeGender," + "allergies=:allergies," + "illness=:illness," + "diagnosis=:diagnosis," + "updateTime=:updateTime," + "price=:price," + "`status`=:status "
 			+ "WHERE `id`=:id;";
 

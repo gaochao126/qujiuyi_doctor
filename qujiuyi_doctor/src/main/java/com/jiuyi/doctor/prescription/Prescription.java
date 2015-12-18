@@ -6,7 +6,6 @@ package com.jiuyi.doctor.prescription;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -46,13 +45,12 @@ public class Prescription implements ISerializableObj {
 
 	// 就诊人信息相关
 	@NotNull
-	@Min(0)
-	private Integer relativeAge;
-	@NotNull
 	@Range(max = 2, min = 1)
 	private Integer relativeGender;
 	@NotEmpty
 	private String relativeName;
+	@NotNull
+	private Date relativeBirthday;
 	private String relativeUid;
 
 	// 患者相关
@@ -80,10 +78,10 @@ public class Prescription implements ISerializableObj {
 		res.put("updateTime", DateUtil.date2Str(this.updateTime));
 		res.put("status", this.status);
 		res.put("medicineTakeStatus", this.medicineTakeStatus);
-		res.put("relativeAge", this.relativeAge);
 		res.put("relativeGender", this.relativeGender);
 		res.put("relativeName", this.relativeName);
 		res.put("relativeUid", this.relativeUid);
+		res.put("relativeBirthday", this.relativeBirthday);
 		res.put("patientName", this.patientName);
 		res.put("patientHead", this.patientHead);
 		res.put("price", this.price);
@@ -142,10 +140,6 @@ public class Prescription implements ISerializableObj {
 
 	public BigDecimal getPrice() {
 		return price;
-	}
-
-	public Integer getRelativeAge() {
-		return relativeAge;
 	}
 
 	public Integer getRelativeGender() {
@@ -220,10 +214,6 @@ public class Prescription implements ISerializableObj {
 		this.price = price;
 	}
 
-	public void setRelativeAge(Integer relativeAge) {
-		this.relativeAge = relativeAge;
-	}
-
 	public void setRelativeGender(Integer relativeGender) {
 		this.relativeGender = relativeGender;
 	}
@@ -250,6 +240,14 @@ public class Prescription implements ISerializableObj {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public Date getRelativeBirthday() {
+		return relativeBirthday;
+	}
+
+	public void setRelativeBirthday(Date relativeBirthday) {
+		this.relativeBirthday = relativeBirthday;
 	}
 
 }
