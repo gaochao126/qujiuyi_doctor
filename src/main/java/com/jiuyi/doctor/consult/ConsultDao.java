@@ -53,7 +53,11 @@ public class ConsultDao extends DbBase {
 			+ "orders.`totalAmount` as money "/* 金额 */
 			+ "FROM `t_patient_consult` consult " /* 咨询详情 */
 			+ "JOIN `t_patient` patient ON patient.id=consult.patientId "/* 患者信息 */
-			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.serviceId=2 ";/* 可能无订单信息，用left join */
+			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.orderType=2 ";/*
+																											 * 可能无订单信息，
+																											 * 用left
+																											 * join
+																											 */
 
 	private static final String SELECT_ALL_CHAT = CONSULT_FULL_INFO /* 所有咨询 */
 			+ "WHERE consult.`doctorId`=? ORDER BY `createTime` DESC";
@@ -81,7 +85,7 @@ public class ConsultDao extends DbBase {
 	private static final String FINISHED_CONSULT_BY_PATIENTID = "SELECT consult.`id`,consult.`patientId`,consult.`createTime`,consult.`type`,consult.`acceptStatus`,consult.`consultStatus`,consult.`symptoms`,orders.`totalAmount` as money, " //
 			+ "consult.`age`,consult.`gender`,IF(cmt.`commentTime`,TRUE,FALSE) AS hasComment "//
 			+ "FROM `t_patient_consult` consult "//
-			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.serviceId=2 " // 订单
+			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.orderType=2 " // 订单
 			+ "LEFT JOIN `t_doctor_comment` cmt ON consult.id=cmt.serviceId " // 评论
 			+ "WHERE consult.`acceptStatus`=1 AND consult.`consultStatus`=2 AND consult.`patientId`=? AND consult.`doctorId`=? ";//
 
@@ -90,6 +94,7 @@ public class ConsultDao extends DbBase {
 	private static final String SELECT_FINISED_PATIENT_LIST = FINISED_PATIENT_LIST + " ORDER BY `createTime` DESC LIMIT ?,?";
 	private static final String SELECT_FINISED_PATIENT_LIST_PAYED = FINISED_PATIENT_LIST + " AND c.type IN(1,2) ORDER BY `createTime` DESC LIMIT ?,?";
 	private static final String SELECT_FINISH_CONSULT_BY_PATIENTID_PAYED = FINISHED_CONSULT_BY_PATIENTID + " AND consult.type IN(1,2) ORDER BY `createTime` DESC";
+	private static final String SELECT_FINISH_CONSULT_BY_PATIENTID = FINISHED_CONSULT_BY_PATIENTID + " ORDER BY `createTime` DESC";
 
 	private static final String SELECT_FINISH_CONSULT_COUNT = "SELECT patientId, COUNT(*) as count FROM `t_patient_consult` WHERE `acceptStatus`=1 AND `consultStatus`=2 AND `doctorId`=? GROUP BY `patientId`";
 	private static final String SELECT_FINISH_CONSULT_COUNT_FREE = "SELECT patientId, COUNT(*) as count FROM `t_patient_consult` WHERE `acceptStatus`=1 AND `consultStatus`=2 AND `doctorId`=? AND `type`=0 GROUP BY `patientId`";
@@ -210,7 +215,7 @@ public class ConsultDao extends DbBase {
 	}
 
 	protected List<Consult> loadFinishedConsultByPatientAll(Doctor doctor, int patientId) {
-		return queryForList(FINISHED_CONSULT_BY_PATIENTID, new Object[] { patientId, doctor.getId() }, Consult.class);
+		return queryForList(SELECT_FINISH_CONSULT_BY_PATIENTID, new Object[] { patientId, doctor.getId() }, Consult.class);
 	}
 
 	protected List<RowData> loadFinishedConsultCountFree(Doctor doctor) {

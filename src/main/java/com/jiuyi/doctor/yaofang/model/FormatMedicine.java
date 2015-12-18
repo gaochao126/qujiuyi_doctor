@@ -24,7 +24,7 @@ public class FormatMedicine extends Format {
 	private String name;
 
 	@Column("prod_usage")
-	private String usage;
+	private String instructions;
 
 	@Column("img_id")
 	@ConfigPrefix("medicine.img.url")
@@ -36,7 +36,7 @@ public class FormatMedicine extends Format {
 		MapObject res = new MapObject();
 		res.put("medicineId", this.medId);
 		res.put("medicineName", this.name);
-		res.put("usage", this.usage);
+		res.put("instructions", this.instructions);
 		res.put("img", this.img);
 		res.putObjects("formats", Arrays.asList(super.serializeToMapObject()));
 		return res;
@@ -55,10 +55,6 @@ public class FormatMedicine extends Format {
 		return name;
 	}
 
-	public String getUsage() {
-		return usage;
-	}
-
 	public String getImg() {
 		return img;
 	}
@@ -67,12 +63,16 @@ public class FormatMedicine extends Format {
 		this.name = name;
 	}
 
-	public void setUsage(String usage) {
-		this.usage = usage;
-	}
-
 	public void setImg(String img) {
 		this.img = img;
+	}
+
+	public String getInstructions() {
+		return instructions;
+	}
+
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
 	}
 
 }
