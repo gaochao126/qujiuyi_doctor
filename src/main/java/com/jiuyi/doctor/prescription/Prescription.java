@@ -12,6 +12,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Range;
 
 import com.jiuyi.frame.annotations.ConfigPrefix;
+import com.jiuyi.frame.annotations.ReadableDate;
 import com.jiuyi.frame.constants.Constants;
 import com.jiuyi.frame.front.ISerializableObj;
 import com.jiuyi.frame.front.MapObject;
@@ -58,11 +59,22 @@ public class Prescription implements ISerializableObj {
 	@ConfigPrefix(Constants.KEY_PATIENT_HEAD)
 	private String patientHead;
 
+	// 审核配药信息
+	private String reviewDoctorName;
+	@ReadableDate("yyyy-MM-dd HH:mm:ss")
+	private String reviewDate;
+
+	private String presDoctorName;
+	@ReadableDate("yyyy-MM-dd HH:mm:ss")
+	private String presDate;
+
+	private int payType;// 费别
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see com.jiuyi.frame.front.ISerializableObj#serializeToMapObject()
 	 */
+
 	@Override
 	public MapObject serializeToMapObject() {
 		MapObject res = new MapObject();
@@ -74,19 +86,29 @@ public class Prescription implements ISerializableObj {
 		res.put("allergies", this.allergies);
 		res.put("illness", this.illness);
 		res.put("diagnosis", this.diagnosis);
-		res.put("createTime", DateUtil.date2Str(this.createTime));
-		res.put("updateTime", DateUtil.date2Str(this.updateTime));
 		res.put("status", this.status);
 		res.put("medicineTakeStatus", this.medicineTakeStatus);
+		res.put("relativeBirthday", this.relativeBirthday);
 		res.put("relativeGender", this.relativeGender);
 		res.put("relativeName", this.relativeName);
 		res.put("relativeUid", this.relativeUid);
-		res.put("relativeBirthday", this.relativeBirthday);
 		res.put("patientName", this.patientName);
 		res.put("patientHead", this.patientHead);
 		res.put("price", this.price);
 		res.put("type", this.type);
 		res.put("typeName", PrescriptionType.getNameById(this.type));
+		res.put("createTime", DateUtil.date2Str(this.createTime, "yyyy-MM-dd HH:mm:ss"));
+		res.put("updateTime", DateUtil.date2Str(this.updateTime, "yyyy-MM-dd HH:mm:ss"));
+		return res;
+	}
+
+	public MapObject serializeDetail() {
+		MapObject res = serializeToMapObject();
+		res.put("reviewDoctorName", this.reviewDoctorName);
+		res.put("reviewDate", this.reviewDate);
+		res.put("presDoctorName", this.presDoctorName);
+		res.put("presDate", this.presDate);
+		res.put("payType", this.payType);
 		return res;
 	}
 
@@ -248,6 +270,46 @@ public class Prescription implements ISerializableObj {
 
 	public void setRelativeBirthday(Date relativeBirthday) {
 		this.relativeBirthday = relativeBirthday;
+	}
+
+	public String getReviewDoctorName() {
+		return reviewDoctorName;
+	}
+
+	public String getReviewDate() {
+		return reviewDate;
+	}
+
+	public String getPresDoctorName() {
+		return presDoctorName;
+	}
+
+	public String getPresDate() {
+		return presDate;
+	}
+
+	public void setReviewDoctorName(String reviewDoctorName) {
+		this.reviewDoctorName = reviewDoctorName;
+	}
+
+	public void setReviewDate(String reviewDate) {
+		this.reviewDate = reviewDate;
+	}
+
+	public void setPresDoctorName(String presDoctorName) {
+		this.presDoctorName = presDoctorName;
+	}
+
+	public void setPresDate(String presDate) {
+		this.presDate = presDate;
+	}
+
+	public int getPayType() {
+		return payType;
+	}
+
+	public void setPayType(int payType) {
+		this.payType = payType;
 	}
 
 }
