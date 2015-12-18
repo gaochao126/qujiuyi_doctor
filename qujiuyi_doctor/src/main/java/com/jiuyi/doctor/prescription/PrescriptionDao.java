@@ -24,9 +24,11 @@ public class PrescriptionDao extends DbBase {
 
 	private static final String SELECT_PRESCRIPTION = "SELECT * FROM `t_prescription` WHERE `doctorId`=? AND `id`=?";
 	private static final String SELECT_PRESCRIPTION_MEDS = "SELECT * FROM `t_prescription_detail` WHERE `prescriptionId`=?";
-	private static final String SELECT_PRESCRIPTION_DETAIL = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead " // select
+	private static final String SELECT_PRESCRIPTION_DETAIL = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead, " // base
+			+ "review.reviewDoctorName,review.reviewDate,review.presDoctorName,review.presDate " // review info
 			+ "FROM `t_prescription` pres " // 处方表
 			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
+			+ "LEFT JOIN `t_prescription_review` review ON pres.id=review.prescriptionId " // 审核表
 			+ "WHERE pres.`doctorId`=? AND pres.`id`=?";
 	private static final String SELECT_PRESCRIPTION_BY_STATUS = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
 			+ "FROM `t_prescription` pres " // 处方表
@@ -59,8 +61,8 @@ public class PrescriptionDao extends DbBase {
 	private static final String INSERT_SIMPLE_PRESCRIPTION = "INSERT `t_prescription`(`id`,`number`,`doctorId`,`patientId`,`createTime`,`updateTime`,`status`) VALUES(:id,:number,:doctorId,:patientId,:createTime,:updateTime,:status)";
 
 	private static final String INSERT_PRESCRIPTION = "INSERT `t_prescription`"
-			+ "(`id`,`number`,`doctorId`,`patientId`,`relativeId`,`relativeName`,`relativeBirthday`,`relativeGender`,`allergies`,`illness`,`diagnosis`,`createTime`,`updateTime`,`status`,`price`,`type`) "
-			+ "VALUES(:id,:number,:doctorId,:patientId,:relativeId,:relativeName,:relativeBirthday,:relativeGender,:allergies,:illness,:diagnosis,:createTime,:updateTime,:status,:price,:type) ";
+			+ "(`id`,`number`,`doctorId`,`patientId`,`relativeId`,`relativeName`,`relativeBirthday`,`relativeGender`,`allergies`,`illness`,`diagnosis`,`createTime`,`updateTime`,`status`,`price`,`type`,`payType`) "
+			+ "VALUES(:id,:number,:doctorId,:patientId,:relativeId,:relativeName,:relativeBirthday,:relativeGender,:allergies,:illness,:diagnosis,:createTime,:updateTime,:status,:price,:type,:payType) ";
 
 	private static final String UPDATE_PRESCRIPTION = "UPDATE `t_prescription` SET " + "relativeId=:relativeId," + "relativeName=:relativeName," + "relativeBirthday=:relativeBirthday,"
 			+ "relativeGender=:relativeGender," + "allergies=:allergies," + "illness=:illness," + "diagnosis=:diagnosis," + "updateTime=:updateTime," + "price=:price," + "`status`=:status "

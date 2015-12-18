@@ -107,6 +107,7 @@ public class PrescriptionManager {
 		prescription.setPrice(calcTotalPrice(formatMedicines));
 		prescription.setNumber(genPresNumber(doctor, prescription));
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
+		prescription.setPayType(0);
 		dao.insertPrescription(doctor, prescription);
 		dao.insertMedicines(prescription, medicines);
 		String summary = String.format("%s医生为您开了一个处方，正等待您确认付款", doctor.getName());
@@ -246,7 +247,9 @@ public class PrescriptionManager {
 			medicineInfos.add(mo);
 		}
 		ServerResult res = new ServerResult();
-		res.putObject(prescription);
+		res.putObject(prescription.serializeDetail());
+		res.put("doctorName", doctor.getName());
+		res.put("doctorHospital", doctor.getHospital());
 		res.put("medicines", medicineInfos);
 		return res;
 	}
