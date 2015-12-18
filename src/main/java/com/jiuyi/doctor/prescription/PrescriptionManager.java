@@ -103,6 +103,7 @@ public class PrescriptionManager {
 		prescription.setCreateTime(new Date());
 		prescription.setUpdateTime(new Date());
 		prescription.setMedicineTakeStatus(0);
+		prescription.setType(PrescriptionType.COMMON.ordinal());
 		prescription.setPrice(calcTotalPrice(formatMedicines));
 		prescription.setNumber(genPresNumber(doctor, prescription));
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
@@ -241,7 +242,7 @@ public class PrescriptionManager {
 			FormatMedicine formatMedicine = getFormatMedicine(pm, formatMedicines);
 			MapObject mo = formatMedicine.serializeToMapObject();
 			mo.put("number", pm.getNumber());
-			mo.put("usage", pm.getInstructions());
+			mo.put("usage", pm.getUsage());
 			medicineInfos.add(mo);
 		}
 		ServerResult res = new ServerResult();
