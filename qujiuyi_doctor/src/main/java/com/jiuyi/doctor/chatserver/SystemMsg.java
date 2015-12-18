@@ -3,6 +3,8 @@
  */
 package com.jiuyi.doctor.chatserver;
 
+import java.util.List;
+
 import com.jiuyi.frame.util.JsonUtil;
 
 /**
@@ -30,5 +32,11 @@ public class SystemMsg extends ChatServerRequestEntity {
 	public SystemMsg(UserType targetType, Integer target, String summary, Object content, String weixinMsg) {
 		this(targetType, target, summary, content);
 		putDetail("weixinMsg", weixinMsg);
+	}
+
+	public SystemMsg(UserType targetType, Integer target, String summary, Object content, String weixinMsg, List<String> weixinMsgUrls) {
+		this(targetType, target, summary, content);
+		putDetail("weixinMsg", weixinMsg);
+		putDetail("weixinMsgUrls", weixinMsgUrls);
 	}
 }
