@@ -53,7 +53,7 @@ public class ConsultDao extends DbBase {
 			+ "orders.`totalAmount` as money "/* 金额 */
 			+ "FROM `t_patient_consult` consult " /* 咨询详情 */
 			+ "JOIN `t_patient` patient ON patient.id=consult.patientId "/* 患者信息 */
-			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.serviceId=2";/* 可能无订单信息，用left join */
+			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.serviceId=2 ";/* 可能无订单信息，用left join */
 
 	private static final String SELECT_ALL_CHAT = CONSULT_FULL_INFO /* 所有咨询 */
 			+ "WHERE consult.`doctorId`=? ORDER BY `createTime` DESC";
@@ -81,7 +81,7 @@ public class ConsultDao extends DbBase {
 	private static final String FINISHED_CONSULT_BY_PATIENTID = "SELECT consult.`id`,consult.`patientId`,consult.`createTime`,consult.`type`,consult.`acceptStatus`,consult.`consultStatus`,consult.`symptoms`,orders.`totalAmount` as money, " //
 			+ "consult.`age`,consult.`gender`,IF(cmt.`commentTime`,TRUE,FALSE) AS hasComment "//
 			+ "FROM `t_patient_consult` consult "//
-			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.serviceId=2" // 订单
+			+ "LEFT JOIN `t_third_pay_order` orders ON consult.id=orders.serviceId AND orders.serviceId=2 " // 订单
 			+ "LEFT JOIN `t_doctor_comment` cmt ON consult.id=cmt.serviceId " // 评论
 			+ "WHERE consult.`acceptStatus`=1 AND consult.`consultStatus`=2 AND consult.`patientId`=? AND consult.`doctorId`=? ";//
 

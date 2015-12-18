@@ -35,6 +35,7 @@ public class SmsVerifyService {
 		test_phone.add("15823566822");
 		test_phone.add("18223506390");
 		test_phone.add("18725850672");
+		test_phone.add("18100863325");
 		test_phone.add("18100863327");
 		test_phone.add("18100863330");
 		test_phone.add("13370756360");
