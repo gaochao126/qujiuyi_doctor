@@ -19,7 +19,8 @@ import com.jiuyi.frame.base.DbBase;
 public class ConsultFinishDao extends DbBase {
 
 	private static final String SELECT = "SELECT o.totalAmount,o.id AS orderId,consult.doctorId FROM t_third_pay_order o,t_patient_consult consult WHERE o.accountArrivalStatus=0 AND unix_timestamp(consult.endTime)+?<=unix_timestamp(now()) AND consult.acceptStatus=1 AND consult.consultStatus=2 AND o.serviceId=consult.id AND o.orderType=2; ";
-	private static final String SELECT_UNHANDLED_CHAT = "SELECT consult.id, consult.doctorId,consult.patientId,doctor.name,o.id,o.couponId,o.totalAmount " + "FROM t_patient_consult consult " //
+	private static final String SELECT_UNHANDLED_CHAT = "SELECT consult.id, consult.doctorId,consult.patientId,doctor.name,o.id as orderId,o.couponId,o.totalAmount " 
+			+ "FROM t_patient_consult consult " //
 			+ "LEFT JOIN t_third_pay_order o ON consult.id = o.serviceId " + "LEFT JOIN t_doctor doctor ON consult.doctorId = doctor.id "
 			+ "WHERE consult.acceptStatus=0 AND `type`=1 AND unix_timestamp(consult.createTime)+?<unix_timestamp(now());";
 

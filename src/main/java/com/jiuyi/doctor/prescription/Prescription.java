@@ -58,6 +58,8 @@ public class Prescription implements ISerializableObj {
 	private String patientName;
 	@ConfigPrefix(Constants.KEY_PATIENT_HEAD)
 	private String patientHead;
+	private String patientPhone;
+	private int patientGender;
 
 	// 审核配药信息
 	private String reviewDoctorName;
@@ -109,6 +111,8 @@ public class Prescription implements ISerializableObj {
 		res.put("presDoctorName", this.presDoctorName);
 		res.put("presDate", this.presDate);
 		res.put("payType", this.payType);
+		res.put("patientPhone", this.patientPhone);
+		res.put("patientGender", this.patientGender);
 		return res;
 	}
 
@@ -310,6 +314,22 @@ public class Prescription implements ISerializableObj {
 
 	public void setPayType(int payType) {
 		this.payType = payType;
+	}
+
+	public String getPatientPhone() {
+		return patientPhone;
+	}
+
+	public void setPatientPhone(String patientPhone) {
+		this.patientPhone = patientPhone;
+	}
+
+	public int getPatientGender() {
+		return patientGender;
+	}
+
+	public void setPatientGender(int patientGender) {
+		this.patientGender = patientGender;
 	}
 
 }

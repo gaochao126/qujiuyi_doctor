@@ -24,7 +24,7 @@ public class PrescriptionDao extends DbBase {
 
 	private static final String SELECT_PRESCRIPTION = "SELECT * FROM `t_prescription` WHERE `doctorId`=? AND `id`=?";
 	private static final String SELECT_PRESCRIPTION_MEDS = "SELECT * FROM `t_prescription_detail` WHERE `prescriptionId`=?";
-	private static final String SELECT_PRESCRIPTION_DETAIL = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead, " // base
+	private static final String SELECT_PRESCRIPTION_DETAIL = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead,patient.phone AS patientPhone,patient.gender AS patientGender" // base
 			+ "review.reviewDoctorName,review.reviewDate,review.presDoctorName,review.presDate " // review info
 			+ "FROM `t_prescription` pres " // 处方表
 			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
@@ -33,12 +33,13 @@ public class PrescriptionDao extends DbBase {
 	private static final String SELECT_PRESCRIPTION_BY_STATUS = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
 			+ "FROM `t_prescription` pres " // 处方表
 			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
-			+ "WHERE pres.doctorId=:doctorId AND `status` IN (:status) LIMIT :startIndex,:size";// where end
+			+ "WHERE pres.doctorId=:doctorId AND `status` IN (:status) ORDER BY `createTime` DESC LIMIT :startIndex,:size";// where
+																															// end
 
 	private static final String SELECT_PRESCRIPTION_BY_PATIENT_AND_STATUS = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
 			+ "FROM `t_prescription` pres " // 处方表
 			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
-			+ "WHERE pres.doctorId=:doctorId AND pres.`patientId`=:patientId AND `status` IN (:status)";// where
+			+ "WHERE pres.doctorId=:doctorId AND pres.`patientId`=:patientId AND `status` IN (:status) ORDER BY `createTime` DESC";// where
 
 	private static final String COUNT_PRESCRIPTION_BY_STATUS = "SELECT COUNT(*) FROM `t_prescription` WHERE doctorId=:doctorId AND `status` in (:status)";
 
@@ -46,13 +47,13 @@ public class PrescriptionDao extends DbBase {
 			+ "FROM `t_prescription` pres "//
 			+ "JOIN `t_patient` patient ON pres.`patientId`=patient.id "//
 			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.doctorId=pres.doctorId AND remark.patientId=pres.patientId " + "WHERE pres.`status` IN (:status) AND pres.doctorId=:doctorId "
-			+ "GROUP BY pres.patientId " + "LIMIT :startIndex,:pageSize ";
+			+ "GROUP BY pres.patientId " + "ORDER BY `createTime` DESC " + "LIMIT :startIndex,:pageSize ";
 
 	private static final String SERACH_PATIENTS_BY_STATUS = "SELECT pres.id,pres.patientId,patient.name AS name,patient.headPortrait,patient.gender,remark.remark " //
 			+ "FROM `t_prescription` pres "//
 			+ "JOIN `t_patient` patient ON pres.`patientId`=patient.id "//
 			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.doctorId=pres.doctorId AND remark.patientId=pres.patientId "
-			+ "WHERE pres.`status` IN (:status) AND pres.doctorId=:doctorId AND (patient.name LIKE :key OR remark.remark LIKE :key) " + "GROUP BY pres.patientId ";
+			+ "WHERE pres.`status` IN (:status) AND pres.doctorId=:doctorId AND (patient.name LIKE :key OR remark.remark LIKE :key) " + "GROUP BY pres.patientId " + "ORDER BY `createTime` DESC";
 
 	private static final String COUNT_HANDLING_PRES = "SELECT COUNT(*) FROM `t_prescription` WHERE `status`=? AND `doctorId`=?";
 

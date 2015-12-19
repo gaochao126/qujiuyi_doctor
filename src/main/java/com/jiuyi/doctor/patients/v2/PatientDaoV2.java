@@ -35,7 +35,7 @@ public class PatientDaoV2 extends DbBase {
 	private static final String SELECT_UNFAMILIAR_COUNT = "SELECT count(patientId) FROM t_doctor_unfamiliar_patient WHERE doctorId=? ";
 
 	private static final String SELECT_PATIENT = "SELECT * FROM `t_patient` WHERE `id`=?";
-	private static final String SELECT_SIMPLE_PATIENT = "SELECT c.patientId,p.name,p.gender,p.headPortrait,p.birthday as age,r.remark,r.note FROM `#tableName#` c join `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=c.doctorId WHERE c.`#where#`=?;";
+	private static final String SELECT_SIMPLE_PATIENT = "SELECT c.patientId,p.name,p.gender,p.phone,p.headPortrait,p.birthday as age,r.remark,r.note FROM `#tableName#` c join `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=c.doctorId WHERE c.`#where#`=?;";
 	private static final String SELECT_CONTACTS = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_contacts").replace("#where#", "doctorId");
 	private static final String SELECT_UNFAMILIAR = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_unfamiliar_patient").replace("#where#", "doctorId");
 	private static final String SELECT_BLACKLIST = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_blacklist_patient").replace("#where#", "doctorId");
