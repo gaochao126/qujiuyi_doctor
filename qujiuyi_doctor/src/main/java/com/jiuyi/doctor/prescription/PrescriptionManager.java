@@ -104,9 +104,9 @@ public class PrescriptionManager {
 		prescription.setUpdateTime(new Date());
 		prescription.setMedicineTakeStatus(0);
 		prescription.setType(PrescriptionType.COMMON.ordinal());
-		prescription.setPrice(calcTotalPrice(formatMedicines));
 		prescription.setNumber(genPresNumber(doctor, prescription));
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
+		prescription.setPrice(calcTotalPrice(medicines, formatMedicines));
 		prescription.setPayType(0);
 		dao.insertPrescription(doctor, prescription);
 		dao.insertMedicines(prescription, medicines);
@@ -152,7 +152,7 @@ public class PrescriptionManager {
 			medicine.setPrescriptionId(prescription.getId());
 		}
 		prescription.setUpdateTime(new Date());
-		prescription.setPrice(calcTotalPrice(formatMedicines));
+		prescription.setPrice(calcTotalPrice(medicines, formatMedicines));
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
 		dao.deletePrescriptionMedicines(doctor, prescription);
 		dao.updatePrescription(doctor, prescription);
@@ -253,6 +253,7 @@ public class PrescriptionManager {
 		ServerResult res = new ServerResult();
 		res.putObject(prescription.serializeDetail());
 		res.put("doctorName", doctor.getName());
+		res.put("departmentName", doctor.getDepartment());
 		res.put("doctorHospital", doctor.getHospital());
 		res.put("medicines", medicineInfos);
 		return res;
@@ -313,13 +314,18 @@ public class PrescriptionManager {
 	 * 计算药单价格
 	 * 
 	 * @param prescriptionMedicine
+	 * @param medicines
+	 *            医生开的药品
 	 * @param formatMedicines
+	 *            药品信息
 	 * @return
 	 */
-	private BigDecimal calcTotalPrice(List<FormatMedicine> formatMedicines) {
+	private BigDecimal calcTotalPrice(List<PrescriptionMedicine> medicines, List<FormatMedicine> formatMedicines) {
 		BigDecimal res = new BigDecimal(0);
-		for (FormatMedicine fm : formatMedicines) {
-			res = res.add(fm.getPrice());
+		for (PrescriptionMedicine m : medicines) {
+			BigDecimal number = new BigDecimal(m.getNumber());
+			BigDecimal unitPrice = getFormatMedicine(m, formatMedicines).getPrice();
+			res = res.add(unitPrice.multiply(number));
 		}
 		return res;
 	}
@@ -331,7 +337,7 @@ public class PrescriptionManager {
 	 * @param prescription
 	 * @return
 	 */
-	private static String genPresNumber(Doctor doctor, Prescription prescription) {
+	private String genPresNumber(Doctor doctor, Prescription prescription) {
 		char head = (char) (Math.random() * 26 + 65);
 		String number = String.format("%c%d%d%d", head, doctor.getId(), prescription.getRelativeId(), (int) (Math.random() * 900 + 100));
 		return number;
