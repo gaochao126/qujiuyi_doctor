@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jiuyi.doctor.prescription;
+package com.jiuyi.doctor.prescription.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -43,6 +43,8 @@ public class Prescription implements ISerializableObj {
 	private int medicineTakeStatus;
 	private BigDecimal price;
 	private int type;
+	private String remark;// 修改备注
+	private int version;
 
 	// 就诊人信息相关
 	@NotNull
@@ -330,6 +332,22 @@ public class Prescription implements ISerializableObj {
 
 	public void setPatientGender(int patientGender) {
 		this.patientGender = patientGender;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
 	}
 
 }

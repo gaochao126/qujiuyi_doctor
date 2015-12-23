@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jiuyi.doctor.prescription.model.Prescription;
+import com.jiuyi.doctor.prescription.model.PrescriptionMedicine;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.annotations.Param;
 import com.jiuyi.frame.annotations.TokenUser;
@@ -61,11 +63,16 @@ public class PrescriptionController {
 		return manager.prescribe(doctor, prescription, medicines);
 	}
 
-	/**
+	/***
 	 * 更新处方
 	 * 
 	 * @param doctor
-	 * @param id
+	 * @param remark
+	 *            修改注明
+	 * @param prescription
+	 *            处方信息
+	 * @param medicines
+	 *            药品列表
 	 * @return
 	 */
 	@RequestMapping(CMD_UPDATE_PRESCRIPTION)

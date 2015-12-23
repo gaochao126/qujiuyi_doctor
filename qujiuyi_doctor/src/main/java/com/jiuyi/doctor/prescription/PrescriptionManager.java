@@ -6,6 +6,7 @@ package com.jiuyi.doctor.prescription;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +19,12 @@ import com.jiuyi.doctor.chatserver.SystemMsg;
 import com.jiuyi.doctor.chatserver.UserType;
 import com.jiuyi.doctor.patients.v2.PatientServiceV2;
 import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.prescription.model.PatientPres;
+import com.jiuyi.doctor.prescription.model.Prescription;
+import com.jiuyi.doctor.prescription.model.PrescriptionMedicine;
+import com.jiuyi.doctor.prescription.model.PrescriptionRemark;
+import com.jiuyi.doctor.prescription.model.PrescriptionStatus;
+import com.jiuyi.doctor.prescription.model.PrescriptionType;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.util.IdGenerator;
 import com.jiuyi.doctor.yaofang.YaofangService;
@@ -25,6 +32,7 @@ import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.frame.front.FailResult;
 import com.jiuyi.frame.front.MapObject;
 import com.jiuyi.frame.front.ServerResult;
+import com.jiuyi.frame.idgen.IdGeneratorService;
 import com.jiuyi.frame.util.CollectionUtil;
 import com.jiuyi.frame.util.ObjectUtil;
 import com.jiuyi.frame.util.StringUtil;
@@ -44,6 +52,8 @@ public class PrescriptionManager {
 	private @Autowired ChatServerService chatServerService;
 
 	private @Autowired PatientServiceV2 patientService;
+
+	private @Autowired IdGeneratorService idGeneratorService;
 
 	/**
 	 * @param doctor
@@ -108,6 +118,7 @@ public class PrescriptionManager {
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
 		prescription.setPrice(calcTotalPrice(medicines, formatMedicines));
 		prescription.setPayType(0);
+		prescription.setVersion(1);// 1代表当前版本，0表示历史版本
 		dao.insertPrescription(doctor, prescription);
 		dao.insertMedicines(prescription, medicines);
 		String summary = String.format("%s医生为您开了一个处方，正等待您确认", doctor.getName());
@@ -148,14 +159,26 @@ public class PrescriptionManager {
 		if (!checkStock.isSuccess()) {
 			return checkStock;
 		}
+
+		String id = IdGenerator.genId();
 		for (PrescriptionMedicine medicine : medicines) {
-			medicine.setPrescriptionId(prescription.getId());
+			medicine.setPrescriptionId(id);
 		}
+		prescription.setId(id);
+		prescription.setDoctorId(doctor.getId());
 		prescription.setUpdateTime(new Date());
+		prescription.setNumber(old.getNumber());
+		prescription.setCreateTime(old.getCreateTime());
 		prescription.setPrice(calcTotalPrice(medicines, formatMedicines));
 		prescription.setStatus(PrescriptionStatus.PRESCRIBED.ordinal());
-		dao.deletePrescriptionMedicines(doctor, prescription);
-		dao.updatePrescription(doctor, prescription);
+		prescription.setType(PrescriptionType.COMMON.ordinal());
+		prescription.setMedicineTakeStatus(0);
+		prescription.setPayType(0);
+		prescription.setVersion(1);// 1代表当前版本，0表示历史版本
+		// 把之前的记录设为历史版本
+		dao.updateVersionByNumber(old.getNumber());
+		// 插入新纪录
+		dao.insertPrescription(doctor, prescription);
 		dao.insertMedicines(prescription, medicines);
 		String summary = String.format("%s医生重新为您开了一个处方，正等待您确认", doctor.getName());
 		String weixinMsg = doctor.getName() + "：我重新给你开了一张处方，请前去确认\n------\n<a href='%s'>查看处方</a>";
@@ -195,12 +218,9 @@ public class PrescriptionManager {
 		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
 		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
 		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
-		List<Patient> prescriptions = dao.loadPatientsByPresStatus(doctor, toSelectStatus, page, pageSize);
-		Integer count = dao.countPatientsByPresStatus(doctor, toSelectStatus);
-		count = count != null ? count : 0;
+		List<PatientPres> prescriptions = dao.loadPatientsByPresStatus(doctor, toSelectStatus, page, pageSize);
 		ServerResult res = new ServerResult();
 		res.putObjects("list", prescriptions);
-		res.put("count", count);
 		return res;
 	}
 
@@ -250,12 +270,14 @@ public class PrescriptionManager {
 			mo.put("instructions", pm.getInstructions());
 			medicineInfos.add(mo);
 		}
+		List<PrescriptionRemark> remarks = loadPresRemarks(prescription);
 		ServerResult res = new ServerResult();
 		res.putObject(prescription.serializeDetail());
 		res.put("doctorName", doctor.getName());
 		res.put("departmentName", doctor.getDepartment());
 		res.put("doctorHospital", doctor.getHospital());
 		res.put("medicines", medicineInfos);
+		res.putObjects("remarks", remarks);
 		return res;
 	}
 
@@ -274,6 +296,16 @@ public class PrescriptionManager {
 		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
 		List<Patient> prescriptions = dao.searchPrescription(doctor, key, toSelectStatus);
 		res.putObjects("list", prescriptions);
+		return res;
+	}
+
+	private List<PrescriptionRemark> loadPresRemarks(Prescription prescription) {
+		List<PrescriptionRemark> reviewRemark = dao.loadPresReview(prescription);// 审核结果
+		List<PrescriptionRemark> doctorRemark = dao.loadPresRemark(prescription);// 医生备注
+		List<PrescriptionRemark> res = new ArrayList<>();
+		res.addAll(reviewRemark);
+		res.addAll(doctorRemark);
+		Collections.sort(res);
 		return res;
 	}
 
@@ -338,9 +370,10 @@ public class PrescriptionManager {
 	 * @return
 	 */
 	private String genPresNumber(Doctor doctor, Prescription prescription) {
-		char head = (char) (Math.random() * 26 + 65);
-		String number = String.format("%c%d%d%d", head, doctor.getId(), prescription.getRelativeId(), (int) (Math.random() * 900 + 100));
-		return number;
+		char prefix = (char) (Math.random() * 26 + 65);
+		int number = idGeneratorService.genId("docto.pres.number");
+		String res = String.format("%c%d", prefix, number);
+		return res;
 	}
 
 	/***
