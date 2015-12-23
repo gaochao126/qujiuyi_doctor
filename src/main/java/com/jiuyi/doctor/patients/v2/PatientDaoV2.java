@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import com.jiuyi.doctor.patients.v2.model.ContactSrc;
 import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.patients.v2.model.RelativePatient;
 import com.jiuyi.doctor.patients.v2.model.Tag;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.DbBase;
@@ -52,6 +53,7 @@ public class PatientDaoV2 extends DbBase {
 	private static final String SELECT_TAGS = "SELECT * FROM `t_doctor_tags` WHERE `doctorId`=?";
 	private static final String SELECT_TAGS_PATIENTS = "SELECT * FROM `t_patient_tags` WHERE `tagId` IN (#tagIds#)";
 	private static final String SELECT_CONTACT_SRC = "SELECT `src` FROM `t_doctor_contacts` WHERE `doctorId`=? AND `patientId`=?";
+	private static final String SELECT_RELATIVE_PATIENT = "SELECT * FROM `t_patient_relative` WHERE `patientId`=?";
 
 	private static final String ADD_CONTACT = "INSERT `t_doctor_contacts`(`doctorId`,`patientId`,`src`) VALUE(?,?,?) ON DUPLICATE KEY UPDATE `src`=?";
 	private static final String ADD_UNFAMILIAR = "INSERT `t_doctor_unfamiliar_patient`(`doctorId`,`patientId`) VALUE(?,?) ON DUPLICATE KEY UPDATE id=id";
@@ -248,5 +250,9 @@ public class PatientDaoV2 extends DbBase {
 	 */
 	protected Patient loadPatientByPhone(Doctor doctor, String phone) {
 		return queryForObjectDefaultBuilder(SELECT_PATIENT_BY_PHONE, new Object[] { doctor.getId(), phone }, Patient.class);
+	}
+
+	protected List<RelativePatient> loadRelativePatients(Doctor doctor, int patientId) {
+		return queryForList(SELECT_RELATIVE_PATIENT, new Object[]{patientId}, RelativePatient.class);
 	}
 }

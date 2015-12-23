@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.jiuyi.doctor.patients.v2.model.DoctorTags;
 import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.patients.v2.model.RelativePatient;
 import com.jiuyi.doctor.patients.v2.model.Tag;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.ManagerBase;
@@ -164,6 +165,20 @@ public class TagManager extends ManagerBase<Doctor, DoctorTags> {
 		return doctorTags.getTagsByPatientId(patientId);
 	}
 
+	/**
+	 * @param doctor
+	 * @param phone
+	 * @return
+	 */
+	protected ServerResult loadPatientsByPhone(Doctor doctor, String phone) {
+		ServerResult res = new ServerResult();
+		Patient patient = dao.loadPatientByPhone(doctor, phone);
+		List<RelativePatient> relativePatients = dao.loadRelativePatients(doctor, patient.getPatientId());
+		res.putObjects("relativePatients", relativePatients);
+		res.putObject(patient);
+		return res;
+	}
+
 	@Override
 	protected DoctorTags constructInfo(Doctor doctor) {
 		List<Tag> tags = dao.loadTags(doctor);
@@ -178,18 +193,6 @@ public class TagManager extends ManagerBase<Doctor, DoctorTags> {
 			}
 		}
 		return new DoctorTags(tags);
-	}
-
-	/**
-	 * @param doctor
-	 * @param phone
-	 * @return
-	 */
-	protected ServerResult loadPatientsByPhone(Doctor doctor, String phone) {
-		ServerResult res = new ServerResult();
-		Patient patient = dao.loadPatientByPhone(doctor, phone);
-		res.putObject(patient);
-		return res;
 	}
 
 }
