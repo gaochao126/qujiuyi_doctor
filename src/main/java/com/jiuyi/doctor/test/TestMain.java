@@ -8,8 +8,6 @@ import java.util.List;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Object[] arr = Arrays.asList("fds").toArray(new String[1]);
-		System.out.println(arr[0]);
 	}
 
 	public static List<Field> getAllFields(Class<?> clazz) {
