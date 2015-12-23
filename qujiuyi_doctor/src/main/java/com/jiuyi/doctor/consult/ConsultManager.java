@@ -343,8 +343,10 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 	protected ServerResult loadCountInfo(Doctor doctor) {
 		int newPayedCount = dao.countNewPayed(doctor);
 		int chatingCount = dao.countChating(doctor);
+		int newFreeCount = dao.countNewFree(doctor);
 		ServerResult res = new ServerResult();
 		res.put("newPayedCount", newPayedCount);
+		res.put("newFreeCount", newFreeCount);
 		res.put("chatingCount", chatingCount);
 		return res;
 	}

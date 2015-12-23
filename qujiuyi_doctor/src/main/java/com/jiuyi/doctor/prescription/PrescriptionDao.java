@@ -30,20 +30,19 @@ public class PrescriptionDao extends DbBase {
 	private static final String SELECT_PRESCRIPTION = "SELECT * FROM `t_prescription` WHERE `doctorId`=? AND `id`=?";
 	private static final String SELECT_PRESCRIPTION_MEDS = "SELECT * FROM `t_prescription_detail` WHERE `prescriptionId`=?";
 	private static final String SELECT_PRESCRIPTION_DETAIL = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead,patient.phone AS patientPhone,patient.gender AS patientGender," // base
-			+ "review.reviewDoctorName,review.reviewDate,review.presDoctorName,review.presDate " // review info
+			+ "review.reviewDoctorName,review.reviewDate,review.presDoctorName,review.presDate,review.reviewResult,review.presStatus " // review info
 			+ "FROM `t_prescription` pres " // 处方表
-			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
+			+ "JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
 			+ "LEFT JOIN `t_prescription_review` review ON pres.id=review.prescriptionId " // 审核表
 			+ "WHERE pres.`doctorId`=? AND pres.`id`=?";
 	private static final String SELECT_PRESCRIPTION_BY_STATUS = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
 			+ "FROM `t_prescription` pres " // 处方表
-			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
-			+ "WHERE pres.doctorId=:doctorId AND pres.version=1 AND `status` IN (:status) ORDER BY `createTime` DESC LIMIT :startIndex,:size";// where
-	// end
+			+ "JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
+			+ "WHERE pres.doctorId=:doctorId AND pres.version=1 AND pres.`status` IN (:status) ORDER BY `createTime` DESC LIMIT :startIndex,:size";// where
 
 	private static final String SELECT_PRESCRIPTION_BY_PATIENT_AND_STATUS = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
 			+ "FROM `t_prescription` pres " // 处方表
-			+ "LEFT JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
+			+ "JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
 			+ "WHERE pres.doctorId=:doctorId AND pres.version=1 AND pres.`patientId`=:patientId AND `status` IN (:status) ORDER BY `createTime` DESC";// where
 
 	private static final String COUNT_PRESCRIPTION_BY_STATUS = "SELECT COUNT(*) FROM `t_prescription` WHERE doctorId=:doctorId AND version=1 AND `status` in (:status)";
@@ -52,7 +51,9 @@ public class PrescriptionDao extends DbBase {
 			+ "FROM `t_prescription` pres "//
 			+ "JOIN `t_patient` patient ON pres.`patientId`=patient.id "//
 			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.doctorId=pres.doctorId AND remark.patientId=pres.patientId "
-			+ "WHERE pres.`status` IN (:status)  AND pres.version=1 AND pres.doctorId=:doctorId " + "GROUP BY pres.patientId " + "ORDER BY `createTime` DESC " + "LIMIT :startIndex,:pageSize ";
+			+ "WHERE pres.`status` IN (:status)  AND pres.version=1 AND pres.doctorId=:doctorId " 
+			+ "GROUP BY pres.patientId " + "ORDER BY `createTime` DESC " 
+			+ "LIMIT :startIndex,:pageSize ";
 
 	private static final String SERACH_PATIENTS_BY_STATUS = "SELECT pres.id,pres.patientId,patient.name AS name,patient.headPortrait,patient.gender,remark.remark " //
 			+ "FROM `t_prescription` pres "//
@@ -68,8 +69,8 @@ public class PrescriptionDao extends DbBase {
 	private static final String INSERT_SIMPLE_PRESCRIPTION = "INSERT `t_prescription`(`id`,`number`,`doctorId`,`patientId`,`createTime`,`updateTime`,`status`) VALUES(:id,:number,:doctorId,:patientId,:createTime,:updateTime,:status)";
 
 	private static final String INSERT_PRESCRIPTION = "INSERT `t_prescription`"
-			+ "(`id`,`number`,`doctorId`,`patientId`,`relativeId`,`relativeName`,`relativeBirthday`,`relativeGender`,`allergies`,`illness`,`diagnosis`,`createTime`,`updateTime`,`status`,`price`,`type`,`payType`,`remark`,`version`) "
-			+ "VALUES(:id,:number,:doctorId,:patientId,:relativeId,:relativeName,:relativeBirthday,:relativeGender,:allergies,:illness,:diagnosis,:createTime,:updateTime,:status,:price,:type,:payType,:remark,:version) ";
+			+ "(`id`,`number`,`doctorId`,`patientId`,`relativeId`,`relativeName`,`relativeBirthday`,`relativeGender`,`allergies`,`illness`,`diagnosis`,`createTime`,`updateTime`,`status`,`price`,`type`,`payType`,`remark`,`version`,`remarkDate`) "
+			+ "VALUES(:id,:number,:doctorId,:patientId,:relativeId,:relativeName,:relativeBirthday,:relativeGender,:allergies,:illness,:diagnosis,:createTime,:updateTime,:status,:price,:type,:payType,:remark,:version,:updateTime) ";
 
 	private static final String UPDATE_PRESCRIPTION = "UPDATE `t_prescription` SET " + "relativeId=:relativeId," + "relativeName=:relativeName," + "relativeBirthday=:relativeBirthday,"
 			+ "relativeGender=:relativeGender," + "allergies=:allergies," + "illness=:illness," + "diagnosis=:diagnosis," + "updateTime=:updateTime," + "price=:price," + "`status`=:status "

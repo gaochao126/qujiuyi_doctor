@@ -8,6 +8,7 @@ import java.util.Arrays;
 import com.jiuyi.frame.annotations.Column;
 import com.jiuyi.frame.annotations.ConfigPrefix;
 import com.jiuyi.frame.front.MapObject;
+import com.jiuyi.frame.util.StringUtil;
 
 /**
  * 带有药品信息的规格类
@@ -30,6 +31,12 @@ public class FormatMedicine extends Format {
 	@ConfigPrefix("medicine.img.url")
 	private String img;
 
+	@Column("prod_pinyin")
+	private String pinyin;
+
+	@Column("prod_firstABC")
+	private String camel;
+
 	@Override
 	public MapObject serializeToMapObject() {
 		/** 为了让前端少建一个对象。。。这里返回的json格式和medicine detail的格式一样，所以就有了下面你看的想吐槽的代码，（逃 */
@@ -41,6 +48,12 @@ public class FormatMedicine extends Format {
 		res.putObjects("formats", Arrays.asList(super.serializeToMapObject()));
 		return res;
 
+	}
+
+	public boolean like(String key) {
+		return (!StringUtil.isNullOrEmpty(name) && name.contains(key)) 
+			|| (!StringUtil.isNullOrEmpty(pinyin) && pinyin.contains(key)) 
+			|| (!StringUtil.isNullOrEmpty(camel) && camel.contains(key)) ;
 	}
 
 	public String getMedId() {
@@ -73,6 +86,22 @@ public class FormatMedicine extends Format {
 
 	public void setInstructions(String instructions) {
 		this.instructions = instructions;
+	}
+
+	public String getPinyin() {
+		return pinyin;
+	}
+
+	public String getCamel() {
+		return camel;
+	}
+
+	public void setPinyin(String pinyin) {
+		this.pinyin = pinyin;
+	}
+
+	public void setCamel(String camel) {
+		this.camel = camel;
 	}
 
 }

@@ -137,6 +137,9 @@ public class PrescriptionManager {
 	 */
 	@Transactional
 	protected ServerResult updatePrescription(Doctor doctor, Prescription prescription, List<PrescriptionMedicine> medicines) {
+		if (StringUtil.isNullOrEmpty(prescription.getRemark())) {
+			return new FailResult("修改备注remark不能为空");
+		}
 		ServerResult res = checkPrescription(prescription, medicines);
 		if (!res.isSuccess()) {
 			return res;

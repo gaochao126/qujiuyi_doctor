@@ -1,19 +1,24 @@
 package com.jiuyi.doctor.yaofang;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jiuyi.doctor.medicalkit.MedicalKitService;
+import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.yaofang.model.Format;
 import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.doctor.yaofang.model.Medicine;
 import com.jiuyi.frame.front.ServerResult;
+import com.jiuyi.frame.util.CollectionUtil;
 
 @Service
 public class YaofangManager {
 
 	private @Autowired YaofangDao dao;
+	private @Autowired MedicalKitService medicalKitService;
 
 	/**
 	 * @param page
@@ -111,7 +116,22 @@ public class YaofangManager {
 	 * @return
 	 */
 	protected List<FormatMedicine> loadFormatMeds(List<String> formatIds) {
+		if (CollectionUtil.isNullOrEmpty(formatIds)) {
+			return new ArrayList<>();
+		}
 		return dao.loadFormatMeds(formatIds);
 	}
 
+	/**
+	 * @param id
+	 * @return
+	 */
+	protected ServerResult formatDetail(Doctor doctor, String id) {
+		FormatMedicine fm = dao.loadFormatMedicine(id);
+		boolean isInKit = medicalKitService.isInKit(doctor, id);
+		ServerResult res = new ServerResult();
+		res.put("isInKit", isInKit);
+		res.putObject(fm);
+		return res;
+	}
 }

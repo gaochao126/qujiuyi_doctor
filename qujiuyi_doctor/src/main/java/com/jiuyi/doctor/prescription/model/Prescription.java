@@ -64,10 +64,13 @@ public class Prescription implements ISerializableObj {
 	private int patientGender;
 
 	// 审核配药信息
+	private int reviewResult;// 审核结果，1通过 2不通过
 	private String reviewDoctorName;
 	@ReadableDate("yyyy-MM-dd HH:mm:ss")
 	private String reviewDate;
 
+	// 配药状态
+	private int presStatus;// 配药状态 1未配药 2已经配药
 	private String presDoctorName;
 	@ReadableDate("yyyy-MM-dd HH:mm:ss")
 	private String presDate;
@@ -112,6 +115,8 @@ public class Prescription implements ISerializableObj {
 		res.put("reviewDate", this.reviewDate);
 		res.put("presDoctorName", this.presDoctorName);
 		res.put("presDate", this.presDate);
+		res.put("reviewResult", this.reviewResult);
+		res.put("presStatus", this.presStatus);
 		res.put("payType", this.payType);
 		res.put("patientPhone", this.patientPhone);
 		res.put("patientGender", this.patientGender);
@@ -348,6 +353,22 @@ public class Prescription implements ISerializableObj {
 
 	public void setVersion(int version) {
 		this.version = version;
+	}
+
+	public int getReviewResult() {
+		return reviewResult;
+	}
+
+	public void setReviewResult(int reviewResult) {
+		this.reviewResult = reviewResult;
+	}
+
+	public int getPresStatus() {
+		return presStatus;
+	}
+
+	public void setPresStatus(int presStatus) {
+		this.presStatus = presStatus;
 	}
 
 }
