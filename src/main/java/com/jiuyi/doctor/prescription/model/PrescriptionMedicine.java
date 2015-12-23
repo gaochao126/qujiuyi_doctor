@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jiuyi.doctor.prescription;
+package com.jiuyi.doctor.prescription.model;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
