@@ -30,6 +30,9 @@ public class Format implements ISerializableObj {
 	@Column("prod_sku")
 	private int stock;
 
+	@Column("prod_unit")
+	private String unit;
+
 	@Override
 	public MapObject serializeToMapObject() {
 		MapObject res = new MapObject();
@@ -37,6 +40,7 @@ public class Format implements ISerializableObj {
 		res.put("formatName", this.format);
 		res.put("price", this.price);
 		res.put("stock", this.stock);
+		res.put("unit", this.unit);
 		return res;
 	}
 
@@ -70,6 +74,14 @@ public class Format implements ISerializableObj {
 
 	public void setStock(int stock) {
 		this.stock = stock;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 
 }

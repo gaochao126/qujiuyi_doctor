@@ -78,7 +78,7 @@ public class MedicalKitManager {
 	}
 
 	private List<FormatMedicine> myMedicalKit(Doctor doctor, int page, int pageSize) {
-		List<String> formatIds = dao.loadMyList(doctor, 1, Integer.MAX_VALUE);
+		List<String> formatIds = dao.loadMyList(doctor, page, pageSize);
 		List<FormatMedicine> fm = yaofangService.loadFormatMeds(formatIds);
 		return fm;
 	}

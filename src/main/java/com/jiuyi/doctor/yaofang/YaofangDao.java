@@ -22,10 +22,21 @@ public class YaofangDao extends YaofangDB {
 	private static final String SELECT_MEDICINE_FORMATS = "SELECT * FROM `Formats` WHERE `prod_id`=:id";
 	private static final String SELECT_MEDICINE_FORMAT = "SELECT * FROM `Formats` WHERE `format_id`=:id";
 
-	private static final String SELECT_FORMAT_MEDS = "SELECT f.*,m.* FROM `Formats` f,`Products` m WHERE m.prod_id=f.prod_id AND f.`format_id` IN (:ids)";
-	private static final String SELECT_PAGE_FORMAT_MEDS = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id FROM `Formats` f,`Products` m WHERE m.prod_id=f.prod_id ORDER BY f.`prod_sku` DESC LIMIT ?,?";
+	private static final String SELECT_FORMAT_MEDS = "SELECT f.*,m.prod_id,m.prod_name,m.prod_usage,m.img_id,m.prod_pinyin,m.prod_firstABC,s.`shape_name` "//
+			+ "FROM `Formats` f,`Products` m "//
+			+ "JOIN `Shape` s ON s.`shape_id`=m.`shape_id` "//
+			+ "WHERE m.prod_id=f.prod_id AND f.`format_id` IN (:ids)";
+
+	private static final String SELECT_PAGE_FORMAT_MEDS = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id,s.`shape_name` "
+			+ "FROM `Formats` f,`Products` m "
+			+ "JOIN `Shape` s ON s.`shape_id`=m.`shape_id` "//
+			+ "WHERE m.prod_id=f.prod_id ORDER BY f.`prod_sku` DESC LIMIT ?,?";
+	
 	private static final String SEARCH_FORMAT_MEDS = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id FROM `Formats` f,`Products` m WHERE m.prod_id=f.prod_id AND LOWER(m.`prod_name`) LIKE :key";
-	private static final String SELECT_FORMAT_MED = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id FROM `Formats` f,`Products` m WHERE m.prod_id=f.prod_id AND f.format_id=?";
+	private static final String SELECT_FORMAT_MED = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id,m.prod_chandi,s.`shape_name` "//
+			+ "FROM `Formats` f,`Products` m "//
+			+ "JOIN `Shape` s ON s.`shape_id`=m.`shape_id` "//
+			+ "WHERE m.prod_id=f.prod_id AND f.format_id=?";//
 
 	public List<Medicine> searchMedicine(String key) {
 		return queryForList(SEARCH_MEDICINE, new MapSqlParameterSource("key", "%" + key.toLowerCase() + "%"), Medicine.class);

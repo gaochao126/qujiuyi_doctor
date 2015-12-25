@@ -49,7 +49,7 @@ public class DoctorBuilder implements RowMapper<Doctor> {
 		String licenseCardFileName = rs.getString("licenseCardPath");
 		String licenseCardPath = StringUtil.isNullOrEmpty(licenseCardFileName) ? "" : dbConfig.getConfig("doctor.licensecard.path") + licenseCardFileName;
 		int status = rs.getInt("status");
-		int score = rs.getInt("score");
+		int score = rs.getInt("recommendScore");
 		int titleId = rs.getInt("titleId");
 		String skill = rs.getString("skill");
 		String experience = rs.getString("experience");

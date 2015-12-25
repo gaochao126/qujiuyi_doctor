@@ -37,6 +37,12 @@ public class FormatMedicine extends Format {
 	@Column("prod_firstABC")
 	private String camel;
 
+	@Column("shape_name")
+	private String shapeName;
+
+	@Column("prod_chandi")
+	private String producer;
+
 	@Override
 	public MapObject serializeToMapObject() {
 		/** 为了让前端少建一个对象。。。这里返回的json格式和medicine detail的格式一样，所以就有了下面你看的想吐槽的代码，（逃 */
@@ -45,15 +51,15 @@ public class FormatMedicine extends Format {
 		res.put("medicineName", this.name);
 		res.put("instructions", this.instructions);
 		res.put("img", this.img);
+		res.put("shapeName", this.shapeName);
+		res.put("producer", this.producer);
 		res.putObjects("formats", Arrays.asList(super.serializeToMapObject()));
 		return res;
 
 	}
 
 	public boolean like(String key) {
-		return (!StringUtil.isNullOrEmpty(name) && name.contains(key)) 
-			|| (!StringUtil.isNullOrEmpty(pinyin) && pinyin.contains(key)) 
-			|| (!StringUtil.isNullOrEmpty(camel) && camel.contains(key)) ;
+		return (!StringUtil.isNullOrEmpty(name) && name.contains(key)) || (!StringUtil.isNullOrEmpty(pinyin) && pinyin.contains(key)) || (!StringUtil.isNullOrEmpty(camel) && camel.contains(key));
 	}
 
 	public String getMedId() {
@@ -102,6 +108,22 @@ public class FormatMedicine extends Format {
 
 	public void setCamel(String camel) {
 		this.camel = camel;
+	}
+
+	public String getShapeName() {
+		return shapeName;
+	}
+
+	public void setShapeName(String shapeName) {
+		this.shapeName = shapeName;
+	}
+
+	public String getProducer() {
+		return producer;
+	}
+
+	public void setProducer(String producer) {
+		this.producer = producer;
 	}
 
 }
