@@ -33,7 +33,11 @@ public class Prescription implements ISerializableObj {
 	@NotNull
 	private Integer patientId;
 	private int relativeId;
+	@NotEmpty
+	private String sickHistory;
+	@NotEmpty
 	private String allergies;
+	@NotEmpty
 	private String illness;
 	@NotEmpty
 	private String diagnosis;
@@ -52,6 +56,8 @@ public class Prescription implements ISerializableObj {
 	private Integer relativeGender;
 	@NotEmpty
 	private String relativeName;
+	@NotEmpty
+	private String relativeNation;
 	@NotNull
 	private Date relativeBirthday;
 	private String relativeUid;
@@ -369,6 +375,22 @@ public class Prescription implements ISerializableObj {
 
 	public void setPresStatus(int presStatus) {
 		this.presStatus = presStatus;
+	}
+
+	public String getRelativeNation() {
+		return relativeNation;
+	}
+
+	public void setRelativeNation(String relativeNation) {
+		this.relativeNation = relativeNation;
+	}
+
+	public String getSickHistory() {
+		return sickHistory;
+	}
+
+	public void setSickHistory(String sickHistory) {
+		this.sickHistory = sickHistory;
 	}
 
 }

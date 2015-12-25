@@ -14,6 +14,7 @@ import com.jiuyi.doctor.patients.v2.model.RelativePatient;
 import com.jiuyi.doctor.patients.v2.model.Tag;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.ManagerBase;
+import com.jiuyi.frame.front.FailResult;
 import com.jiuyi.frame.front.MapObject;
 import com.jiuyi.frame.front.ResultConst;
 import com.jiuyi.frame.front.ServerResult;
@@ -173,6 +174,9 @@ public class TagManager extends ManagerBase<Doctor, DoctorTags> {
 	protected ServerResult loadPatientsByPhone(Doctor doctor, String phone) {
 		ServerResult res = new ServerResult();
 		Patient patient = dao.loadPatientByPhone(doctor, phone);
+		if (patient == null) {
+			return new FailResult("没有找到该手机号对应的用户");
+		}
 		List<RelativePatient> relativePatients = dao.loadRelativePatients(doctor, patient.getPatientId());
 		res.putObjects("relativePatients", relativePatients);
 		res.putObject(patient);
