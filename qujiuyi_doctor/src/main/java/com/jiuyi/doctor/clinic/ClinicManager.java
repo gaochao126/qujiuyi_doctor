@@ -44,7 +44,7 @@ public class ClinicManager extends ManagerBase<Doctor, Clinic> {
 	@Autowired
 	ConsultService chatService;
 
-	private static final String DEFAULT_SLOGAN = "心系群众，以爱服人。 ";
+	private static final String DEFAULT_SLOGAN = "心系群众，以爱服人 ";
 
 	/** 医生注册完成后自动创建一个诊所 */
 	protected ServerResult openClinic(Doctor doctor) {
