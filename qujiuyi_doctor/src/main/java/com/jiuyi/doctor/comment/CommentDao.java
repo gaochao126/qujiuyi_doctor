@@ -11,7 +11,9 @@ import com.jiuyi.frame.base.DbBase;
 @Repository
 public class CommentDao extends DbBase {
 
-	private static final String SELECT_COMMENT_TYPE_SERVICEID = "SELECT * FROM `t_doctor_comment` WHERE `serviceType`=? AND `serviceId`=? AND `doctorId`=?";
+	private static final String SELECT_COMMENT_TYPE_SERVICEID = "SELECT c.*,p.`name` as patientName,p.`gender` as patientGender, p.`headPortrait`as patientHead,p.`birthday` as patientAge "
+			+ "FROM `t_doctor_comment` c,`t_patient` p "
+			+ "WHERE p.id=c.patientId AND c.`serviceType`=? AND c.`serviceId`=? AND c.`doctorId`=?";
 
 	private static final String SELECT_EVALUATION_PAGE = "SELECT c.*,p.`name` as patientName,p.`gender` as patientGender, p.`headPortrait`as patientHead,p.`birthday` as patientAge FROM `t_doctor_comment` c,`t_patient` p WHERE p.`id`=c.`patientId` AND c.`doctorId`=? ORDER BY c.`commentTime` DESC LIMIT ?,?";
 	private static final String SELECT_EVALUATION_COUNT = "SELECT COUNT(`id`) FROM `t_doctor_comment` WHERE `commentTime`>? AND `doctorId`=?";

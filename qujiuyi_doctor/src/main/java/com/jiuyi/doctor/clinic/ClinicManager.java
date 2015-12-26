@@ -10,7 +10,6 @@ import com.jiuyi.doctor.appointment.AppointmentService;
 import com.jiuyi.doctor.clinic.model.Clinic;
 import com.jiuyi.doctor.clinic.model.DoctorClinic;
 import com.jiuyi.doctor.consult.ConsultService;
-import com.jiuyi.doctor.hospitals.model.DoctorTitle;
 import com.jiuyi.doctor.personal.PersonalService;
 import com.jiuyi.doctor.prescribe.PrescribeService;
 import com.jiuyi.doctor.user.UserService;
@@ -106,7 +105,7 @@ public class ClinicManager extends ManagerBase<Doctor, Clinic> {
 	}
 
 	private Clinic openNewClinic(Doctor doctor) {
-		String name = doctor.getName() + DoctorTitle.getTitleNameById(doctor.getTitleId()) + "工作室";
+		String name = doctor.getName() + doctor.getDepartment() + "工作室";
 		Clinic clinic = new Clinic(name, DEFAULT_SLOGAN);
 		int clinicId = dao.newClinic(doctor, clinic);
 		clinic.setId(clinicId);

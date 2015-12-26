@@ -107,9 +107,9 @@ public class ConsultDao extends DbBase {
 	// 历史记录搜索end
 
 	// 咨询中，付费新申请，免费申请count
-	private static final String SELECT_CHATING_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` WHERE `doctorId`=? AND `consultStatus`=1";
-	private static final String SELECT_NEW_PAYED_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` WHERE `doctorId`=? AND `acceptStatus`=0 AND `consultStatus`=0 AND `payStatus`=1 AND `type` IN(1,2)";
-	private static final String SELECT_NEW_FREE_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` WHERE `acceptStatus`=0 AND `consultStatus`=0 AND `type`=0";
+	private static final String SELECT_CHATING_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` consult,`t_patient` patient  WHERE consult.patientId = patient.id AND  consult.`consultStatus`=1 AND consult.`doctorId`=?";
+	private static final String SELECT_NEW_PAYED_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` consult,`t_patient` patient  WHERE consult.patientId = patient.id AND  consult.`acceptStatus`=0 AND  consult.`consultStatus`=0 AND  consult.`payStatus`=1 AND  consult.`type` IN(1,2) AND consult.`doctorId`=? ";
+	private static final String SELECT_NEW_FREE_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` consult,`t_patient` patient WHERE consult.patientId = patient.id AND consult.`acceptStatus`=0 AND consult.`consultStatus`=0 AND consult.`type`=0";
 	// 咨询中，付费新申请count end
 
 	private static final String SELECT_UNREAD_MSG = "SELECT `sender`,`chatType`,`chatContent`,`chatTime`,`serviceId` FROM `t_chat_his` WHERE `receiver`=? AND `receiverType`=1 AND `readStatus`=0";
