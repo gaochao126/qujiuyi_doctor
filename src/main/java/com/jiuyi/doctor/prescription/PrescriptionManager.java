@@ -197,7 +197,8 @@ public class PrescriptionManager {
 	 * @return
 	 */
 	protected ServerResult loadHandlingList(Doctor doctor, int page, int pageSize) {
-		List<Integer> statusList = Arrays.asList(PrescriptionStatus.PRESCRIBED.ordinal());
+		/* 正在处理的处方包括：1需要修改的，2已经开完药但是没有审核或者付款的 */
+		List<Integer> statusList = Arrays.asList(PrescriptionStatus.NEED_EDIT.ordinal(), PrescriptionStatus.PRESCRIBED.ordinal());
 		List<Prescription> prescriptions = dao.loadByStatus(doctor, statusList, page, pageSize);
 		Integer count = dao.loadHandlingCount(doctor);
 		ServerResult res = new ServerResult();

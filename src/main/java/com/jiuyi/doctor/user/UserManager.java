@@ -104,8 +104,8 @@ public class UserManager implements IUserManager {
 		this.LICENSE_CARD_FILE_PATH = dbConfig.getConfig("doctor.licenseCardPath");
 		this.EXPIRE_TIME = NumberUtil.parseInt(dbConfig.getConfig("doctor.expireTime")) * 24 * 60 * 60 * 1000;
 
-		this.name_update.put("skill", new UpdateSkill("skill", userDao, 150));
-		this.name_update.put("experience", new UpdateSkill("experience", userDao, 150));
+		this.name_update.put("skill", new UpdateSkill("skill", userDao, 5000));
+		this.name_update.put("experience", new UpdateSkill("experience", userDao, 5000));
 		// this.name_update.put("gender", new UpdateUserInfo("gender",
 		// userDao));
 		// this.name_update.put("officePhone", new UpdateUserInfo("officePhone",
@@ -123,7 +123,7 @@ public class UserManager implements IUserManager {
 		jobService.submitJob(new JobContext(JobType.SCHEDULED, new ClearRunnable(), 5, 5, TimeUnit.SECONDS));
 
 		// 测试专用
-		Doctor doctor = userDao.loadDoctorByPhone("15823566822");
+		Doctor doctor = userDao.loadDoctorByPhone("18725850672");
 		String access_token = "123456";
 		putDoctor(access_token, doctor);
 		doctor.setChannelId("5443637761324926995");
