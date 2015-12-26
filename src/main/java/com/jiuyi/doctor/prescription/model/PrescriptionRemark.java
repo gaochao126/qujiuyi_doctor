@@ -3,15 +3,10 @@
  */
 package com.jiuyi.doctor.prescription.model;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
-
-import org.springframework.jdbc.core.RowMapper;
-
-import com.jiuyi.frame.front.ISerializableObj;
+import com.jiuyi.frame.annotations.Column;
+import com.jiuyi.frame.annotations.ReadableDate;
 import com.jiuyi.frame.front.MapObject;
-import com.jiuyi.frame.util.DateUtil;
+import com.jiuyi.frame.util.StringUtil;
 
 /**
  * 处方的备注，包括审核药师的审核结果和医生的修改批注
@@ -19,81 +14,90 @@ import com.jiuyi.frame.util.DateUtil;
  * @author xutaoyang
  *
  */
-public class PrescriptionRemark implements Comparable<PrescriptionRemark>, ISerializableObj {
+public class PrescriptionRemark {
 
-	public static final RowMapper<PrescriptionRemark> builder = new RowMapper<PrescriptionRemark>() {
-
-		@Override
-		public PrescriptionRemark mapRow(ResultSet rs, int rowNum) throws SQLException {
-			String username = rs.getString("username");
-			int userType = rs.getInt("userType");
-			String content = rs.getString("content");
-			Date remarkDate = rs.getDate("remarkDate");
-			return new PrescriptionRemark(username, remarkDate, userType, content);
+	/** 医生备注 */
+	public MapObject doctorRemark() {
+		if (StringUtil.isNullOrEmpty(this.remark)) {
+			return null;
 		}
-	};
-	private String username;
-	private Date remarkDate;
-	private int userType;
-	private String content;
-
-	public PrescriptionRemark(String username, Date remarkDate, int userType, String content) {
-		this.username = username;
-		this.remarkDate = remarkDate;
-		this.userType = userType;
-		this.content = content;
+		MapObject res = new MapObject();
+		res.put("content", this.remark);
+		res.put("username", this.doctorName);
+		res.put("date", this.remarkDate);
+		res.put("userType", 1);
+		return res;
 	}
 
-	public String getUsername() {
-		return username;
+	/** 审核医师回复 */
+	public MapObject reviewRemark() {
+		if (StringUtil.isNullOrEmpty(this.reviewFailReason)) {
+			return null;
+		}
+		MapObject res = new MapObject();
+		res.put("content", this.reviewFailReason);
+		res.put("username", this.reviewDoctorName);
+		res.put("date", this.remarkDate);
+		res.put("userType", 2);
+		return res;
 	}
 
-	public Date getRemarkDate() {
+	private String remark;
+	@ReadableDate("yyyy-MM-dd HH:mm:ss")
+	private String remarkDate;
+	private String reviewFailReason;
+	@ReadableDate("yyyy-MM-dd HH:mm:ss")
+	private String reviewDate;
+	private String reviewDoctorName;
+	@Column("name")
+	private String doctorName;
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public String getReviewFailReason() {
+		return reviewFailReason;
+	}
+
+	public String getReviewDate() {
+		return reviewDate;
+	}
+
+	public String getReviewDoctorName() {
+		return reviewDoctorName;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public void setReviewFailReason(String reviewFailReason) {
+		this.reviewFailReason = reviewFailReason;
+	}
+
+	public void setReviewDate(String reviewDate) {
+		this.reviewDate = reviewDate;
+	}
+
+	public void setReviewDoctorName(String reviewDoctorName) {
+		this.reviewDoctorName = reviewDoctorName;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getRemarkDate() {
 		return remarkDate;
 	}
 
-	public int getUserType() {
-		return userType;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setRemarkDate(Date remarkDate) {
+	public void setRemarkDate(String remarkDate) {
 		this.remarkDate = remarkDate;
-	}
-
-	public void setUserType(int userType) {
-		this.userType = userType;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	@Override
-	public int compareTo(PrescriptionRemark o) {
-		return this.remarkDate.compareTo(o.getRemarkDate());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jiuyi.frame.front.ISerializableObj#serializeToMapObject()
-	 */
-	@Override
-	public MapObject serializeToMapObject() {
-		MapObject res = new MapObject();
-		res.put("username", this.username);
-		res.put("userType", this.userType);
-		res.put("content", this.content);
-		res.put("date", DateUtil.date2Str(this.getRemarkDate()));
-		return res;
 	}
 
 }

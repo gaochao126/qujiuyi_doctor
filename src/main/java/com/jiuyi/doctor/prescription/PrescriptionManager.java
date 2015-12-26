@@ -6,7 +6,6 @@ package com.jiuyi.doctor.prescription;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -273,7 +272,7 @@ public class PrescriptionManager {
 			mo.put("instructions", pm.getInstructions());
 			medicineInfos.add(mo);
 		}
-		List<PrescriptionRemark> remarks = loadPresRemarks(prescription);
+		List<MapObject> remarks = loadPresRemarks(prescription);
 		ServerResult res = new ServerResult();
 		res.putObject(prescription.serializeDetail());
 		res.put("doctorName", doctor.getName());
@@ -302,13 +301,19 @@ public class PrescriptionManager {
 		return res;
 	}
 
-	private List<PrescriptionRemark> loadPresRemarks(Prescription prescription) {
-		List<PrescriptionRemark> reviewRemark = dao.loadPresReview(prescription);// 审核结果
-		List<PrescriptionRemark> doctorRemark = dao.loadPresRemark(prescription);// 医生备注
-		List<PrescriptionRemark> res = new ArrayList<>();
-		res.addAll(reviewRemark);
-		res.addAll(doctorRemark);
-		Collections.sort(res);
+	private List<MapObject> loadPresRemarks(Prescription prescription) {
+		List<PrescriptionRemark> remarks = dao.loadPresRemark(prescription);
+		List<MapObject> res = new ArrayList<>();
+		for (PrescriptionRemark remark : remarks) {
+			MapObject doctorRemark = remark.doctorRemark();// 医生备注
+			MapObject reviewRemark = remark.reviewRemark();// 审核备注
+			if (reviewRemark != null) {
+				res.add(reviewRemark);
+			}
+			if (doctorRemark != null) {
+				res.add(doctorRemark);
+			}
+		}
 		return res;
 	}
 
