@@ -73,7 +73,7 @@ public class ConsultFinish {
 			params.add(consultMap);
 		}
 		ChatServerRequestEntity req = new ChatServerRequestEntity("expireConsult");
-		req.putParam("consults", params);
+		req.putParam("params", params);
 		chatServerService.postMsg(req);
 	}
 
