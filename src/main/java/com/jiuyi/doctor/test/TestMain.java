@@ -9,9 +9,7 @@ import java.util.List;
 public class TestMain {
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
-		String test = "791医生3: 我重新���你开了一张处方，请前去确认";
-
-		System.err.println(new String(test.getBytes(), "UTF-8"));
+		System.err.println(new Object());
 	}
 
 	public static List<Field> getAllFields(Class<?> clazz) {

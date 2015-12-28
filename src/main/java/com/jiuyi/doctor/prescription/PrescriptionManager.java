@@ -183,7 +183,7 @@ public class PrescriptionManager {
 		dao.insertPrescription(doctor, prescription);
 		dao.insertMedicines(prescription, medicines);
 		String summary = String.format("%s医生重新为您开了一个处方，正等待您确认", doctor.getName());
-		String weixinMsg = String.format("%s我重新给你开了一张处方，请前去确认\n------\n<a href='%s'>查看处方</a>", doctor.getName());
+		String weixinMsg = "#name#我重新给你开了一张处方，请前去确认\n------\n<a href='%s'>查看处方</a>".replace("#name#", doctor.getName());
 		List<String> url = Arrays.asList("prescription_prescriptionDetail.action?params.id=" + prescription.getId());
 		SystemMsg systemMsg = new SystemMsg(UserType.PATIENT, prescription.getPatientId(), summary, prescription, weixinMsg, url);
 		chatServerService.postMsg(systemMsg);
