@@ -11,7 +11,6 @@ import com.jiuyi.doctor.hospitals.DepartmentService;
 import com.jiuyi.doctor.hospitals.HospitalService;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.conf.DBConfig;
-import com.jiuyi.frame.util.StringUtil;
 
 /**
  * @Author: xutaoyang @Date: 下午2:03:43
@@ -41,16 +40,13 @@ public class DoctorBuilder implements RowMapper<Doctor> {
 		int hospitalId = rs.getInt("hospitalId");
 		int departmentId = rs.getInt("departmentId");
 		String headFileName = rs.getString("head");
-		String headPath = StringUtil.isNullOrEmpty(headFileName) ? "" : dbConfig.getConfig("doctor.head.path") + headFileName;
 		String idCardFileName = rs.getString("idCardPath");
-		String idCardPath = StringUtil.isNullOrEmpty(idCardFileName) ? "" : dbConfig.getConfig("doctor.idcard.path") + idCardFileName;
 		String titleCardFileName = rs.getString("titleCardPath");
-		String titleCardPath = StringUtil.isNullOrEmpty(titleCardFileName) ? "" : dbConfig.getConfig("doctor.titlecard.path") + titleCardFileName;
 		String licenseCardFileName = rs.getString("licenseCardPath");
-		String licenseCardPath = StringUtil.isNullOrEmpty(licenseCardFileName) ? "" : dbConfig.getConfig("doctor.licensecard.path") + licenseCardFileName;
 		int status = rs.getInt("status");
 		int score = rs.getInt("recommendScore");
 		int titleId = rs.getInt("titleId");
+		String officePhone = rs.getString("officePhone");
 		String skill = rs.getString("skill");
 		String experience = rs.getString("experience");
 		String hospital = hospitalService.getNameById(hospitalId);
@@ -59,9 +55,15 @@ public class DoctorBuilder implements RowMapper<Doctor> {
 		String graduationSchool = rs.getString("graduationSchool");
 		int praisedNum = rs.getInt("praisedNum");
 		String qrCodeImg = rs.getString("qrCodeImg");
-		Doctor doctor = new Doctor(id, phone, name, hospital, department, headPath, idCardPath, titleCardPath, licenseCardPath, status, score, titleId, skill, experience, position, graduationSchool,
-				praisedNum, qrCodeImg);
+		int offlineId = rs.getInt("offlineId");
+		int editStatus = rs.getInt("editStatus");
+		Doctor doctor = new Doctor(id, phone, name, hospital, department, headFileName, idCardFileName, titleCardFileName, licenseCardFileName, status, score, titleId, skill, experience, position,
+				graduationSchool, praisedNum, qrCodeImg);
 		doctor.setHospitalId(hospitalId);
+		doctor.setOfflineId(offlineId);
+		doctor.setEditStatus(editStatus);
+		doctor.setDepartmentId(departmentId);
+		doctor.setOfficePhone(officePhone);
 		return doctor;
 
 	}
