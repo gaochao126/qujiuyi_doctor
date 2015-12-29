@@ -73,7 +73,7 @@ public class ConsultDao extends DbBase {
 
 	private static final String SELECT_FREE_CHAT = CONSULT_FULL_INFO
 			/* 免费咨询 ,不需要订单信息 */
-			+ "WHERE consult.`acceptStatus`=0 AND `type`=0 LIMIT ?,?";
+			+ "WHERE consult.`acceptStatus`=0 AND consult.`consultStatus`=0 AND `type`=0 LIMIT ?,?";
 
 	// 历史记录begin
 	private static final String FINISED_PATIENT_LIST = "SELECT distinct(c.patientId),p.name,p.gender,p.headPortrait,p.birthday AS age,r.remark,r.note "//
