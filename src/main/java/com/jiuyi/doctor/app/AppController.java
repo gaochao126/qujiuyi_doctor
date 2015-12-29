@@ -27,6 +27,7 @@ public class AppController extends ControllerBase {
 	private static final String CMD = "app_";
 	private static final String CMD_IOS = CMD + "ios";
 	private static final String CMD_ANDROID = CMD + "android_version";
+	private static final String CMD_KEFU_PHONE = "app_kefu_phone";
 
 	@Autowired
 	private DBConfig dbConfig;
@@ -48,6 +49,14 @@ public class AppController extends ControllerBase {
 		res.put("url", dbConfig.getConfigFromDB("doctor.app.android.download.url"));
 		res.put("version", dbConfig.getConfigFromDB("doctor.app.android.version"));
 		res.put("forceUpdate", dbConfig.getConfigFromDB("doctor.app.android.forceUpdate"));
+		return res;
+	}
+
+	@RequestMapping(CMD_KEFU_PHONE)
+	@ResponseBody
+	public ServerResult kefuPhone() {
+		ServerResult res = new ServerResult();
+		res.put("kefuPhone", dbConfig.getConfigFromDB("kefu.phone"));
 		return res;
 	}
 
