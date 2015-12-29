@@ -3,7 +3,9 @@ package com.jiuyi.doctor.user.model;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.jiuyi.doctor.hospitals.model.DoctorTitle;
+import com.jiuyi.frame.conf.DBConfigStatic;
 import com.jiuyi.frame.front.MapObject;
+import com.jiuyi.frame.util.StringUtil;
 import com.jiuyi.frame.zervice.user.model.User;
 
 /**
@@ -29,6 +31,9 @@ public class Doctor extends User {
 	private String titleCardPath;
 	private String licenseCardPath;
 
+	/** 线下医生id */
+	private int offlineId;
+	private int editStatus;
 	private int status;
 	private int score;
 	private Integer titleId; // 职称
@@ -38,6 +43,7 @@ public class Doctor extends User {
 	private String graduationSchool;// 毕业院校
 
 	private int hospitalId;
+	private int departmentId;
 	private int praisedNum;// 被赞次数
 	private String qrCodeImg;// 二维码图片地址
 
@@ -79,6 +85,10 @@ public class Doctor extends User {
 
 	@Override
 	public MapObject serializeToMapObject() {
+		String headPath = StringUtil.isNullOrEmpty(this.headPath) ? "" : DBConfigStatic.getConfig("doctor.head.path") + this.headPath;
+		String idCardPath = StringUtil.isNullOrEmpty(this.idCardPath) ? "" : DBConfigStatic.getConfig("doctor.idcard.path") + this.idCardPath;
+		String titleCardPath = StringUtil.isNullOrEmpty(this.titleCardPath) ? "" : DBConfigStatic.getConfig("doctor.titlecard.path") + this.titleCardPath;
+		String licenseCardPath = StringUtil.isNullOrEmpty(this.licenseCardPath) ? "" : DBConfigStatic.getConfig("doctor.licensecard.path") + this.licenseCardPath;
 		MapObject res = new MapObject();
 		res.put("id", this.id);
 		res.put("phone", this.phone);
@@ -86,10 +96,10 @@ public class Doctor extends User {
 		res.put("hospital", this.hospital);
 		res.put("department", this.department);
 		res.put("officePhone", this.officePhone);
-		res.put("head", this.headPath);
-		res.put("idCardPath", this.idCardPath);
-		res.put("titleCardPath", this.titleCardPath);
-		res.put("licenseCardPath", this.licenseCardPath);
+		res.put("head", headPath);
+		res.put("idCardPath", idCardPath);
+		res.put("titleCardPath", titleCardPath);
+		res.put("licenseCardPath", licenseCardPath);
 		res.put("status", this.status);
 		res.put("score", this.score);
 		res.put("title", DoctorTitle.getTitleNameById(this.titleId));
@@ -312,4 +322,29 @@ public class Doctor extends User {
 		this.channelId = doctor.getChannelId();
 		this.deviceType = doctor.getDeviceType();
 	}
+
+	public int getEditStatus() {
+		return editStatus;
+	}
+
+	public void setEditStatus(int editStatus) {
+		this.editStatus = editStatus;
+	}
+
+	public int getOfflineId() {
+		return offlineId;
+	}
+
+	public void setOfflineId(int offlineId) {
+		this.offlineId = offlineId;
+	}
+
+	public int getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(int departmentId) {
+		this.departmentId = departmentId;
+	}
+
 }

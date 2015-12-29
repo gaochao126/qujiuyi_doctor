@@ -26,6 +26,7 @@ import com.jiuyi.doctor.praise.PraiseService;
 import com.jiuyi.doctor.user.model.BeforeLogin;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.user.model.DoctorStatus;
+import com.jiuyi.doctor.user.model.EditStatus;
 import com.jiuyi.doctor.user.model.FillDoctor;
 import com.jiuyi.doctor.user.update.UpdateSkill;
 import com.jiuyi.doctor.user.update.UpdateUserInfo;
@@ -302,6 +303,9 @@ public class UserManager implements IUserManager {
 		newDoctor.setTitleCardPath(titleFileName);
 		newDoctor.setLicenseCardPath(licenseFileName);
 		Doctor afterFill = userDao.fillDoctor(doctor, newDoctor);
+		/* 插入认证信息 */
+		newDoctor.setType(0);
+		userDao.insertAuth(doctor, newDoctor);
 		afterFill.copyInfo(doctor);
 		putDoctor(doctor.getAccess_token(), afterFill);
 		// 默认开一个诊所和账户
@@ -334,16 +338,6 @@ public class UserManager implements IUserManager {
 		return new ServerResult();
 	}
 
-	private void putDoctor(String token, Doctor doctor) {
-		String oldToken = id_token.get(doctor.getId());
-		if (oldToken != null) {
-			token_doctor.remove(oldToken);
-		}
-		token_doctor.put(token, doctor);
-		id_doctor.put(doctor.getId(), doctor);
-		id_token.put(doctor.getId(), token);
-	}
-
 	protected void modifyPhone(Doctor doctor, String phone) {
 		userDao.modifyPhone(doctor, phone);
 		doctor.setPhone(phone);
@@ -359,7 +353,19 @@ public class UserManager implements IUserManager {
 		}
 		String headFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(head));
 		FileUtil.writeFile(HERD_FILE_PATH, headFileName, head);
-		userDao.updateHeadPath(doctor, headFileName);
+		FillDoctor authDoctor = new FillDoctor();
+		authDoctor.setDoctorId(doctor.getId());
+		authDoctor.setType(1);
+		authDoctor.setName(doctor.getName());
+		authDoctor.setHeadPath(headFileName);
+		authDoctor.setHospitalId(doctor.getHospitalId());
+		authDoctor.setDepartmentId(doctor.getDepartmentId());
+		authDoctor.setOfficePhone(doctor.getOfficePhone());
+		authDoctor.setIdCardPath(doctor.getIdCardPath());
+		authDoctor.setTitleCardPath(doctor.getTitleCardPath());
+		authDoctor.setLicenseCardPath(doctor.getLicenseCardPath());
+		userDao.insertAuth(doctor, authDoctor);
+		userDao.updateEditStatus(doctor, EditStatus.EDITED);
 		return new ServerResult();
 	}
 
@@ -368,6 +374,16 @@ public class UserManager implements IUserManager {
 		Integer doctorId = doctor.getId();
 		res.put("easemobusername", StringUtil.md5Str(StringUtil.md5Str(String.valueOf(doctorId))));
 		res.put("easemobpassword", StringUtil.md5Str(String.valueOf(doctorId)));
+	}
+
+	private void putDoctor(String token, Doctor doctor) {
+		String oldToken = id_token.get(doctor.getId());
+		if (oldToken != null) {
+			token_doctor.remove(oldToken);
+		}
+		token_doctor.put(token, doctor);
+		id_doctor.put(doctor.getId(), doctor);
+		id_token.put(doctor.getId(), token);
 	}
 
 	class ClearRunnable implements Runnable {

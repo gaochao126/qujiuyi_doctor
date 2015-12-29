@@ -13,6 +13,8 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 public class FillDoctor {
 
+	private int doctorId;
+
 	@NotEmpty
 	private String name;
 	@NotNull
@@ -35,6 +37,8 @@ public class FillDoctor {
 	private String idCardPath;
 	private String titleCardPath;
 	private String licenseCardPath;
+
+	private int type;
 
 	public String getName() {
 		return name;
@@ -138,6 +142,22 @@ public class FillDoctor {
 
 	public void setExperience(String experience) {
 		this.experience = experience;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public int getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(int doctorId) {
+		this.doctorId = doctorId;
 	}
 
 }
