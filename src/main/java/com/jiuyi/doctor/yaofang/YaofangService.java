@@ -29,4 +29,5 @@ public class YaofangService {
 	public List<FormatMedicine> loadFormatMeds(List<String> formatIds) {
 		return manager.loadFormatMeds(formatIds);
 	}
+
 }
