@@ -38,6 +38,7 @@ public class UserDAO extends DbBase {
 	@Autowired
 	RecognizeDoctorBuilder recognizeDoctorBuilder;
 
+	private static final String SELECT_BY_TOKEN = "SELECT * FROM `t_doctor` where `token`=?";
 	private static final String SELECT_BY_PHONE = "SELECT * FROM `t_doctor` where `phone`=?";
 	private static final String SELECT_PHONE = "SELECT count(`id`) FROM `t_doctor` where `phone`=?";
 	private static final String SELECT_PASSWORD = "SELECT `password` FROM `t_doctor` where `phone`=?";
@@ -56,6 +57,7 @@ public class UserDAO extends DbBase {
 	private static final String UPDATE_HEAD = "UPDATE `t_doctor` SET `head`=? WHERE `id`=?";
 	private static final String UPDATE_QRCODE = "UPDATE `t_doctor` SET `qrCodeImg`=? WHERE `id`=?";
 	private static final String UPDATE_EIDT_STATUS = "UPDATE `t_doctor` SET `editStatus`=? WHERE `id`=?";
+	private static final String UPDATE_TOKEN = "UPDATE `t_doctor` SET `token`=? WHERE `id`=?";
 
 	public Doctor updateSingleCol(Doctor doctor, String dbField, Object value) {
 		String sql = UPDATE_COL.replace("#col#", dbField);
@@ -153,5 +155,24 @@ public class UserDAO extends DbBase {
 
 	protected void updateEditStatus(Doctor doctor, EditStatus editStatus) {
 		jdbc.update(UPDATE_EIDT_STATUS, editStatus.ordinal(), doctor.getId());
+	}
+
+	protected void setToken(Doctor doctor) {
+		jdbc.update(UPDATE_TOKEN, doctor.getAccess_token(), doctor.getId());
+	}
+
+	/**
+	 * @param token
+	 * @return
+	 */
+	public Doctor loadDoctorByToken(String token) {
+		return queryForObject(SELECT_BY_TOKEN, new Object[] { token }, doctorBuilder);
+	}
+
+	/**
+	 * @param doctor
+	 */
+	protected void removeToken(Doctor doctor) {
+		jdbc.update(UPDATE_TOKEN, "", doctor.getId());
 	}
 }
