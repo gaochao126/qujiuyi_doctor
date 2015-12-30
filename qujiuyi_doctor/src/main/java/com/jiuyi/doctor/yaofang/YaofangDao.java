@@ -27,12 +27,16 @@ public class YaofangDao extends YaofangDB {
 			+ "JOIN `Shape` s ON s.`shape_id`=m.`shape_id` "//
 			+ "WHERE m.prod_id=f.prod_id AND f.`format_id` IN (:ids)";
 
-	private static final String SELECT_PAGE_FORMAT_MEDS = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id,s.`shape_name` "
-			+ "FROM `Formats` f,`Products` m "
+	private static final String SELECT_PAGE_FORMAT_MEDS = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id,s.`shape_name` " + "FROM `Formats` f,`Products` m "
 			+ "JOIN `Shape` s ON s.`shape_id`=m.`shape_id` "//
 			+ "WHERE m.prod_id=f.prod_id ORDER BY f.`prod_sku` DESC LIMIT ?,?";
-	
-	private static final String SEARCH_FORMAT_MEDS = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id FROM `Formats` f,`Products` m WHERE m.prod_id=f.prod_id AND LOWER(m.`prod_name`) LIKE :key";
+
+	private static final String SEARCH_FORMAT_MEDS = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id "//
+			+ "FROM `Formats` f,`Products` m "//
+			+ "WHERE m.prod_id=f.prod_id "//
+			+ "AND (LOWER(m.`prod_name`) LIKE :key "//
+			+ "OR LOWER(m.`prod_pinyin`) LIKE :key "//
+			+ "OR LOWER(m.`prod_firstABC`) LIKE :key) ";
 	private static final String SELECT_FORMAT_MED = "SELECT f.*,m.prod_name,m.prod_usage,m.img_id,m.prod_chandi,s.`shape_name` "//
 			+ "FROM `Formats` f,`Products` m "//
 			+ "JOIN `Shape` s ON s.`shape_id`=m.`shape_id` "//
@@ -79,7 +83,7 @@ public class YaofangDao extends YaofangDB {
 	 * @param pageSize
 	 * @return
 	 */
-	protected List<Medicine> loadMedicines(int page, int pageSize) {
+	public List<Medicine> loadMedicines(int page, int pageSize) {
 		return queryForList(SELECT_PAGE_MEDICINES, new Object[] { startIndex(page, pageSize), pageSize }, Medicine.class);
 	}
 
@@ -96,7 +100,7 @@ public class YaofangDao extends YaofangDB {
 	 * @param pageSize
 	 * @return
 	 */
-	protected List<FormatMedicine> loadFormatMedicines(int page, int pageSize) {
+	public List<FormatMedicine> loadFormatMedicines(int page, int pageSize) {
 		return queryForList(SELECT_PAGE_FORMAT_MEDS, new Object[] { startIndex(page, pageSize), pageSize }, FormatMedicine.class);
 	}
 
@@ -110,6 +114,14 @@ public class YaofangDao extends YaofangDB {
 
 	protected FormatMedicine loadFormatMedicine(String id) {
 		return queryForObjectDefaultBuilder(SELECT_FORMAT_MED, new Object[] { id }, FormatMedicine.class);
+	}
+
+	/**
+	 * @param updateArgs
+	 */
+	public void updatePinYin(List<Object[]> updateArgs) {
+		String sql = "update `Products` set `prod_pinyin`=?,`prod_firstABC`=? where `prod_id`=?";
+		jdbc.batchUpdate(sql, updateArgs);
 	}
 
 }
