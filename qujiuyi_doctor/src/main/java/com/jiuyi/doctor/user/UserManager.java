@@ -104,23 +104,8 @@ public class UserManager implements IUserManager {
 		this.TITLE_CARD_FILE_PATH = dbConfig.getConfig("doctor.titleCardPath");
 		this.LICENSE_CARD_FILE_PATH = dbConfig.getConfig("doctor.licenseCardPath");
 		this.EXPIRE_TIME = NumberUtil.parseInt(dbConfig.getConfig("doctor.expireTime")) * 24 * 60 * 60 * 1000;
-
 		this.name_update.put("skill", new UpdateSkill("skill", userDao, 5000));
 		this.name_update.put("experience", new UpdateSkill("experience", userDao, 5000));
-		// this.name_update.put("gender", new UpdateUserInfo("gender",
-		// userDao));
-		// this.name_update.put("officePhone", new UpdateUserInfo("officePhone",
-		// userDao));
-		// this.name_update.put("position", new UpdateUserInfo("position",
-		// userDao));
-		// this.name_update.put("graduationSchool", new
-		// UpdateUserInfo("graduationSchool", userDao));
-		// this.name_update.put("hospital", new UpdateHospital("hospitalId",
-		// userDao, hospitalService));
-		// this.name_update.put("department", new
-		// UpdateDepartment("departmentId", userDao, departmentService));
-		// this.name_update.put("title", new UpdateTitle("titleId", userDao));
-
 		jobService.submitJob(new JobContext(JobType.SCHEDULED, new ClearRunnable(), 5, 5, TimeUnit.SECONDS));
 
 		// 测试专用
@@ -140,6 +125,14 @@ public class UserManager implements IUserManager {
 	@Override
 	public Doctor getUserByToken(String token) {
 		Doctor doctor = this.token_doctor.get(token);
+		if (doctor == null) {
+			doctor = userDao.loadDoctorByToken(token);
+			// 从数据库load出来代表服务器已经重启过，同步一次到聊天服
+			if (doctor != null) {
+				putDoctor(token, doctor);
+				chatServerService.onLogin(doctor);
+			}
+		}
 		if (doctor != null) {
 			doctor.setAccess_token(token);
 		}
@@ -253,6 +246,7 @@ public class UserManager implements IUserManager {
 		doctor.setDeviceType(deviceType);
 		doctor.setAccess_token(access_token);
 		// 登录信息同步到聊天服务器
+		userDao.setToken(doctor);
 		chatServerService.onLogin(doctor);
 		qrCodeService.tryGenQRCode(doctor);
 		ServerResult res = new ServerResult();
@@ -274,6 +268,7 @@ public class UserManager implements IUserManager {
 		String token = doctor.getAccess_token();
 		id_doctor.remove(doctorId);
 		token_doctor.remove(token);
+		userDao.removeToken(doctor);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -347,6 +342,13 @@ public class UserManager implements IUserManager {
 		userDao.modifyPassword(doctor, newPassword);
 	}
 
+	/**
+	 * 修改头像
+	 * 
+	 * @param doctor
+	 * @param head
+	 * @return
+	 */
 	protected ServerResult modifyHead(Doctor doctor, MultipartFile head) {
 		if (head == null) {
 			return new ServerResult(ResultConst.PARAM_ERROR);
@@ -364,6 +366,7 @@ public class UserManager implements IUserManager {
 		authDoctor.setIdCardPath(doctor.getIdCardPath());
 		authDoctor.setTitleCardPath(doctor.getTitleCardPath());
 		authDoctor.setLicenseCardPath(doctor.getLicenseCardPath());
+		/* 需要审核 */
 		userDao.insertAuth(doctor, authDoctor);
 		userDao.updateEditStatus(doctor, EditStatus.EDITED);
 		return new ServerResult();
@@ -398,7 +401,6 @@ public class UserManager implements IUserManager {
 							Loggers.debugf("user:<<%s>> expired", doctor.getId());
 						}
 						handleLogout(doctor);
-						iter.remove();
 					}
 				}
 			} catch (Exception e) {
