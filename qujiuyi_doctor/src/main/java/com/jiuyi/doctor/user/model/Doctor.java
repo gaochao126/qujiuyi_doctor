@@ -1,5 +1,7 @@
 package com.jiuyi.doctor.user.model;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.jiuyi.doctor.hospitals.model.DoctorTitle;
@@ -52,6 +54,11 @@ public class Doctor extends User {
 	private transient String access_token;
 	private transient String channelId;
 	private transient Integer deviceType;
+
+	/** true表示 需要更新token了，当下一次访问接口的时候，将返回最新的token */
+	private AtomicBoolean needUpdateToken = new AtomicBoolean(false);
+	private String newToken;
+	private long tokenGenTime;// token生成的时间
 
 	public Doctor() {
 	}
@@ -112,6 +119,35 @@ public class Doctor extends User {
 		return res;
 	}
 
+	/***
+	 * 用户长时间没有操作，将从内存中移除
+	 */
+	@Override
+	public boolean isExpire(long now, int expireTime) {
+		if (lastAccesss == 0) {
+			lastAccesss = System.currentTimeMillis();
+			return false;
+		}
+		long passedTime = now - lastAccesss;
+		return passedTime > expireTime;
+	}
+
+	/**
+	 * token是否过期
+	 * 
+	 * @param now
+	 * @param tokenExpireTime
+	 * @return
+	 */
+	public boolean isTokenExpire(long now, int tokenExpireTime) {
+		if (tokenGenTime == 0) {
+			tokenGenTime = System.currentTimeMillis();
+			return false;
+		}
+		return now - tokenGenTime > tokenExpireTime;
+	}
+
+	@Override
 	public int getId() {
 		return id;
 	}
@@ -148,6 +184,7 @@ public class Doctor extends User {
 		return licenseCardPath;
 	}
 
+	@Override
 	public int getStatus() {
 		return status;
 	}
@@ -160,10 +197,12 @@ public class Doctor extends User {
 		return experience;
 	}
 
+	@Override
 	public long getLastAccesss() {
 		return lastAccesss;
 	}
 
+	@Override
 	public String getAccess_token() {
 		return access_token;
 	}
@@ -184,6 +223,7 @@ public class Doctor extends User {
 		this.score = score;
 	}
 
+	@Override
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -240,10 +280,12 @@ public class Doctor extends User {
 		this.experience = experience;
 	}
 
+	@Override
 	public void setLastAccesss(long lastAccesss) {
 		this.lastAccesss = lastAccesss;
 	}
 
+	@Override
 	public void setAccess_token(String access_token) {
 		this.access_token = access_token;
 	}
@@ -304,15 +346,7 @@ public class Doctor extends User {
 		this.hospitalId = hospitalId;
 	}
 
-	public boolean isExpire(long now, int expireTime) {
-		if (lastAccesss == 0) {
-			lastAccesss = System.currentTimeMillis();
-			return false;
-		}
-		long passedTime = now - lastAccesss;
-		return passedTime > expireTime;
-	}
-
+	@Override
 	public void setLastAccess() {
 		this.lastAccesss = System.currentTimeMillis();
 	}
@@ -345,6 +379,30 @@ public class Doctor extends User {
 
 	public void setDepartmentId(int departmentId) {
 		this.departmentId = departmentId;
+	}
+
+	public String getNewToken() {
+		return newToken;
+	}
+
+	public void setNewToken(String newToken) {
+		this.newToken = newToken;
+	}
+
+	public AtomicBoolean getNeedUpdateToken() {
+		return needUpdateToken;
+	}
+
+	public void setNeedUpdateToken(AtomicBoolean needUpdateToken) {
+		this.needUpdateToken = needUpdateToken;
+	}
+
+	public long getTokenGenTime() {
+		return tokenGenTime;
+	}
+
+	public void setTokenGenTime(long tokenGenTime) {
+		this.tokenGenTime = tokenGenTime;
 	}
 
 }

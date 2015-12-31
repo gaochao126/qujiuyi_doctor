@@ -24,4 +24,12 @@ public class CommentManager {
 	protected Integer loadUnreadCmtCount(Doctor doctor, Date lastGetUnreadEvaTime) {
 		return dao.loadUnreadCmtCount(doctor, lastGetUnreadEvaTime);
 	}
+
+	/**
+	 * @param doctor
+	 * @return
+	 */
+	protected int countDoctorComment(Doctor doctor) {
+		return dao.countDoctorComment(doctor);
+	}
 }

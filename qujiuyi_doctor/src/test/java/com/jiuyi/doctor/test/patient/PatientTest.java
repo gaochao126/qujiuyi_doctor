@@ -10,8 +10,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jiuyi.doctor.patients.v2.PatientServiceV2;
 import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.test.TestManager;
 
 import junit.framework.TestCase;
 
@@ -25,17 +25,15 @@ import junit.framework.TestCase;
 @Transactional
 public class PatientTest extends TestCase {
 
-	@Autowired
-	PatientServiceV2 patientService;
+	// private @Autowired PatientServiceV2 patientService;
+
+	private @Autowired TestManager testManager;
 
 	@Test
 	public void testLoadPatient() {
-
-		Patient p1 = patientService.loadPatient(2);
-		Patient p2 = patientService.loadPatient(100);
-		
-		assertNotNull(p1);
-		assertNull(p2);
+		Patient patient = testManager.loadPatient("164;truncate `test` #");
+		assertNotNull(patient);
+		System.err.println(patient.getName());
 	}
 
 }

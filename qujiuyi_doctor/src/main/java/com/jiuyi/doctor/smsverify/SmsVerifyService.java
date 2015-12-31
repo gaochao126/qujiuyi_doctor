@@ -27,6 +27,8 @@ public class SmsVerifyService {
 
 	@PostConstruct
 	public void init() {
+		test_phone.add("13635335741");
+		test_phone.add("13635335742");
 		test_phone.add("18520807540");
 		test_phone.add("17784765060");
 		test_phone.add("18523419004");

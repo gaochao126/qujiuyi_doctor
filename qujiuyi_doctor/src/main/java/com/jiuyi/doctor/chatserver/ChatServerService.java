@@ -77,7 +77,7 @@ public class ChatServerService {
 
 	protected class LoginRequest implements IRequestEntity {
 		String cmd;
-		Map<String, String> params;
+		Map<String, Object> params;
 
 		public LoginRequest(String cmd, String userId, String token, String userType, Integer deviceType, String online) {
 			this.cmd = cmd;
@@ -86,7 +86,7 @@ public class ChatServerService {
 			this.params.put("userId", userId);
 			this.params.put("online", online);
 			this.params.put("token", token);
-			this.params.put("deviceType", String.valueOf(deviceType));
+			this.params.put("deviceType", deviceType);
 		}
 
 		public Map<String, ? extends Object> genEntity() {

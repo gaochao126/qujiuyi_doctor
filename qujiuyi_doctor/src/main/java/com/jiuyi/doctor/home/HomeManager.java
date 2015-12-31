@@ -87,10 +87,14 @@ public class HomeManager extends ManagerBase<Doctor, HomeInfo>implements IReload
 	/** 对医生的评价 */
 	protected ServerResult loadEvaluation(Doctor doctor, int page) {
 		List<Comment> evaluations = commentService.loadComment(doctor, page, PAGE_SIZE);
+		int count = commentService.countTotalComment(doctor);
 		Date now = new Date();
 		keyValueService.keyValueForever.setValue(doctor.getId(), TARGET_GET_UNREAD_TIME, now);
 		loadInfoBase(doctor).lastGetUnreadEvaTime = now;
-		return new ServerResult("list", evaluations);
+		ServerResult res = new ServerResult();
+		res.put("list", evaluations);
+		res.put("count", count);
+		return res;
 	}
 
 	/** 系统消息 */

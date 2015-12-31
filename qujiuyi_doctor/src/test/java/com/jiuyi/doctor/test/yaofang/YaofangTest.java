@@ -17,6 +17,7 @@ import com.jiuyi.doctor.yaofang.YaofangService;
 import com.jiuyi.doctor.yaofang.model.Format;
 import com.jiuyi.doctor.yaofang.model.FormatMedicine;
 import com.jiuyi.doctor.yaofang.model.Medicine;
+import com.jiuyi.doctor.yaofang.scripts.ScriptMain;
 import com.jiuyi.frame.util.JsonUtil;
 
 import junit.framework.TestCase;
@@ -31,6 +32,9 @@ import junit.framework.TestCase;
 public class YaofangTest extends TestCase {
 	@Autowired
 	YaofangService service;
+
+	@Autowired
+	ScriptMain scriptMain;
 
 	@Test
 	public void testBatchSelect() {
@@ -57,5 +61,10 @@ public class YaofangTest extends TestCase {
 		List<String> ids = Arrays.asList("219972876337", "220217242319");
 		List<FormatMedicine> formatMedicines = service.loadFormatMeds(ids);
 		System.err.println(JsonUtil.toJson(formatMedicines));
+	}
+
+	@Test
+	public void updatePinyin() {
+		scriptMain.updatePinYin();
 	}
 }

@@ -24,4 +24,12 @@ public class CommentService {
 	public Integer loadUnreadCmtCount(Doctor doctor, Date lastGetUnreadEvaTime) {
 		return manager.loadUnreadCmtCount(doctor, lastGetUnreadEvaTime);
 	}
+
+	/**
+	 * @param doctor
+	 * @return
+	 */
+	public int countTotalComment(Doctor doctor) {
+		return manager.countDoctorComment(doctor);
+	}
 }
