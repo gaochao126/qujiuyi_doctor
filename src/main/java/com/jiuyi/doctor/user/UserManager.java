@@ -1,8 +1,11 @@
 package com.jiuyi.doctor.user;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +30,7 @@ import com.jiuyi.doctor.user.model.BeforeLogin;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.user.model.DoctorStatus;
 import com.jiuyi.doctor.user.model.EditStatus;
+import com.jiuyi.doctor.user.model.ExpiredToken;
 import com.jiuyi.doctor.user.model.FillDoctor;
 import com.jiuyi.doctor.user.update.UpdateSkill;
 import com.jiuyi.doctor.user.update.UpdateUserInfo;
@@ -97,6 +101,8 @@ public class UserManager implements IUserManager {
 	private ConcurrentHashMap<String, BeforeLogin> refreshToken_beforeLogin = new ConcurrentHashMap<String, BeforeLogin>();
 	private ConcurrentHashMap<Integer, String> id_token = new ConcurrentHashMap<>();
 
+	private Set<ExpiredToken> expiredTokens = Collections.synchronizedSet(new HashSet<ExpiredToken>());
+
 	@PostConstruct
 	public void init() {
 		this.HERD_FILE_PATH = dbConfig.getConfig("doctor.headPath");
@@ -129,7 +135,8 @@ public class UserManager implements IUserManager {
 		}
 		Doctor doctor = this.token_doctor.get(token);
 		if (doctor == null) {
-			doctor = userDao.loadDoctorByToken(token);
+			String md5OfToken = StringUtil.md5Str(token);
+			doctor = userDao.loadDoctorByToken(md5OfToken);
 			// 从数据库load出来代表服务器已经重启过，同步一次到聊天服
 			if (doctor != null) {
 				doctor.setAccess_token(token);
@@ -250,7 +257,7 @@ public class UserManager implements IUserManager {
 		doctor.setDeviceType(deviceType);
 		doctor.setAccess_token(access_token);
 		// 登录信息同步到聊天服务器
-		userDao.setToken(doctor);
+		userDao.setToken(doctor, StringUtil.md5Str(access_token));
 		chatServerService.onLogin(doctor);
 		qrCodeService.tryGenQRCode(doctor);
 		ServerResult res = new ServerResult();
@@ -391,9 +398,11 @@ public class UserManager implements IUserManager {
 		String newToken = doctor.getNewToken();
 		doctor.setAccess_token(newToken);
 		doctor.getNeedUpdateToken().set(false);
-		this.token_doctor.remove(oldToken);
 		this.token_doctor.put(newToken, doctor);
-		userDao.setToken(doctor);
+		userDao.setToken(doctor, StringUtil.md5Str(newToken));
+		/* 把失效的token加入到待移除队列中，暂时还不从内存中移除的原因是客户端可能会多线程请求，当第一个线程还没来得及更新token的时候，第二个线程请求的token是old Token，但是不能返回未登录 */
+		ExpiredToken expiredToken = new ExpiredToken(oldToken);
+		expiredTokens.add(expiredToken);
 		/** 同步到聊天服 */
 		ChatServerRequestEntity entity = new ChatServerRequestEntity("updateToken");
 		entity.putDetail("online", "0");
@@ -421,6 +430,12 @@ public class UserManager implements IUserManager {
 		id_token.put(doctor.getId(), token);
 	}
 
+	/**
+	 * 清理线程，清理长时间未操作的用户，清理过期token
+	 * 
+	 * @author xutaoyang
+	 *
+	 */
 	class ClearRunnable implements Runnable {
 		@Override
 		public void run() {
@@ -433,10 +448,17 @@ public class UserManager implements IUserManager {
 							Loggers.debugf("user:<<%s>> expired", doctor.getId());
 						}
 						handleLogout(doctor);
-					} else if (doctor.isTokenExpire(now, dbConfig.getConfigInt("doctor.token.expire.time"))) {
+					} else if (!doctor.getNeedUpdateToken().get() && doctor.isTokenExpire(now, dbConfig.getConfigInt("doctor.token.expire.time"))) {
 						doctor.getNeedUpdateToken().set(true);
 						doctor.setNewToken(generateToken(doctor.getId()));
 						doctor.setTokenGenTime(now);
+					}
+				}
+				for (Iterator<ExpiredToken> iter = expiredTokens.iterator(); iter.hasNext();) {
+					ExpiredToken expiredToken = iter.next();
+					if (expiredToken.needRemove(now, dbConfig.getConfigInt("doctor.token.remove.time"))) {
+						token_doctor.remove(expiredToken.getToken());
+						iter.remove();
 					}
 				}
 			} catch (Exception e) {

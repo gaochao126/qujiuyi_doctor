@@ -39,11 +39,22 @@ public class UpdateTokenAdvice {
 		String url = requestMapping.value()[0];
 		url = url.startsWith("/") && !url.equals("/") ? url.substring(1) : url;
 		returnValue.put("cmd", url);
-		if (returnValue.isSuccess() && doctor != null && doctor.getNeedUpdateToken().get()) {
+		if (shouldUpdateToken(returnValue, doctor)) {
 			userService.updateToken(doctor);
 			returnValue.put("newToken", doctor.getAccess_token());
 			returnValue.putResult(ResultConst.PLEASE_UPDATE_TOKEN);
 		}
+	}
+
+	/**
+	 * 判断是否需要更新token
+	 * 
+	 * @param res
+	 * @param doctor
+	 * @return
+	 */
+	private boolean shouldUpdateToken(ServerResult res, Doctor doctor) {
+		return res.isSuccess() && doctor != null && doctor.getNeedUpdateToken().get();
 	}
 
 }

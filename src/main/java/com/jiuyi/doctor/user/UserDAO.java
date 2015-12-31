@@ -157,8 +157,8 @@ public class UserDAO extends DbBase {
 		jdbc.update(UPDATE_EIDT_STATUS, editStatus.ordinal(), doctor.getId());
 	}
 
-	protected void setToken(Doctor doctor) {
-		jdbc.update(UPDATE_TOKEN, doctor.getAccess_token(), doctor.getId());
+	protected void setToken(Doctor doctor,String newToken) {
+		jdbc.update(UPDATE_TOKEN, newToken, doctor.getId());
 	}
 
 	/**
