@@ -28,4 +28,9 @@ public class Test11Controller {
 		return new ServerResult();
 	}
 
+	@RequestMapping("test_handler21")
+	public void testReturnValHandler21() {
+		System.err.println("dododododooodo");
+	}
+
 }

@@ -151,4 +151,13 @@ public class UserService {
 		return file == null || file.isEmpty();
 	}
 
+	/**
+	 * 按需更新token
+	 * 
+	 * @param doctor
+	 */
+	public void updateToken(Doctor doctor) {
+		userManager.updateToken(doctor);
+	}
+
 }

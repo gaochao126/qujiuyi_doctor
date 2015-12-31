@@ -9,7 +9,7 @@ import java.util.List;
 public class TestMain {
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
-		System.err.println(new Object());
+		System.out.println(30 * 1000);
 	}
 
 	public static List<Field> getAllFields(Class<?> clazz) {

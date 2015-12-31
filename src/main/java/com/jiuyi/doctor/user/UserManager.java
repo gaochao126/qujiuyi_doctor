@@ -124,11 +124,15 @@ public class UserManager implements IUserManager {
 
 	@Override
 	public Doctor getUserByToken(String token) {
+		if (StringUtil.isNullOrEmpty(token)) {
+			return null;
+		}
 		Doctor doctor = this.token_doctor.get(token);
 		if (doctor == null) {
 			doctor = userDao.loadDoctorByToken(token);
 			// 从数据库load出来代表服务器已经重启过，同步一次到聊天服
 			if (doctor != null) {
+				doctor.setAccess_token(token);
 				putDoctor(token, doctor);
 				chatServerService.onLogin(doctor);
 			}
@@ -260,6 +264,11 @@ public class UserManager implements IUserManager {
 		return res;
 	}
 
+	/**
+	 * 退出登录
+	 * 
+	 * @param doctor
+	 */
 	protected void handleLogout(Doctor doctor) {
 		eventService.dispatchEvent(new EventLogout(doctor));
 		// 登出信息同步到聊天服务器
@@ -372,6 +381,29 @@ public class UserManager implements IUserManager {
 		return new ServerResult();
 	}
 
+	/**
+	 * 更新token
+	 * 
+	 * @param doctor
+	 */
+	protected void updateToken(Doctor doctor) {
+		String oldToken = doctor.getAccess_token();
+		String newToken = doctor.getNewToken();
+		doctor.setAccess_token(newToken);
+		doctor.getNeedUpdateToken().set(false);
+		this.token_doctor.remove(oldToken);
+		this.token_doctor.put(newToken, doctor);
+		userDao.setToken(doctor);
+		/** 同步到聊天服 */
+		ChatServerRequestEntity entity = new ChatServerRequestEntity("updateToken");
+		entity.putDetail("online", "0");
+		entity.putDetail("userType", "1");
+		entity.putDetail("token", doctor.getAccess_token());
+		entity.putDetail("deviceType", doctor.getDeviceType());
+		entity.putDetail("userId", String.valueOf(doctor.getId()));
+		chatServerService.postMsg(entity);
+	}
+
 	/** 把建立环信连接的用户密码返回给客户端，客户端用username和password与环信服务器建立连接 */
 	private void putEasemobInfo(Doctor doctor, ServerResult res) {
 		Integer doctorId = doctor.getId();
@@ -401,6 +433,10 @@ public class UserManager implements IUserManager {
 							Loggers.debugf("user:<<%s>> expired", doctor.getId());
 						}
 						handleLogout(doctor);
+					} else if (doctor.isTokenExpire(now, dbConfig.getConfigInt("doctor.token.expire.time"))) {
+						doctor.getNeedUpdateToken().set(true);
+						doctor.setNewToken(generateToken(doctor.getId()));
+						doctor.setTokenGenTime(now);
 					}
 				}
 			} catch (Exception e) {
