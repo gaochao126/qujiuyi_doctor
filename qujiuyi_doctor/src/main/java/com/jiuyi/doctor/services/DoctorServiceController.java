@@ -25,15 +25,21 @@ public class DoctorServiceController extends ControllerBase {
 	}
 
 	private static final String CMD = "service_";
-	private static final String CMD_LOAD_INFO = CMD + "info"; // 服务主界面信息
+	private static final String CMD_LOAD_STATUS = CMD + "info"; // 服务主界面信息
+	private static final String CMD_LOAD_DETAIL = CMD + "detail"; // 服务列表详细信息
 
 	@Autowired
 	DoctorServiceManager manager;
 
-	@RequestMapping(CMD_LOAD_INFO)
+	@RequestMapping(CMD_LOAD_STATUS)
 	@ResponseBody
 	public ServerResult handleLoadInfo(@TokenUser Doctor doctor) {
 		return manager.handleLoadInfo(doctor);
+	}
+	@RequestMapping(CMD_LOAD_DETAIL)
+	@ResponseBody
+	public ServerResult handleLoadDetail(@TokenUser Doctor doctor) {
+		return manager.handleLoadDetail(doctor);
 	}
 
 }
