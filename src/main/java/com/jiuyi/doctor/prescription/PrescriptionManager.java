@@ -107,10 +107,11 @@ public class PrescriptionManager {
 		for (PrescriptionMedicine medicine : medicines) {
 			medicine.setPrescriptionId(id);
 		}
+		Date createTime = new Date();
 		prescription.setId(id);
 		prescription.setDoctorId(doctor.getId());
-		prescription.setCreateTime(new Date());
-		prescription.setUpdateTime(new Date());
+		prescription.setCreateTime(createTime);
+		prescription.setUpdateTime(createTime);
 		prescription.setMedicineTakeStatus(0);
 		prescription.setType(PrescriptionType.COMMON.ordinal());
 		prescription.setNumber(genPresNumber(doctor, prescription));
