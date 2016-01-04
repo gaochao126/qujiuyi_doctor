@@ -33,6 +33,9 @@ public class CronTime {
 	/** 每月1日 00:00 清理计数器 */
 	public static final String CLEAR_DONE_COUNTER_MONTH = "0 0 0 1 * ?";
 
+	/** 每5分钟跑一次，处方在创建48小时后，只要处于未支付状态，则标记为过期 */
+	public static final String EXPIRE_PRESCRIPTION = "0 0/5 * * * ?";
+
 	/** 测试,每秒 */
 	public static final String TEST = "0/1 * * * * ?";
 
