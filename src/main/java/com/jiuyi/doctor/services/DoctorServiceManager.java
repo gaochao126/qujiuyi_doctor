@@ -36,4 +36,16 @@ public class DoctorServiceManager {
 		return res;
 	}
 
+	/**
+	 * @param doctor
+	 * @return
+	 */
+	public ServerResult handleLoadDetail(Doctor doctor) {
+		DoctorChat doctorChat = chatService.loadDoctorChat(doctor);
+		ServerResult res = new ServerResult();
+		res.put("chatStatus", doctorChat.getStatus());
+		res.put("chatPrice", doctorChat.getPrice());
+		return res;
+	}
+
 }
