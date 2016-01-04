@@ -91,7 +91,7 @@ public class PrescriptionManager {
 	 */
 	@Transactional
 	protected ServerResult prescribe(Doctor doctor, Prescription prescription, List<PrescriptionMedicine> medicines) {
-		ServerResult res = checkPrescription(prescription, medicines);
+		ServerResult res = checkPrescription(doctor, prescription, medicines);
 		if (!res.isSuccess()) {
 			return res;
 		}
@@ -139,7 +139,7 @@ public class PrescriptionManager {
 		if (StringUtil.isNullOrEmpty(prescription.getRemark())) {
 			return new FailResult("修改备注remark不能为空");
 		}
-		ServerResult res = checkPrescription(prescription, medicines);
+		ServerResult res = checkPrescription(doctor, prescription, medicines);
 		if (!res.isSuccess()) {
 			return res;
 		}
@@ -392,7 +392,7 @@ public class PrescriptionManager {
 	 * @param medicines
 	 * @return
 	 */
-	private ServerResult checkPrescription(Prescription prescription, List<PrescriptionMedicine> medicines) {
+	private ServerResult checkPrescription(Doctor doctor, Prescription prescription, List<PrescriptionMedicine> medicines) {
 		ServerResult res = ObjectUtil.validateResult(prescription);
 		if (!res.isSuccess()) {
 			return res;
@@ -410,6 +410,9 @@ public class PrescriptionManager {
 		Patient patient = patientService.loadPatient(prescription.getPatientId());
 		if (patient == null) {
 			return new FailResult("该患者不存在或已注销~");
+		}
+		if (patient.getPhone() == doctor.getPhone()) {
+			return new FailResult("对不起，不能给自己开处方~");
 		}
 		return new ServerResult();
 	}
