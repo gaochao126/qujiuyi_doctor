@@ -32,7 +32,6 @@ public class ConsultDao extends DbBase {
 	private static final String SELECT_ALL_CONSULT_BY_PATIENTID = "SELECT * FROM `t_patient_consult` WHERE `patientId`=? AND `doctorId`=?";
 	private static final String SELECT_CONSULT_BY_PATIENTID = "SELECT * FROM `t_patient_consult` WHERE `consultStatus`=1 AND `patientId`=? AND `doctorId`=?";
 	private static final String SELECT_CONSULT = "SELECT * FROM `t_patient_consult` WHERE `id`=?";
-	private static final String SELECT_CONSULT_SATISFACATION = "SELECT AVG(`satisfaction`) FROM `t_patient_consult` WHERE `doctorId`=?";
 	private static final String SELECT_CHAT_LIST = "SELECT list.*,patient.`name`,patient.`headPortrait` "//
 			+ "FROM `t_doctor_chat_list` list, `t_patient` patient "//
 			+ "WHERE patient.`id`=list.`patientId` AND `doctorId`=?";//
@@ -144,11 +143,6 @@ public class ConsultDao extends DbBase {
 
 	protected List<UnreadMsg> loadUnreadMsgs(Doctor doctor) {
 		return jdbc.query(SELECT_UNREAD_MSG, new Object[] { doctor.getId() }, UnreadMsg.builder);
-	}
-
-	protected Double loadDoctorScore(Doctor doctor) {
-		Double score = queryForObject(SELECT_CONSULT_SATISFACATION, new Object[] { doctor.getId() }, Double.class);
-		return score == null ? 0 : score;
 	}
 
 	protected void addChatList(Doctor doctor, int patientId) {

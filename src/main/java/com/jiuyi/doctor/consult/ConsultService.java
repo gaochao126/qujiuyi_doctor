@@ -26,10 +26,6 @@ public class ConsultService {
 	@Autowired
 	ConsultManager manager;
 
-	public Double loadDoctorScore(Doctor doctor) {
-		return dao.loadDoctorScore(doctor);
-	}
-
 	public List<Consult> loadUnFinishConsult(Doctor doctor) {
 		return manager.loadUnFinishedChatList(doctor);
 	}
