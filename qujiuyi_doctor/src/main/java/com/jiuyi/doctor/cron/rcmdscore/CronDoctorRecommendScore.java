@@ -29,7 +29,7 @@ public class CronDoctorRecommendScore {
 		Map<Integer, RecommendScoreInfo> doctorId_score = dao.loadScoreInfo();
 		List<Object[]> updateArgs = new ArrayList<>(doctorId_score.size());
 		for (Entry<Integer, RecommendScoreInfo> entry : doctorId_score.entrySet()) {
-			updateArgs.add(new Object[] { entry.getValue().recommendScore(), entry.getValue().score(), entry.getKey() });
+			updateArgs.add(new Object[] { entry.getValue().recommendScore(), entry.getKey() });
 			dao.updateRecommendScore(updateArgs);
 		}
 	}

@@ -21,11 +21,12 @@ import com.jiuyi.frame.base.DbBase;
  */
 @Repository
 public class DoctorRecommendDao extends DbBase {
-	private static final String SELECT_CONSULT_INFO = "SELECT `doctorId`,`satisfaction`,`acceptStatus` FROM `t_patient_consult`";
-	private static final String UPATE_RECOMMEND_SCORE = "UPDATE `t_doctor` SET `recommendScore`=?,`score`=? WHERE `id`=?";
-
+	private static final String UPATE_RECOMMEND_SCORE = "UPDATE `t_doctor` SET `recommendScore`=? WHERE `id`=?";
+	
+	private static final String SELECT_COMMENT_INFO = "SELECT `doctorId`,`satisfaction`,COUNT(`satisfaction`) AS number FROM `t_doctor_comment` GROUP BY CONCAT(`doctorId`,`satisfaction`); ";
+	
 	protected Map<Integer, RecommendScoreInfo> loadScoreInfo() {
-		return jdbc.query(SELECT_CONSULT_INFO, new ResultSetHandler());
+		return jdbc.query(SELECT_COMMENT_INFO, new ResultSetHandler());
 	}
 
 	protected void updateRecommendScore(List<Object[]> updateArgs) {
@@ -40,13 +41,13 @@ public class DoctorRecommendDao extends DbBase {
 			while (rs.next()) {
 				int doctorId = rs.getInt("doctorId");
 				Integer satisfaction = rs.getInt("satisfaction");// null的情况下为0
-				int acceptStatus = rs.getInt("acceptStatus");
+				int count = rs.getInt("number");
 				RecommendScoreInfo scoreInfo = res.get(doctorId);
 				if (scoreInfo == null) {
 					scoreInfo = new RecommendScoreInfo();
 					res.put(doctorId, scoreInfo);
 				}
-				scoreInfo.addData(satisfaction, acceptStatus);
+				scoreInfo.addData(satisfaction, count);
 			}
 			return res;
 		}
