@@ -43,6 +43,7 @@ public class UserController extends ControllerBase {
 	private static final String CMD_MODIFY_PASSWORD = PRE + "modify_password";
 	private static final String CMD_MODIFY_HEAD = PRE + "modify_head";
 	private static final String CMD_LOAD_INFO_BY_ID = PRE + "info_by_id";
+	private static final String CMD_UPLOAD_TITLE_CARD = PRE + "upload_title";
 
 	@Autowired
 	@Qualifier("UserService")
@@ -173,6 +174,13 @@ public class UserController extends ControllerBase {
 	@ResponseBody
 	public ServerResult handleModifyHead(@TokenUser Doctor doctor, @RequestParam("head") MultipartFile head) {
 		ServerResult res = manager.modifyHead(doctor, head);
+		return res;
+	}
+	
+	@RequestMapping(CMD_UPLOAD_TITLE_CARD)
+	@ResponseBody
+	public ServerResult uploadTitleCard(@TokenUser Doctor doctor, @RequestParam("title") MultipartFile titleCard) {
+		ServerResult res = manager.uploadTitleCard(doctor, titleCard);
 		return res;
 	}
 

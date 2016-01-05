@@ -301,17 +301,26 @@ public class UserManager implements IUserManager {
 				newDoctor.setExperience(offlineDoctor.getExperience());
 			}
 		}
-		String headFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(head));
+		if (!head.isEmpty()) {
+			String headFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(head));
+			FileUtil.writeFile(HERD_FILE_PATH, headFileName, head);
+			newDoctor.setHeadPath(headFileName);
+		} else {
+			newDoctor.setHeadPath("doctor-head.jpg");
+		}
+		if (!titleCard.isEmpty()) {
+			String titleFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(titleCard));
+			FileUtil.writeFile(TITLE_CARD_FILE_PATH, titleFileName, titleCard);
+			newDoctor.setTitleCardPath(titleFileName);
+		} else {
+			newDoctor.setTitleCardPath("");
+		}
+		
 		String idFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(idCard));
-		String titleFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(titleCard));
 		String licenseFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(licenseCard));
-		FileUtil.writeFile(HERD_FILE_PATH, headFileName, head);
 		FileUtil.writeFile(ID_CARD_FILE_PATH, idFileName, idCard);
-		FileUtil.writeFile(TITLE_CARD_FILE_PATH, titleFileName, titleCard);
 		FileUtil.writeFile(LICENSE_CARD_FILE_PATH, licenseFileName, licenseCard);
 		newDoctor.setIdCardPath(idFileName);
-		newDoctor.setHeadPath(headFileName);
-		newDoctor.setTitleCardPath(titleFileName);
 		newDoctor.setLicenseCardPath(licenseFileName);
 		Doctor afterFill = userDao.fillDoctor(doctor, newDoctor);
 		/* 插入认证信息 */
@@ -366,7 +375,7 @@ public class UserManager implements IUserManager {
 	 * @return
 	 */
 	protected ServerResult modifyHead(Doctor doctor, MultipartFile head) {
-		if (head == null) {
+		if (head == null || head.isEmpty()) {
 			return new ServerResult(ResultConst.PARAM_ERROR);
 		}
 		String headFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(head));
@@ -381,6 +390,36 @@ public class UserManager implements IUserManager {
 		authDoctor.setOfficePhone(doctor.getOfficePhone());
 		authDoctor.setIdCardPath(doctor.getIdCardPath());
 		authDoctor.setTitleCardPath(doctor.getTitleCardPath());
+		authDoctor.setLicenseCardPath(doctor.getLicenseCardPath());
+		/* 需要审核 */
+		userDao.insertAuth(doctor, authDoctor);
+		userDao.updateEditStatus(doctor, EditStatus.EDITED);
+		return new ServerResult();
+	}
+	
+	/**
+	 * 上传职称证
+	 * 
+	 * @param doctor
+	 * @param head
+	 * @return
+	 */
+	protected ServerResult uploadTitleCard(Doctor doctor, MultipartFile titleCard) {
+		if (titleCard == null || titleCard.isEmpty()) {
+			return new ServerResult(ResultConst.PARAM_ERROR);
+		}
+		String titleFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(titleCard));
+		FileUtil.writeFile(TITLE_CARD_FILE_PATH, titleFileName, titleCard);
+		FillDoctor authDoctor = new FillDoctor();
+		authDoctor.setTitleCardPath(titleFileName);
+		authDoctor.setDoctorId(doctor.getId());
+		authDoctor.setType(1);
+		authDoctor.setName(doctor.getName());
+		authDoctor.setHeadPath(doctor.getHeadPath());
+		authDoctor.setHospitalId(doctor.getHospitalId());
+		authDoctor.setDepartmentId(doctor.getDepartmentId());
+		authDoctor.setOfficePhone(doctor.getOfficePhone());
+		authDoctor.setIdCardPath(doctor.getIdCardPath());
 		authDoctor.setLicenseCardPath(doctor.getLicenseCardPath());
 		/* 需要审核 */
 		userDao.insertAuth(doctor, authDoctor);
