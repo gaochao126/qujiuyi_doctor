@@ -12,28 +12,18 @@ import java.util.Map;
  */
 public class RecommendScoreInfo {
 	public Map<Integer, Integer> score_count = new HashMap<>();
-	public Integer acceptCount = 0;
-	public Integer totalCount = 0;
+	private int total = 10;// 默认赠送10个好评~
 
-	public void addData(Integer satisfaction, int acceptStatus) {
-		totalCount++;
-		acceptCount = acceptStatus == 1 ? acceptCount + 1 : acceptCount;
-
+	public void addData(Integer satisfaction, int count) {
 		// 默认为满意（1:一般 2:满意3:非常满意）
 		satisfaction = satisfaction == 0 ? 2 : satisfaction;
-		Integer scoreCount = score_count.get(satisfaction);
-		scoreCount = scoreCount == null ? 0 : scoreCount;
-		score_count.put(satisfaction, scoreCount + 1);
-	}
-
-	/** 患者对医生的评分 */
-	public int score() {
-		return totalCount == 0 ? 0 : (int) ((float) (getScoreCount(3) * 10 + getScoreCount(2) * 7 + getScoreCount(1) * 3) / totalCount);
+		score_count.put(satisfaction, count);
+		total += count;
 	}
 
 	/** 最终推荐指数=患者评分+接单率分数 */
 	public int recommendScore() {
-		return totalCount == 0 ? 80 : score() + (int) (((float) acceptCount / totalCount) * 10) + 80;
+		return total == 0 ? 100 : ((getScoreCount(3) + 10) * 100 + getScoreCount(2) * 90 + getScoreCount(1) * 20) / total;
 	}
 
 	private int getScoreCount(Integer satisfaction) {
