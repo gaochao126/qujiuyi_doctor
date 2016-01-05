@@ -107,7 +107,7 @@ public class UserService {
 		if (doctor.getStatus() != DoctorStatus.NEED_AUTH.id) {
 			return new ServerResult(ResultConst.NOT_SATISFY);
 		}
-		if (isFileNullOrEmpty(head) || isFileNullOrEmpty(idCard) || isFileNullOrEmpty(titleCard) || isFileNullOrEmpty(licenseCard)) {
+		if (isFileNullOrEmpty(idCard) || isFileNullOrEmpty(licenseCard)) {
 			return new ServerResult(ResultConst.PARAM_ERROR);
 		}
 		ServerResult fileCheckRes = fileCheck.securityCheck(head, idCard, titleCard, licenseCard);
