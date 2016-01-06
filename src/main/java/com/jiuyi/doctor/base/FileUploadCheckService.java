@@ -33,6 +33,9 @@ public class FileUploadCheckService {
 	}
 
 	public ServerResult securityCheck(MultipartFile file) {
+		if (file == null || file.isEmpty()) {
+			return new ServerResult();
+		}
 		file.getContentType();
 		file.getOriginalFilename();
 		String post = getPost(file.getOriginalFilename());

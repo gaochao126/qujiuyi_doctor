@@ -24,7 +24,6 @@ public class FillDoctor {
 	@NotEmpty
 	private String officePhone;
 
-	@NotNull
 	private Integer titleId; // 职称
 
 	private String skill;
