@@ -131,8 +131,8 @@ public class UserController extends ControllerBase {
 	@RequestMapping(CMD_DOCTOR_FILL)
 	@ResponseBody
 	public ServerResult handleFillInfo(@TokenUser @Permission(DoctorStatus.NEED_AUTH) Doctor doctor, @Valid @ModelAttribute FillDoctor newDoctor, BindingResult br,
-			@RequestParam("head") MultipartFile head, @RequestParam("idCard") MultipartFile idCard, @RequestParam("titleCard") MultipartFile titleCard,
-			@RequestParam("licenseCard") MultipartFile licenseCard) {
+			@RequestParam(value = "head", required = false) MultipartFile head, @RequestParam("idCard") MultipartFile idCard,
+			@RequestParam(value = "titleCard", required = false) MultipartFile titleCard, @RequestParam("licenseCard") MultipartFile licenseCard) {
 		if (br.hasErrors()) {
 			ServerResult res = new ServerResult(ResultConst.PARAM_ERROR);
 			res.put("err", br.getAllErrors());
@@ -176,7 +176,7 @@ public class UserController extends ControllerBase {
 		ServerResult res = manager.modifyHead(doctor, head);
 		return res;
 	}
-	
+
 	@RequestMapping(CMD_UPLOAD_TITLE_CARD)
 	@ResponseBody
 	public ServerResult uploadTitleCard(@TokenUser Doctor doctor, @RequestParam("title") MultipartFile titleCard) {

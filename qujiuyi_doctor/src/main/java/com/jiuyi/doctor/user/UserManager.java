@@ -25,6 +25,7 @@ import com.jiuyi.doctor.clinic.ClinicService;
 import com.jiuyi.doctor.consult.ConsultService;
 import com.jiuyi.doctor.hospitals.DepartmentService;
 import com.jiuyi.doctor.hospitals.HospitalService;
+import com.jiuyi.doctor.hospitals.model.DoctorTitle;
 import com.jiuyi.doctor.praise.PraiseService;
 import com.jiuyi.doctor.user.model.BeforeLogin;
 import com.jiuyi.doctor.user.model.Doctor;
@@ -301,21 +302,24 @@ public class UserManager implements IUserManager {
 				newDoctor.setExperience(offlineDoctor.getExperience());
 			}
 		}
-		if (!head.isEmpty()) {
+		if (head != null && !head.isEmpty()) {
 			String headFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(head));
 			FileUtil.writeFile(HERD_FILE_PATH, headFileName, head);
 			newDoctor.setHeadPath(headFileName);
 		} else {
 			newDoctor.setHeadPath("doctor-head.jpg");
 		}
-		if (!titleCard.isEmpty()) {
+		if (titleCard != null && !titleCard.isEmpty()) {
 			String titleFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(titleCard));
 			FileUtil.writeFile(TITLE_CARD_FILE_PATH, titleFileName, titleCard);
 			newDoctor.setTitleCardPath(titleFileName);
 		} else {
 			newDoctor.setTitleCardPath("");
 		}
-		
+		if (newDoctor.getTitleId() == null) {
+			newDoctor.setTitleId(DoctorTitle.PRIMARY.id);
+		}
+
 		String idFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(idCard));
 		String licenseFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(licenseCard));
 		FileUtil.writeFile(ID_CARD_FILE_PATH, idFileName, idCard);
@@ -396,7 +400,7 @@ public class UserManager implements IUserManager {
 		userDao.updateEditStatus(doctor, EditStatus.EDITED);
 		return new ServerResult();
 	}
-	
+
 	/**
 	 * 上传职称证
 	 * 
