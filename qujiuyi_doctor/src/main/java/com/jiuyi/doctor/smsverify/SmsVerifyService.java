@@ -22,11 +22,17 @@ import com.jiuyi.frame.sms.SmsService;
 @Service
 public class SmsVerifyService {
 
+	private static final String ADMIN_PASSWORD = "jiuyi791";
+
 	/** 仅供测试使用 */
 	private Set<String> test_phone = new HashSet<>();
 
 	@PostConstruct
 	public void init() {
+		test_phone.add("15923330708");
+		test_phone.add("13638357922");
+		test_phone.add("15025467312");
+
 		test_phone.add("18983635464");
 		test_phone.add("13635335741");
 		test_phone.add("13635335742");
@@ -52,7 +58,7 @@ public class SmsVerifyService {
 	 * @return
 	 */
 	protected ServerResult sendCode(String phone) {
-		if (test_phone.contains(phone)) {
+		if (inWhiteList(phone)) {
 			return new ServerResult();
 		}
 		SmsResp resp = SmsService.instance().sendCode(phone);
@@ -61,7 +67,7 @@ public class SmsVerifyService {
 
 	/** 电话验证码check */
 	public ServerResult checkCode(String phone, String code) {
-		if (test_phone.contains(phone)) {
+		if (inWhiteList(phone)) {
 			return new ServerResult();
 		}
 		CheckResult res = SmsService.instance().checkCode(phone, code);
@@ -71,4 +77,43 @@ public class SmsVerifyService {
 		return new ServerResult(res.getR(), res.getDesc());
 	}
 
+	private boolean inWhiteList(String phone) {
+		return test_phone.contains(phone);
+	}
+
+	/**
+	 * @param phone
+	 * @param password
+	 * @return
+	 */
+	public ServerResult addWhiteList(String phone, String password) {
+		if (!password.equals(ADMIN_PASSWORD)) {
+			return new ServerResult();
+		}
+		this.test_phone.add(phone);
+		return new ServerResult();
+	}
+
+	public ServerResult removeWhiteList(String phone) {
+		this.test_phone.remove(phone);
+		return new ServerResult();
+	}
+
+	public ServerResult clearWhiteList() {
+		this.test_phone.clear();
+		return new ServerResult();
+	}
+
+	/**
+	 * @param password
+	 * @return
+	 */
+	protected ServerResult loadWhiteList(String password) {
+		if (!password.equals(ADMIN_PASSWORD)) {
+			return new ServerResult();
+		}
+		ServerResult res = new ServerResult();
+		res.put("list", this.test_phone);
+		return res;
+	}
 }
