@@ -46,11 +46,11 @@ public class CallManager {
 	 * @return
 	 */
 	public ServerResult makeCall(String caller, String called) {
+		/*
+		 * "主叫号码", "被叫号码", "被叫侧显示的号码", "主叫侧显示的号码", "xx.wav(可选第三方自定义回拨提示音)", "是否一直播放提示音", "用于终止播放提示音的按键", "第三方私有数据",
+		 * "最大通话时长", "实时话单通知地址", "是否给主被叫发送话单", "是否录音", "通话倒计时", "到达倒计时时间播放的提示音"
+		 */
 		HashMap<String, Object> result = restAPI.callback("18223506390", "18100863330", "4009191791", "4009191791", null, null, null, null, null, null, null, null, null, null);
-		// result = restAPI.callback("主叫号码", "被叫号码", "被叫侧显示的号码", "主叫侧显示的号码",
-		// "xx.wav(可选第三方自定义回拨提示音)", "是否一直播放提示音", "用于终止播放提示音的按键", "第三方私有数据",
-		// "最大通话时长", "实时话单通知地址", "是否给主被叫发送话单", "是否录音", "通话倒计时",
-		// "到达倒计时时间播放的提示音");
 		Loggers.info("SDKTestCallback result=" + result);
 		if ("000000".equals(result.get("statusCode"))) {
 			// 正常返回输出data包体信息（map）
