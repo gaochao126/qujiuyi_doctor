@@ -80,14 +80,14 @@ public class UserDAO extends DbBase {
 	protected Doctor fillDoctor(Doctor doctor, FillDoctor fillDoctor) {
 		/** 插入医生信息表 */
 		jdbc.update(FILL_DOCTOR, fillDoctor.getName(), fillDoctor.getHospitalId(), fillDoctor.getDepartmentId(), fillDoctor.getOfficePhone(), fillDoctor.getTitleId(),
-				DoctorStatus.UNDER_VERIFY.ordinal(), fillDoctor.getHead(), fillDoctor.getIdCardPath(), fillDoctor.getTitleCardPath(), fillDoctor.getLicenseCardPath(), fillDoctor.getSkill(),
+				DoctorStatus.UNDER_VERIFY.ordinal(), fillDoctor.getHeadPath(), fillDoctor.getIdCardPath(), fillDoctor.getTitleCardPath(), fillDoctor.getLicenseCardPath(), fillDoctor.getSkill(),
 				fillDoctor.getExperience(), fillDoctor.getOfflineId(), doctor.getId());
 		return loadDoctorById(doctor.getId());
 	}
 
 	protected void insertAuth(Doctor doctor, FillDoctor fillDoctor) {
 		/** 插入认证信息表 */
-		jdbc.update(INSERT_AUTH, doctor.getId(), fillDoctor.getName(), fillDoctor.getHospitalId(), fillDoctor.getDepartmentId(), fillDoctor.getOfficePhone(), fillDoctor.getHead(),
+		jdbc.update(INSERT_AUTH, doctor.getId(), fillDoctor.getName(), fillDoctor.getHospitalId(), fillDoctor.getDepartmentId(), fillDoctor.getOfficePhone(), fillDoctor.getHeadPath(),
 				fillDoctor.getIdCardPath(), fillDoctor.getTitleCardPath(), fillDoctor.getLicenseCardPath(), fillDoctor.getType(), fillDoctor.getField());
 	}
 

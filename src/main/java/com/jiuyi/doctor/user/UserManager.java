@@ -315,9 +315,9 @@ public class UserManager implements IUserManager {
 		if (head != null && !head.isEmpty()) {
 			String headFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(head));
 			FileUtil.writeFile(HERD_FILE_PATH, headFileName, head);
-			newDoctor.setHead(headFileName);
+			newDoctor.setHeadPath(headFileName);
 		} else {
-			newDoctor.setHead("doctor_default.png");
+			newDoctor.setHeadPath("doctor_default.png");
 		}
 		if (titleCard != null && !titleCard.isEmpty()) {
 			String titleFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(titleCard));
@@ -400,7 +400,7 @@ public class UserManager implements IUserManager {
 		authDoctor.setType(1);
 		authDoctor.setField(1);
 		authDoctor.setName(doctor.getName());
-		authDoctor.setHead(headFileName);
+		authDoctor.setHeadPath(headFileName);
 		authDoctor.setHospitalId(doctor.getHospitalId());
 		authDoctor.setDepartmentId(doctor.getDepartmentId());
 		authDoctor.setOfficePhone(doctor.getOfficePhone());
@@ -432,7 +432,7 @@ public class UserManager implements IUserManager {
 		authDoctor.setType(1);
 		authDoctor.setField(2);
 		authDoctor.setName(doctor.getName());
-		authDoctor.setHead(doctor.getHeadPath());
+		authDoctor.setHeadPath(doctor.getHeadPath());
 		authDoctor.setHospitalId(doctor.getHospitalId());
 		authDoctor.setDepartmentId(doctor.getDepartmentId());
 		authDoctor.setOfficePhone(doctor.getOfficePhone());
@@ -458,7 +458,7 @@ public class UserManager implements IUserManager {
 		for (FillDoctor authInfo : authInfos) {
 			if (authInfo.getField() == 1) {
 				res.put("headStatus", authInfo.getStatus());
-				res.put("head", authInfo.getHead());
+				res.put("head", authInfo.getHeadPath());
 			} else {
 				res.put("titleStatus", authInfo.getStatus());
 				res.put("titleCardPath", authInfo.getTitleCardPath());

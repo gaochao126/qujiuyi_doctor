@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.jiuyi.frame.annotations.Column;
 import com.jiuyi.frame.annotations.ConfigPrefix;
 
 /**
@@ -35,7 +36,9 @@ public class FillDoctor {
 
 	private Integer gender;
 
-	private String head;
+	@Column("head")
+	@ConfigPrefix("doctor.head.path")
+	private String headPath;
 	private String idCardPath;
 
 	@ConfigPrefix("doctor.titlecard.path")
@@ -111,14 +114,6 @@ public class FillDoctor {
 		this.titleId = titleId;
 	}
 
-	public String getHead() {
-		return head;
-	}
-
-	public void setHead(String head) {
-		this.head = head;
-	}
-
 	public void setIdCardPath(String idCardPath) {
 		this.idCardPath = idCardPath;
 	}
@@ -186,6 +181,14 @@ public class FillDoctor {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public String getHeadPath() {
+		return headPath;
+	}
+
+	public void setHeadPath(String headPath) {
+		this.headPath = headPath;
 	}
 
 }
