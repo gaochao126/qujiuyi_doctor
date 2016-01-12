@@ -144,10 +144,6 @@ public class UserDAO extends DbBase {
 		jdbc.update(UPDATE_QRCODE, new Object[] { qrCode, doctorId });
 	}
 
-	protected List<Integer> doctorIds() {
-		return jdbc.queryForList("select `id` from `t_doctor`", Integer.class);
-	}
-
 	protected Doctor loadOfflineDoctor(int offlineId) {
 		return queryForObjectDefaultBuilder(SELECT_HOSPITAL_DOCTOR, new Object[] { offlineId }, Doctor.class);
 	}
