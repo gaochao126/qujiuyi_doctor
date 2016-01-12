@@ -130,8 +130,7 @@ public class UserController extends ControllerBase {
 	}
 
 	@RequestMapping(CMD_DOCTOR_FILL)
-	@ResponseBody
-	public ServerResult handleFillInfo(@TokenUser @Permission(DoctorStatus.NEED_AUTH) Doctor doctor, @Valid @ModelAttribute FillDoctor newDoctor, BindingResult br,
+	public @ResponseBody ServerResult handleFillInfo(@TokenUser @Permission(DoctorStatus.NEED_AUTH) Doctor doctor, @Valid @ModelAttribute FillDoctor newDoctor, BindingResult br,
 			@RequestParam(value = "head", required = false) MultipartFile head, @RequestParam("idCard") MultipartFile idCard,
 			@RequestParam(value = "titleCard", required = false) MultipartFile titleCard, @RequestParam("licenseCard") MultipartFile licenseCard) {
 		if (br.hasErrors()) {
