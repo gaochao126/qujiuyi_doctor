@@ -4,6 +4,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.jiuyi.frame.annotations.ConfigPrefix;
+
 /**
  * @Author: xutaoyang @Date: 下午4:16:03
  *
@@ -32,12 +34,22 @@ public class FillDoctor {
 	private Integer offlineId;// 对应的线下医生的id
 
 	private Integer gender;
-	private String headPath;
+
+	private String head;
 	private String idCardPath;
+
+	@ConfigPrefix("doctor.titlecard.path")
 	private String titleCardPath;
 	private String licenseCardPath;
 
+	/** 0注册时提交 1信息修改 */
 	private int type;
+
+	/** 0全部 1头像 2职称证 */
+	private int field;
+
+	/** 0待审核 1审核通过 2审核未通过 */
+	private int status;
 
 	public String getName() {
 		return name;
@@ -61,10 +73,6 @@ public class FillDoctor {
 
 	public Integer getTitleId() {
 		return titleId;
-	}
-
-	public String getHeadPath() {
-		return headPath;
 	}
 
 	public String getIdCardPath() {
@@ -103,8 +111,12 @@ public class FillDoctor {
 		this.titleId = titleId;
 	}
 
-	public void setHeadPath(String headPath) {
-		this.headPath = headPath;
+	public String getHead() {
+		return head;
+	}
+
+	public void setHead(String head) {
+		this.head = head;
 	}
 
 	public void setIdCardPath(String idCardPath) {
@@ -157,6 +169,23 @@ public class FillDoctor {
 
 	public void setDoctorId(int doctorId) {
 		this.doctorId = doctorId;
+	}
+
+	public int getField() {
+		return field;
+	}
+
+	public void setField(int field) {
+		this.field = field;
+	}
+
+	/** 0待审核 1审核通过 2审核未通过 */
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 
 }

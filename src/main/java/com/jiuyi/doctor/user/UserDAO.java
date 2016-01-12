@@ -17,7 +17,6 @@ import com.jiuyi.doctor.hospitals.HospitalService;
 import com.jiuyi.doctor.user.builder.DoctorBuilder;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.user.model.DoctorStatus;
-import com.jiuyi.doctor.user.model.EditStatus;
 import com.jiuyi.doctor.user.model.FillDoctor;
 import com.jiuyi.doctor.user.model.RecognizeDoctor;
 import com.jiuyi.doctor.user.model.RecognizeDoctorBuilder;
@@ -46,9 +45,10 @@ public class UserDAO extends DbBase {
 	private static final String SELECT_BY_NAME = "SELECT * FROM `t_hospital_doctor` WHERE `name`=?";
 	private static final String SELECT_VERIFY_FAIL_DESC = "SELECT `description` FROM `t_doctor_auth` WHERE `doctorId`=? ORDER BY `id` DESC LIMIT 1";
 	private static final String SELECT_HOSPITAL_DOCTOR = "SELECT * FROM `t_hospital_doctor` WHERE `id`=?";
+	private static final String SELECT_AUTH_INFO = "SELECT * FROM `t_doctor_auth` WHERE `doctorId`=?";
 
 	private static final String INSERT_DOCTOR = "INSERT INTO `t_doctor`(`phone`,`password`,`status`) VALUES(?,?,?)";
-	private static final String INSERT_AUTH = "INSERT `t_doctor_auth`(`doctorId`,`name`,`hospitalId`,`departmentId`,`officePhone`,`head`,`idCardPath`,`titleCardPath`,`licenseCardPath`,`type`) VALUE(?,?,?,?,?,?,?,?,?,?)";
+	private static final String INSERT_AUTH = "INSERT `t_doctor_auth`(`doctorId`,`name`,`hospitalId`,`departmentId`,`officePhone`,`head`,`idCardPath`,`titleCardPath`,`licenseCardPath`,`type`,`field`) VALUE(?,?,?,?,?,?,?,?,?,?,?)";
 	private static final String FILL_DOCTOR = "UPDATE `t_doctor` SET `name`=?,`hospitalId`=?,`departmentId`=?,`officePhone`=?,`titleId`=?,`status`=?, `head`=?,`idCardPath`=?,`titleCardPath`=?,`licenseCardPath`=?,skill=?,experience=?,offlineId=? WHERE `id`=?";
 	private static final String UPDATE_DOCTOR = "UPDATE `t_doctor` SET `name`=?,`hospitalId`=? WHERE `id`=?";
 	private static final String UPDATE_PHONE = "UPDATE `t_doctor` SET `phone`=? WHERE `id`=?";
@@ -56,7 +56,6 @@ public class UserDAO extends DbBase {
 	private static final String UPDATE_COL = "UPDATE `t_doctor` SET `#col#`=? WHERE `id`=?";
 	private static final String UPDATE_HEAD = "UPDATE `t_doctor` SET `head`=? WHERE `id`=?";
 	private static final String UPDATE_QRCODE = "UPDATE `t_doctor` SET `qrCodeImg`=? WHERE `id`=?";
-	private static final String UPDATE_EIDT_STATUS = "UPDATE `t_doctor` SET `editStatus`=? WHERE `id`=?";
 	private static final String UPDATE_TOKEN = "UPDATE `t_doctor` SET `token`=? WHERE `id`=?";
 
 	public Doctor updateSingleCol(Doctor doctor, String dbField, Object value) {
@@ -81,15 +80,15 @@ public class UserDAO extends DbBase {
 	protected Doctor fillDoctor(Doctor doctor, FillDoctor fillDoctor) {
 		/** 插入医生信息表 */
 		jdbc.update(FILL_DOCTOR, fillDoctor.getName(), fillDoctor.getHospitalId(), fillDoctor.getDepartmentId(), fillDoctor.getOfficePhone(), fillDoctor.getTitleId(),
-				DoctorStatus.UNDER_VERIFY.ordinal(), fillDoctor.getHeadPath(), fillDoctor.getIdCardPath(), fillDoctor.getTitleCardPath(), fillDoctor.getLicenseCardPath(), fillDoctor.getSkill(),
+				DoctorStatus.UNDER_VERIFY.ordinal(), fillDoctor.getHead(), fillDoctor.getIdCardPath(), fillDoctor.getTitleCardPath(), fillDoctor.getLicenseCardPath(), fillDoctor.getSkill(),
 				fillDoctor.getExperience(), fillDoctor.getOfflineId(), doctor.getId());
 		return loadDoctorById(doctor.getId());
 	}
 
 	protected void insertAuth(Doctor doctor, FillDoctor fillDoctor) {
 		/** 插入认证信息表 */
-		jdbc.update(INSERT_AUTH, doctor.getId(), fillDoctor.getName(), fillDoctor.getHospitalId(), fillDoctor.getDepartmentId(), fillDoctor.getOfficePhone(), fillDoctor.getHeadPath(),
-				fillDoctor.getIdCardPath(), fillDoctor.getTitleCardPath(), fillDoctor.getLicenseCardPath(), fillDoctor.getType());
+		jdbc.update(INSERT_AUTH, doctor.getId(), fillDoctor.getName(), fillDoctor.getHospitalId(), fillDoctor.getDepartmentId(), fillDoctor.getOfficePhone(), fillDoctor.getHead(),
+				fillDoctor.getIdCardPath(), fillDoctor.getTitleCardPath(), fillDoctor.getLicenseCardPath(), fillDoctor.getType(), fillDoctor.getField());
 	}
 
 	public int addDoctor(final String phone, final String password) {
@@ -153,11 +152,7 @@ public class UserDAO extends DbBase {
 		return queryForObjectDefaultBuilder(SELECT_HOSPITAL_DOCTOR, new Object[] { offlineId }, Doctor.class);
 	}
 
-	protected void updateEditStatus(Doctor doctor, EditStatus editStatus) {
-		jdbc.update(UPDATE_EIDT_STATUS, editStatus.ordinal(), doctor.getId());
-	}
-
-	protected void setToken(Doctor doctor,String newToken) {
+	protected void setToken(Doctor doctor, String newToken) {
 		jdbc.update(UPDATE_TOKEN, newToken, doctor.getId());
 	}
 
@@ -165,7 +160,7 @@ public class UserDAO extends DbBase {
 	 * @param token
 	 * @return
 	 */
-	public Doctor loadDoctorByToken(String token) {
+	protected Doctor loadDoctorByToken(String token) {
 		return queryForObject(SELECT_BY_TOKEN, new Object[] { token }, doctorBuilder);
 	}
 
@@ -175,4 +170,9 @@ public class UserDAO extends DbBase {
 	protected void removeToken(Doctor doctor) {
 		jdbc.update(UPDATE_TOKEN, "", doctor.getId());
 	}
+
+	protected List<FillDoctor> loadDoctorAuthInfo(Doctor doctor) {
+		return queryForList(SELECT_AUTH_INFO, new Object[] { doctor.getId() }, FillDoctor.class);
+	}
+
 }

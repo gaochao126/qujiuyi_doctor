@@ -35,7 +35,6 @@ public class Doctor extends User {
 
 	/** 线下医生id */
 	private int offlineId;
-	private int editStatus;
 	private int status;
 	private int score;
 	private Integer titleId; // 职称
@@ -355,14 +354,6 @@ public class Doctor extends User {
 		this.lastAccesss = doctor.getLastAccesss();
 		this.channelId = doctor.getChannelId();
 		this.deviceType = doctor.getDeviceType();
-	}
-
-	public int getEditStatus() {
-		return editStatus;
-	}
-
-	public void setEditStatus(int editStatus) {
-		this.editStatus = editStatus;
 	}
 
 	public int getOfflineId() {
