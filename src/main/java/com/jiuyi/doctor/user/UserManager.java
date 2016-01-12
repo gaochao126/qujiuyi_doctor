@@ -44,6 +44,7 @@ import com.jiuyi.frame.helper.Loggers;
 import com.jiuyi.frame.jobs.JobContext;
 import com.jiuyi.frame.jobs.JobService;
 import com.jiuyi.frame.jobs.JobType;
+import com.jiuyi.frame.keyvalue.KeyValueService;
 import com.jiuyi.frame.util.FileUtil;
 import com.jiuyi.frame.util.NumberUtil;
 import com.jiuyi.frame.util.StringUtil;
@@ -58,6 +59,7 @@ public class UserManager implements IUserManager {
 	private String TITLE_CARD_FILE_PATH;
 	private String LICENSE_CARD_FILE_PATH;
 	private String file_name_format = "%s-%s.%s";
+	private static final String K_FIRST_LOGIN = "user_first_login";
 
 	@Autowired
 	@Qualifier("UserDAO")
@@ -95,6 +97,8 @@ public class UserManager implements IUserManager {
 
 	@Autowired
 	QRCodeService qrCodeService;
+
+	private @Autowired KeyValueService keyValueService;
 
 	private Map<String, UpdateUserInfo> name_update = new HashMap<>();
 	private ConcurrentHashMap<Integer, Doctor> id_doctor = new ConcurrentHashMap<Integer, Doctor>();
@@ -268,6 +272,12 @@ public class UserManager implements IUserManager {
 			res.put("authFailReason", userDao.getVerifyFailDesc(doctor));
 		}
 		res.putObjects("chatList", consultService.loadUnFinishConsult(doctor));
+		Integer isFirstLogin = keyValueService.keyValueForever.getValueInt(doctor.getId(), K_FIRST_LOGIN);
+		boolean isFirst = isFirstLogin == 0 && doctor.getStatus() == DoctorStatus.NORMAL.ordinal();// 审核成功后第一次登陆
+		if (isFirst) {
+			keyValueService.keyValueForever.setValue(doctor.getId(), K_FIRST_LOGIN, 1);
+		}
+		res.put("isFirstLogin", isFirst);
 		putEasemobInfo(doctor, res);
 		return res;
 	}
@@ -307,7 +317,7 @@ public class UserManager implements IUserManager {
 			FileUtil.writeFile(HERD_FILE_PATH, headFileName, head);
 			newDoctor.setHeadPath(headFileName);
 		} else {
-			newDoctor.setHeadPath("doctor-head.jpg");
+			newDoctor.setHeadPath("doctor_default.png");
 		}
 		if (titleCard != null && !titleCard.isEmpty()) {
 			String titleFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(titleCard));

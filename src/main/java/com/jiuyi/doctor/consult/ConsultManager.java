@@ -2,6 +2,7 @@ package com.jiuyi.doctor.consult;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,6 +132,9 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		if (consult.getDoctorId() != doctor.getId() && consult.getType() != CONSULT_FREE) {
 			return new ServerResult(ResultConst.NOT_SATISFY);
 		}
+		if (consult.getPhone().equals(doctor.getPhone())) {
+			return new FailResult("对不起，不能接受自己的提问哦~");
+		}
 		Consult consulting = dao.loadConsultingByPatientId(doctor, consult.getPatientId());
 		if (consulting != null) {
 			return new FailResult("您与该患者有正在进行的咨询，请先结束该次咨询");
@@ -205,7 +209,14 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 
 	/** 免费咨询 */
 	protected ServerResult loadFreeConsult(Doctor doctor, int page, int pageSize) {
-		return new ServerResult("list", dao.loadFreeConsult(doctor, page, pageSize), true);
+		List<Consult> list = dao.loadFreeConsult(doctor, page, pageSize);
+		// 不显示和医生有相同电话的患者的提问，这种情况比较少，所以不在sql里面做了
+		for (Iterator<Consult> iter = list.listIterator(); iter.hasNext();) {
+			if (iter.next().getPhone().equals(doctor.getPhone())) {
+				iter.remove();
+			}
+		}
+		return new ServerResult("list", list, true);
 	}
 
 	/** 已经完成的，患者列表 ,type=0表示免费类型，非0表示付费类型 */

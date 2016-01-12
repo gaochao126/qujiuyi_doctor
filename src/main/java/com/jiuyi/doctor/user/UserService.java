@@ -104,7 +104,7 @@ public class UserService {
 
 	/** 注册完后完善个人信息 */
 	protected ServerResult handleFillInfo(Doctor doctor, FillDoctor newDoctor, MultipartFile head, MultipartFile idCard, MultipartFile titleCard, MultipartFile licenseCard) {
-		if (doctor.getStatus() != DoctorStatus.NEED_AUTH.id) {
+		if (doctor.getStatus() != DoctorStatus.NEED_AUTH.id && doctor.getStatus() != DoctorStatus.VERIFY_FAIL.id) {
 			return new ServerResult(ResultConst.NOT_SATISFY);
 		}
 		if (isFileNullOrEmpty(idCard) || isFileNullOrEmpty(licenseCard)) {

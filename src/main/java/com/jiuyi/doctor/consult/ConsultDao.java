@@ -31,7 +31,7 @@ public class ConsultDao extends DbBase {
 
 	private static final String SELECT_ALL_CONSULT_BY_PATIENTID = "SELECT * FROM `t_patient_consult` WHERE `patientId`=? AND `doctorId`=?";
 	private static final String SELECT_CONSULT_BY_PATIENTID = "SELECT * FROM `t_patient_consult` WHERE `consultStatus`=1 AND `patientId`=? AND `doctorId`=?";
-	private static final String SELECT_CONSULT = "SELECT * FROM `t_patient_consult` WHERE `id`=?";
+	private static final String SELECT_CONSULT = "SELECT consult.*,patient.phone FROM `t_patient_consult` consult,t_patient patient WHERE patient.id=consult.patientId AND consult.`id`=?";
 	private static final String SELECT_CHAT_LIST = "SELECT list.*,patient.`name`,patient.`headPortrait` "//
 			+ "FROM `t_doctor_chat_list` list, `t_patient` patient "//
 			+ "WHERE patient.`id`=list.`patientId` AND `doctorId`=?";//
@@ -108,7 +108,7 @@ public class ConsultDao extends DbBase {
 	// 咨询中，付费新申请，免费申请count
 	private static final String SELECT_CHATING_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` consult,`t_patient` patient  WHERE consult.patientId = patient.id AND  consult.`consultStatus`=1 AND consult.`doctorId`=?";
 	private static final String SELECT_NEW_PAYED_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` consult,`t_patient` patient  WHERE consult.patientId = patient.id AND  consult.`acceptStatus`=0 AND  consult.`consultStatus`=0 AND  consult.`payStatus`=1 AND  consult.`type` IN(1,2) AND consult.`doctorId`=? ";
-	private static final String SELECT_NEW_FREE_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` consult,`t_patient` patient WHERE consult.patientId = patient.id AND consult.`acceptStatus`=0 AND consult.`consultStatus`=0 AND consult.`type`=0";
+	private static final String SELECT_NEW_FREE_COUNT = "SELECT COUNT(*) FROM `t_patient_consult` consult,`t_patient` patient WHERE consult.patientId = patient.id AND patient.phone<>? AND consult.`acceptStatus`=0 AND consult.`consultStatus`=0 AND consult.`type`=0";
 	// 咨询中，付费新申请count end
 
 	private static final String SELECT_UNREAD_MSG = "SELECT `sender`,`chatType`,`chatContent`,`chatTime`,`serviceId` FROM `t_chat_his` WHERE `receiver`=? AND `receiverType`=1 AND `readStatus`=0";
@@ -272,6 +272,6 @@ public class ConsultDao extends DbBase {
 	}
 
 	protected int countNewFree(Doctor doctor) {
-		return queryForInteger(SELECT_NEW_FREE_COUNT);
+		return queryForInteger(SELECT_NEW_FREE_COUNT, doctor.getPhone());
 	}
 }
