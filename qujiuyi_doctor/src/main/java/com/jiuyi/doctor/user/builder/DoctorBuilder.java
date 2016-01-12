@@ -56,12 +56,10 @@ public class DoctorBuilder implements RowMapper<Doctor> {
 		int praisedNum = rs.getInt("praisedNum");
 		String qrCodeImg = rs.getString("qrCodeImg");
 		int offlineId = rs.getInt("offlineId");
-		int editStatus = rs.getInt("editStatus");
 		Doctor doctor = new Doctor(id, phone, name, hospital, department, headFileName, idCardFileName, titleCardFileName, licenseCardFileName, status, score, titleId, skill, experience, position,
 				graduationSchool, praisedNum, qrCodeImg);
 		doctor.setHospitalId(hospitalId);
 		doctor.setOfflineId(offlineId);
-		doctor.setEditStatus(editStatus);
 		doctor.setDepartmentId(departmentId);
 		doctor.setOfficePhone(officePhone);
 		return doctor;

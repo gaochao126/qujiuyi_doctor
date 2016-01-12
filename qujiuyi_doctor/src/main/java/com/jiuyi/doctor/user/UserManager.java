@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -30,7 +31,6 @@ import com.jiuyi.doctor.praise.PraiseService;
 import com.jiuyi.doctor.user.model.BeforeLogin;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.user.model.DoctorStatus;
-import com.jiuyi.doctor.user.model.EditStatus;
 import com.jiuyi.doctor.user.model.ExpiredToken;
 import com.jiuyi.doctor.user.model.FillDoctor;
 import com.jiuyi.doctor.user.update.UpdateSkill;
@@ -315,9 +315,9 @@ public class UserManager implements IUserManager {
 		if (head != null && !head.isEmpty()) {
 			String headFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(head));
 			FileUtil.writeFile(HERD_FILE_PATH, headFileName, head);
-			newDoctor.setHeadPath(headFileName);
+			newDoctor.setHead(headFileName);
 		} else {
-			newDoctor.setHeadPath("doctor_default.png");
+			newDoctor.setHead("doctor_default.png");
 		}
 		if (titleCard != null && !titleCard.isEmpty()) {
 			String titleFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(titleCard));
@@ -339,6 +339,7 @@ public class UserManager implements IUserManager {
 		Doctor afterFill = userDao.fillDoctor(doctor, newDoctor);
 		/* 插入认证信息 */
 		newDoctor.setType(0);
+		newDoctor.setField(0);
 		userDao.insertAuth(doctor, newDoctor);
 		afterFill.copyInfo(doctor);
 		putDoctor(doctor.getAccess_token(), afterFill);
@@ -397,8 +398,9 @@ public class UserManager implements IUserManager {
 		FillDoctor authDoctor = new FillDoctor();
 		authDoctor.setDoctorId(doctor.getId());
 		authDoctor.setType(1);
+		authDoctor.setField(1);
 		authDoctor.setName(doctor.getName());
-		authDoctor.setHeadPath(headFileName);
+		authDoctor.setHead(headFileName);
 		authDoctor.setHospitalId(doctor.getHospitalId());
 		authDoctor.setDepartmentId(doctor.getDepartmentId());
 		authDoctor.setOfficePhone(doctor.getOfficePhone());
@@ -407,7 +409,6 @@ public class UserManager implements IUserManager {
 		authDoctor.setLicenseCardPath(doctor.getLicenseCardPath());
 		/* 需要审核 */
 		userDao.insertAuth(doctor, authDoctor);
-		userDao.updateEditStatus(doctor, EditStatus.EDITED);
 		return new ServerResult();
 	}
 
@@ -422,14 +423,16 @@ public class UserManager implements IUserManager {
 		if (titleCard == null || titleCard.isEmpty()) {
 			return new ServerResult(ResultConst.PARAM_ERROR);
 		}
+
 		String titleFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(titleCard));
 		FileUtil.writeFile(TITLE_CARD_FILE_PATH, titleFileName, titleCard);
 		FillDoctor authDoctor = new FillDoctor();
 		authDoctor.setTitleCardPath(titleFileName);
 		authDoctor.setDoctorId(doctor.getId());
 		authDoctor.setType(1);
+		authDoctor.setField(2);
 		authDoctor.setName(doctor.getName());
-		authDoctor.setHeadPath(doctor.getHeadPath());
+		authDoctor.setHead(doctor.getHeadPath());
 		authDoctor.setHospitalId(doctor.getHospitalId());
 		authDoctor.setDepartmentId(doctor.getDepartmentId());
 		authDoctor.setOfficePhone(doctor.getOfficePhone());
@@ -437,8 +440,31 @@ public class UserManager implements IUserManager {
 		authDoctor.setLicenseCardPath(doctor.getLicenseCardPath());
 		/* 需要审核 */
 		userDao.insertAuth(doctor, authDoctor);
-		userDao.updateEditStatus(doctor, EditStatus.EDITED);
 		return new ServerResult();
+	}
+
+	/**
+	 * @param doctor
+	 * @return
+	 */
+	protected ServerResult loadEditStatus(Doctor doctor) {
+		ServerResult res = new ServerResult();
+		int defaultStatus = 3;// 未提交
+		res.put("headStatus", defaultStatus);
+		res.put("titleStatus", defaultStatus);
+		res.put("head", "");
+		res.put("titleCardPath", "");
+		List<FillDoctor> authInfos = userDao.loadDoctorAuthInfo(doctor);
+		for (FillDoctor authInfo : authInfos) {
+			if (authInfo.getField() == 1) {
+				res.put("headStatus", authInfo.getStatus());
+				res.put("head", authInfo.getHead());
+			} else {
+				res.put("titleStatus", authInfo.getStatus());
+				res.put("titleCardPath", authInfo.getTitleCardPath());
+			}
+		}
+		return res;
 	}
 
 	/**

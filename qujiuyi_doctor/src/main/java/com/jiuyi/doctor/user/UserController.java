@@ -44,6 +44,7 @@ public class UserController extends ControllerBase {
 	private static final String CMD_MODIFY_HEAD = PRE + "modify_head";
 	private static final String CMD_LOAD_INFO_BY_ID = PRE + "info_by_id";
 	private static final String CMD_UPLOAD_TITLE_CARD = PRE + "upload_title";
+	private static final String CMD_LOAD_EDIT_STATUS = PRE + "edit_status";// 各个信息的修改状态
 
 	@Autowired
 	@Qualifier("UserService")
@@ -182,6 +183,19 @@ public class UserController extends ControllerBase {
 	public ServerResult uploadTitleCard(@TokenUser Doctor doctor, @RequestParam("title") MultipartFile titleCard) {
 		ServerResult res = manager.uploadTitleCard(doctor, titleCard);
 		return res;
+	}
+
+	/**
+	 * 医生各个信息的修改状态，处于正在修改状态的信息在审核之前不能再修改
+	 * 
+	 * @param doctor
+	 * @param titleCard
+	 * @return
+	 */
+	@RequestMapping(CMD_LOAD_EDIT_STATUS)
+	@ResponseBody
+	public ServerResult loadEditStatus(@TokenUser Doctor doctor) {
+		return manager.loadEditStatus(doctor);
 	}
 
 }
