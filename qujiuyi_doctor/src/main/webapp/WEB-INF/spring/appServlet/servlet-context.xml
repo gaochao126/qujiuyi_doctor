@@ -101,5 +101,6 @@
 		<beans:bean class="com.jiuyi.frame.interceptor.SecurityInterceptor" />
 		<beans:bean class="com.jiuyi.frame.interceptor.TraceInterceptor" />
 		<beans:bean class="com.jiuyi.frame.interceptor.AccessInterceptor" />
+		<beans:bean class="com.jiuyi.frame.interceptor.PageInterceptor" />
 	</interceptors>
 </beans:beans>
