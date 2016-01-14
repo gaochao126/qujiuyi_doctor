@@ -11,7 +11,7 @@ import com.jiuyi.doctor.consult.model.ChatRecord;
 import com.jiuyi.doctor.consult.model.Consult;
 import com.jiuyi.doctor.consult.model.DoctorChat;
 import com.jiuyi.doctor.consult.model.UnreadMsg;
-import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.patients.model.Patient;
 import com.jiuyi.doctor.services.ServiceStatus;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.DbBase;

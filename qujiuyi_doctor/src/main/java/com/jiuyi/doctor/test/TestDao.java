@@ -5,7 +5,7 @@ package com.jiuyi.doctor.test;
 
 import org.springframework.stereotype.Repository;
 
-import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.patients.model.Patient;
 import com.jiuyi.frame.base.DbBase;
 
 /**

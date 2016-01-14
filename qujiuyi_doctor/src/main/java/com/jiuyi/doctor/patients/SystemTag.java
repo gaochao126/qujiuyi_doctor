@@ -1,4 +1,4 @@
-package com.jiuyi.doctor.patients.v2;
+package com.jiuyi.doctor.patients;
 
 /**
  * @Author: xutaoyang @Date: 上午10:44:13

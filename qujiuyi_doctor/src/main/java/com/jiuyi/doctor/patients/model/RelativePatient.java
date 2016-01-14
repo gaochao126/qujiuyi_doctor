@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jiuyi.doctor.patients.v2.model;
+package com.jiuyi.doctor.patients.model;
 
 import java.util.Date;
 

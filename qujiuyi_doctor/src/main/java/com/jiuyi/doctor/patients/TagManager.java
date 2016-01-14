@@ -1,4 +1,4 @@
-package com.jiuyi.doctor.patients.v2;
+package com.jiuyi.doctor.patients;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,10 +8,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.jiuyi.doctor.patients.v2.model.DoctorTags;
-import com.jiuyi.doctor.patients.v2.model.Patient;
-import com.jiuyi.doctor.patients.v2.model.RelativePatient;
-import com.jiuyi.doctor.patients.v2.model.Tag;
+import com.jiuyi.doctor.patients.model.DoctorTags;
+import com.jiuyi.doctor.patients.model.Patient;
+import com.jiuyi.doctor.patients.model.RelativePatient;
+import com.jiuyi.doctor.patients.model.Tag;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.ManagerBase;
 import com.jiuyi.frame.front.FailResult;
