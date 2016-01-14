@@ -1,4 +1,4 @@
-package com.jiuyi.doctor.patients.v2;
+package com.jiuyi.doctor.patients;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,14 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.jiuyi.doctor.patients.v2.model.ContactSrc;
-import com.jiuyi.doctor.patients.v2.model.Patient;
-import com.jiuyi.doctor.patients.v2.model.RelativePatient;
-import com.jiuyi.doctor.patients.v2.model.Tag;
+import com.jiuyi.doctor.patients.model.DoctorPatient;
+import com.jiuyi.doctor.patients.model.DoctorPatientRelation;
+import com.jiuyi.doctor.patients.model.Patient;
+import com.jiuyi.doctor.patients.model.RelativePatient;
+import com.jiuyi.doctor.patients.model.Tag;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.DbBase;
 import com.jiuyi.frame.util.StringUtil;
@@ -32,40 +34,62 @@ import com.jiuyi.frame.util.StringUtil;
 @Repository
 public class PatientDaoV2 extends DbBase {
 
+	// @formatter:off
 	private static final String SELECT_PERSONAL_PATIENTS_COUNT = "SELECT COUNT(*) FROM `t_personal_doctor` WHERE `doctorId`=?";
-	private static final String SELECT_UNFAMILIAR_COUNT = "SELECT count(patientId) FROM t_doctor_unfamiliar_patient WHERE doctorId=? ";
+
+	private static final String SELECT_UNFAMILIAR_COUNT = "SELECT count(patientId) FROM t_doctor_remark_patient WHERE relation=? AND doctorId=?";
 
 	private static final String SELECT_PATIENT = "SELECT * FROM `t_patient` WHERE `id`=?";
-	private static final String SELECT_SIMPLE_PATIENT = "SELECT c.patientId,p.name,p.gender,p.phone,p.headPortrait,p.birthday as age,r.remark,r.note FROM `#tableName#` c join `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=c.doctorId WHERE c.`#where#`=?;";
-	private static final String SELECT_CONTACTS = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_contacts").replace("#where#", "doctorId");
-	private static final String SELECT_UNFAMILIAR = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_unfamiliar_patient").replace("#where#", "doctorId");
-	private static final String SELECT_BLACKLIST = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_doctor_blacklist_patient").replace("#where#", "doctorId");
-	private static final String SELECT_PERSONAL_PATIENTS = SELECT_SIMPLE_PATIENT.replace("#tableName#", "t_personal_doctor").replace("#where#", "doctorId");
-	private static final String SELECT_SIMPLE_PATIENT_BY_TAG = "SELECT c.*,p.`name`,p.`gender`,p.`headPortrait`,p.`birthday` AS age,r.remark,r.note FROM `t_patient_tags` c JOIN `t_patient` p ON c.patientId =p.id LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=? WHERE c.`tagId`=?;";
-	private static final String SELECT_SIMPLE_PATIENT_BATCH = "SELECT p.`id` as patientId,p.`name`,p.`gender`,p.`headPortrait`,p.`birthday` AS age FROM `t_patient` p WHERE p.`id` IN (#patientIds#)";
-	private static final String SELECT_PATIENT_DETAIL = "SELECT p.id as patientId,p.*,r.remark,r.note,r.relation FROM `t_patient` p LEFT JOIN `t_doctor_remark_patient` r ON r.doctorId=? AND r.patientId=p.id WHERE p.id=?;";
+
+	private static final String SELECT_DOCTOR_PATIENT = "SELECT * FROM `t_doctor_remark_patient` WHERE `doctorId`=? AND `patientId`=?";
+
+	private static final String SELECT_PATIENTS_BY_RELATION = "SELECT relation.patientId,p.name,p.gender,p.phone,p.headPortrait,p.birthday AS age,relation.relation,relation.note "
+			+ "FROM `t_doctor_remark_patient` relation "
+			+ "JOIN `t_patient` p ON relation.patientId =p.id "
+			+ "WHERE relation.relation=? AND relation.doctorId=?";
+	
+	private static final String SELECT_PERSONAL_PATIENTS = "SELECT relation.patientId,p.name,p.gender,p.phone,p.headPortrait,p.birthday AS age,relation.relation,relation.note "
+			+ "FROM `t_personal_doctor` personal "
+			+ "JOIN `t_patient` p ON p.id=personal.patientId "
+			+ "JOIN `t_doctor_remark_patient` relation ON relation.patientId=personal.patientId "
+			+ "WHERE personal.doctorId=?";
+	
+	private static final String SELECT_SIMPLE_PATIENT_BY_TAG = "SELECT c.*,p.`name`,p.`gender`,p.`headPortrait`,p.`birthday` AS age,r.remark,r.note "
+			+ "FROM `t_patient_tags` c "
+			+ "JOIN `t_patient` p ON c.patientId =p.id "
+			+ "LEFT JOIN `t_doctor_remark_patient` r ON r.patientId=c.patientId AND r.doctorId=? "
+			+ "WHERE c.`tagId`=?;";
+	
+	private static final String SELECT_PATIENT_DETAIL = "SELECT p.id as patientId,p.*,r.remark,r.note,r.relation "
+			+ "FROM `t_patient` p "
+			+ "LEFT JOIN `t_doctor_remark_patient` r ON r.doctorId=? AND r.patientId=p.id "
+			+ "WHERE p.id=?;";
+	
 	private static final String SELECT_DOCTOR_PATIENT_TYPE = "SELECT `relation` from `t_doctor_remark_patient` WHERE `doctorId`=? AND `patientId`=?";
-	private static final String SELECT_PATIENT_BY_PHONE = "SELECT patient.id as patientId,patient.*,remark.remark,remark.relation "//
-			+ "FROM `t_patient` patient "//
-			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.patientId=patient.id AND remark.doctorId=? "//
-			+ "WHERE patient.phone=?";//
+	
+	private static final String SELECT_PATIENT_BY_PHONE = "SELECT patient.id as patientId,patient.*,remark.remark,remark.relation "
+			+ "FROM `t_patient` patient "
+			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.patientId=patient.id "
+			+ "WHERE patient.phone=? AND remark.doctorId=?";
 
 	private static final String SELECT_TAGS = "SELECT * FROM `t_doctor_tags` WHERE `doctorId`=?";
 	private static final String SELECT_TAGS_PATIENTS = "SELECT * FROM `t_patient_tags` WHERE `tagId` IN (#tagIds#)";
-	private static final String SELECT_CONTACT_SRC = "SELECT `src` FROM `t_doctor_contacts` WHERE `doctorId`=? AND `patientId`=?";
 	private static final String SELECT_RELATIVE_PATIENT = "SELECT * FROM `t_patient_relative` WHERE `patientId`=?";
+	
+	private static final String SELECT_PERSONAL_DOCTOR = "SELECT COUNT(*) FROM `t_personal_doctor` WHERE `expirationTime`>now() AND `doctorId`=? AND `patientId`=?";
 
-	private static final String ADD_CONTACT = "INSERT `t_doctor_contacts`(`doctorId`,`patientId`,`src`) VALUE(?,?,?) ON DUPLICATE KEY UPDATE `src`=?";
-	private static final String ADD_UNFAMILIAR = "INSERT `t_doctor_unfamiliar_patient`(`doctorId`,`patientId`) VALUE(?,?) ON DUPLICATE KEY UPDATE id=id";
-	private static final String ADD_BLACKLIST = "INSERT `t_doctor_blacklist_patient`(`doctorId`,`patientId`) VALUE(?,?) ON DUPLICATE KEY UPDATE id=id";
+	private static final String SEARCH_MY_PATIENTS = "SELECT patient.id as patientId,patient.*,remark.remark,remark.relation "
+			+ "FROM `t_patient` patient "
+			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.patientId=patient.id "
+			+ "WHERE (patient.name LIKE :key OR remark.remark LIKE :key) AND remark.doctorId=:doctorId";
+
+	private static final String SEARCH_MY_PATIENTS_BY_RELATION = SEARCH_MY_PATIENTS + " AND remark.relation=:relation";
+	
+	private static final String INSERT_DOCTOR_PATIENT_RELATION = "INSERT `t_doctor_remark_patient`(`doctorId`,`patientId`,`relation`,`src`) VALUE(?,?,?,?) ON DUPLICATE KEY UPDATE `relation`=?";
 
 	private static final String UPDATE_REMARK = "INSERT `t_doctor_remark_patient`(`doctorId`,`patientId`,`remark`) VALUE(?,?,?) ON DUPLICATE KEY UPDATE `remark`=?";
 	private static final String UPDATE_NOTE = "INSERT `t_doctor_remark_patient`(`doctorId`,`patientId`,`note`) VALUE(?,?,?) ON DUPLICATE KEY UPDATE `note`=?";
 	private static final String UPDATE_RELATION = "INSERT `t_doctor_remark_patient`(`doctorId`,`patientId`,`relation`) VALUE(?,?,?) ON DUPLICATE KEY UPDATE `relation`=?";
-
-	private static final String REMOVE_CONTACT = "DELETE FROM `t_doctor_contacts` WHERE `doctorId`=? AND `patientId`=?";
-	private static final String REMOVE_UNFAMILIAR = "DELETE FROM `t_doctor_unfamiliar_patient` WHERE `doctorId`=? AND `patientId`=?";
-	private static final String REMOVE_BLACKLIST = "DELETE FROM `t_doctor_blacklist_patient` WHERE `doctorId`=? AND `patientId`=?";
 
 	private static final String ADD_TAG = "INSERT `t_doctor_tags`(`doctorId`,`name`) VALUE(?,?)";
 	private static final String DEL_TAG = "DELETE FROM `t_doctor_tags` WHERE `id`=? AND `doctorId`=?";
@@ -73,49 +97,26 @@ public class PatientDaoV2 extends DbBase {
 
 	private static final String INSERT_TAG_PATIENT = "INSERT `t_patient_tags`(`patientId`,`tagId`) VALUE(?,?)";
 	private static final String REMOVE_TAG_PATIENT = "DELETE FROM `t_patient_tags` WHERE `patientId`=? AND `tagId`=?";
+	// @formatter:on
 
 	protected int loadUnfamiliarCount(Doctor doctor) {
-		return queryForInteger(SELECT_UNFAMILIAR_COUNT, doctor.getId());
+		return queryForInteger(SELECT_UNFAMILIAR_COUNT, DoctorPatientRelation.UNFAMILIAR.ordinal(), doctor.getId());
 	}
 
-	protected List<Patient> loadContacts(Doctor doctor) {
-		return queryForList(SELECT_CONTACTS, new Object[] { doctor.getId() }, Patient.class);
+	protected DoctorPatient loadDoctorPatient(Doctor doctor, Integer patientId) {
+		return queryForObjectDefaultBuilder(SELECT_DOCTOR_PATIENT, new Object[] { doctor.getId(), patientId }, DoctorPatient.class);
 	}
 
-	protected List<Patient> loadUnfamiliar(Doctor doctor) {
-		return queryForList(SELECT_UNFAMILIAR, new Object[] { doctor.getId() }, Patient.class);
+	protected List<Patient> loadPatientsByRelation(Doctor doctor, DoctorPatientRelation relation) {
+		return queryForListPage(SELECT_PATIENTS_BY_RELATION, new Object[] { relation.ordinal(), doctor.getId() }, Patient.class);
 	}
 
-	protected List<Patient> loadBlacklist(Doctor doctor) {
-		return queryForList(SELECT_BLACKLIST, new Object[] { doctor.getId() }, Patient.class);
+	protected boolean isPersonal(Doctor doctor, int patientId) {
+		return queryForInteger(SELECT_PERSONAL_DOCTOR, doctor.getId(), patientId) > 0;
 	}
 
-	protected Integer loadContactSrc(Doctor doctor, Integer patientId) {
-		return queryForInteger(SELECT_CONTACT_SRC, doctor.getId(), patientId);
-	}
-
-	protected void addUnfamiliar(Doctor doctor, Integer patientId) {
-		jdbc.update(ADD_UNFAMILIAR, doctor.getId(), patientId);
-	}
-
-	protected void addBlacklist(Doctor doctor, Integer patientId) {
-		jdbc.update(ADD_BLACKLIST, doctor.getId(), patientId);
-	}
-
-	protected void addToContacts(Doctor doctor, Integer patientId, ContactSrc contactSrc) {
-		jdbc.update(ADD_CONTACT, doctor.getId(), patientId, contactSrc.id, contactSrc.id);
-	}
-
-	protected void removeUnfamiliar(Doctor doctor, Integer patientId) {
-		jdbc.update(REMOVE_UNFAMILIAR, doctor.getId(), patientId);
-	}
-
-	protected void removeContact(Doctor doctor, Integer patientId) {
-		jdbc.update(REMOVE_CONTACT, doctor.getId(), patientId);
-	}
-
-	protected void removeBlacklist(Doctor doctor, Integer patientId) {
-		jdbc.update(REMOVE_BLACKLIST, doctor.getId(), patientId);
+	protected void insertDoctorPatientRelation(Doctor doctor, DoctorPatient doctorPatient) {
+		jdbc.update(INSERT_DOCTOR_PATIENT_RELATION, doctor.getId(), doctorPatient.getPatientId(), doctorPatient.getRelation(), doctorPatient.getSrc(), doctorPatient.getRelation());
 	}
 
 	protected List<Tag> loadTags(Doctor doctor) {
@@ -142,13 +143,8 @@ public class PatientDaoV2 extends DbBase {
 		jdbc.update(DEL_TAG, new Object[] { tagId, doctor.getId() });
 	}
 
-	protected List<Patient> loadSimplePatient(List<Integer> patientIds) {
-		String cmd = SELECT_SIMPLE_PATIENT_BATCH.replace("#patientIds#", StringUtil.joinArr(patientIds, ","));
-		return queryForList(cmd, Patient.class);
-	}
-
 	protected List<Patient> loadSimplePatientByTag(Doctor doctor, Integer tagId) {
-		return queryForList(SELECT_SIMPLE_PATIENT_BY_TAG, new Object[] { doctor.getId(), tagId }, Patient.class);
+		return queryForListPage(SELECT_SIMPLE_PATIENT_BY_TAG, new Object[] { doctor.getId(), tagId }, Patient.class);
 	}
 
 	protected void updateTagName(Doctor doctor, Integer tagId, String name) {
@@ -206,7 +202,7 @@ public class PatientDaoV2 extends DbBase {
 
 	/** 私人患者列表 */
 	protected List<Patient> loadSimplePersonal(Doctor doctor) {
-		return queryForList(SELECT_PERSONAL_PATIENTS, new Object[] { doctor.getId() }, Patient.class);
+		return queryForListPage(SELECT_PERSONAL_PATIENTS, new Object[] { doctor.getId() }, Patient.class);
 	}
 
 	protected Patient loadPatientDetailInfo(Doctor doctor, Integer patientId) {
@@ -249,10 +245,25 @@ public class PatientDaoV2 extends DbBase {
 	 * @return
 	 */
 	protected Patient loadPatientByPhone(Doctor doctor, String phone) {
-		return queryForObjectDefaultBuilder(SELECT_PATIENT_BY_PHONE, new Object[] { doctor.getId(), phone }, Patient.class);
+		return queryForObjectDefaultBuilder(SELECT_PATIENT_BY_PHONE, new Object[] { phone, doctor.getId() }, Patient.class);
 	}
 
 	protected List<RelativePatient> loadRelativePatients(Doctor doctor, int patientId) {
-		return queryForList(SELECT_RELATIVE_PATIENT, new Object[]{patientId}, RelativePatient.class);
+		return queryForList(SELECT_RELATIVE_PATIENT, new Object[] { patientId }, RelativePatient.class);
+	}
+
+	protected List<Patient> searchMyPatient(Doctor doctor, String key) {
+		MapSqlParameterSource param = new MapSqlParameterSource();
+		param.addValue("key", "%" + key + "%");
+		param.addValue("doctorId", doctor.getId());
+		return queryForListPage(SEARCH_MY_PATIENTS, param, Patient.class);
+	}
+
+	protected List<Patient> searchMyPatientByRelation(Doctor doctor, String key, DoctorPatientRelation relation) {
+		MapSqlParameterSource param = new MapSqlParameterSource();
+		param.addValue("key", "%" + key + "%");
+		param.addValue("doctorId", doctor.getId());
+		param.addValue("relation", relation.ordinal());
+		return queryForListPage(SEARCH_MY_PATIENTS_BY_RELATION, param, Patient.class);
 	}
 }

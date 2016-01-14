@@ -16,8 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jiuyi.doctor.chatserver.ChatServerService;
 import com.jiuyi.doctor.chatserver.SystemMsg;
 import com.jiuyi.doctor.chatserver.UserType;
-import com.jiuyi.doctor.patients.v2.PatientServiceV2;
-import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.patients.PatientServiceV2;
+import com.jiuyi.doctor.patients.model.DoctorPatient;
+import com.jiuyi.doctor.patients.model.DoctorPatientRelation;
+import com.jiuyi.doctor.patients.model.DoctorPatientSrc;
+import com.jiuyi.doctor.patients.model.Patient;
 import com.jiuyi.doctor.prescription.model.PatientPres;
 import com.jiuyi.doctor.prescription.model.Prescription;
 import com.jiuyi.doctor.prescription.model.PrescriptionMedicine;
@@ -126,6 +129,10 @@ public class PrescriptionManager {
 		List<String> url = Arrays.asList("prescription_prescriptionDetail.action?params.id=" + prescription.getId());
 		SystemMsg systemMsg = new SystemMsg(UserType.PATIENT, prescription.getPatientId(), summary, prescription, weixinMsg, url);
 		chatServerService.postMsg(systemMsg);
+
+		/** 把患者加到陌生人列表 */
+		DoctorPatient doctorPatient = new DoctorPatient(doctor.getId(), prescription.getPatientId(), DoctorPatientSrc.SERVICE, DoctorPatientRelation.UNFAMILIAR);
+		patientService.addDoctorPatient(doctor, doctorPatient);
 		return new ServerResult();
 	}
 

@@ -25,9 +25,11 @@ import com.jiuyi.doctor.hospitals.model.DoctorTitle;
 import com.jiuyi.doctor.order.OrderService;
 import com.jiuyi.doctor.order.OrderType;
 import com.jiuyi.doctor.order.ThirdPayOrder;
-import com.jiuyi.doctor.patients.PatientService;
-import com.jiuyi.doctor.patients.v2.PatientServiceV2;
-import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.patients.PatientServiceV2;
+import com.jiuyi.doctor.patients.model.DoctorPatient;
+import com.jiuyi.doctor.patients.model.DoctorPatientRelation;
+import com.jiuyi.doctor.patients.model.DoctorPatientSrc;
+import com.jiuyi.doctor.patients.model.Patient;
 import com.jiuyi.doctor.services.ServiceStatus;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.ManagerBase;
@@ -54,8 +56,6 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 	private @Autowired AccountService accountService;
 
 	private @Autowired ChatServerService chatServer;
-
-	private @Autowired PatientService patientService;
 
 	private @Autowired YiyuanyizhenService yiyuanyizhenService;
 
@@ -145,7 +145,6 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		 */
 		dao.onAcceptConsult(doctor, consult);
 		dao.addChatList(doctor, consult.getPatientId());// 添加最近联系人
-		patientService.addPatient(doctor, consult.getPatientId());// 添加到患者群
 
 		/* 付费图文咨询 */
 		if (consult.getType() == ConsultType.COMMON.ordinal()) {
@@ -157,7 +156,9 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		}
 		ChatAcceptRequest request = new ChatAcceptRequest(RESPONSE_CONSULT, doctor, consult, true);
 		chatServer.postMsg(request);
-		patientServiceV2.addToUnfamiliar(doctor, consult.getPatientId());
+
+		DoctorPatient doctorPatient = new DoctorPatient(doctor.getId(), consult.getPatientId(), DoctorPatientSrc.SERVICE, DoctorPatientRelation.UNFAMILIAR);
+		patientServiceV2.addDoctorPatient(doctor, doctorPatient);
 		return new ServerResult();
 	}
 

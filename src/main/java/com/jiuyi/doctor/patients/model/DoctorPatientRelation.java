@@ -1,4 +1,4 @@
-package com.jiuyi.doctor.patients.v2.model;
+package com.jiuyi.doctor.patients.model;
 
 /**
  * @Author: xutaoyang @Date: 下午2:42:54
@@ -7,7 +7,7 @@ package com.jiuyi.doctor.patients.v2.model;
  *
  * @Copyright @ 2015 重庆玖壹健康管理有限公司
  */
-public enum DoctorPatientType {
+public enum DoctorPatientRelation {
 
 	/** 无关系 */
 	NONE,
@@ -18,10 +18,10 @@ public enum DoctorPatientType {
 	/** 黑名单 */
 	BLACKLIST;
 
-	public static DoctorPatientType getTypeById(int id) {
+	public static DoctorPatientRelation getTypeById(int id) {
 		if (id < 0 || id > values().length) {
 			return null;
 		}
-		return DoctorPatientType.values()[id];
+		return DoctorPatientRelation.values()[id];
 	}
 }

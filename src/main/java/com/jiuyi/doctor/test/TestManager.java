@@ -5,7 +5,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.patients.model.Patient;
 import com.jiuyi.frame.front.ServerResult;
 
 @Service

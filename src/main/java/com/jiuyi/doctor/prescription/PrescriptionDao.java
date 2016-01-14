@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 
-import com.jiuyi.doctor.patients.v2.model.Patient;
+import com.jiuyi.doctor.patients.model.Patient;
 import com.jiuyi.doctor.prescription.model.PatientPres;
 import com.jiuyi.doctor.prescription.model.Prescription;
 import com.jiuyi.doctor.prescription.model.PrescriptionMedicine;

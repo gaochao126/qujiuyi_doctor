@@ -1,4 +1,4 @@
-package com.jiuyi.doctor.patients.v2.model;
+package com.jiuyi.doctor.patients.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

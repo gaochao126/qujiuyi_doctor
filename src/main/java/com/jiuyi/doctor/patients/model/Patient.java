@@ -1,9 +1,8 @@
-package com.jiuyi.doctor.patients.v2.model;
+package com.jiuyi.doctor.patients.model;
 
 import java.util.List;
 
 import com.jiuyi.frame.annotations.Age;
-import com.jiuyi.frame.annotations.Column;
 import com.jiuyi.frame.annotations.ConfigPrefix;
 import com.jiuyi.frame.constants.Constants;
 import com.jiuyi.frame.front.ISerializableObj;
@@ -28,8 +27,7 @@ public class Patient implements ISerializableObj {
 	@Age
 	private Integer age;
 	private Integer src;
-	@Column("relation")
-	private Integer type;
+	private Integer relation;
 	private String phone;
 	private String note;
 	private List<Tag> tags;
@@ -44,7 +42,7 @@ public class Patient implements ISerializableObj {
 		res.put("patientName", this.name);
 		res.put("patientHead", this.headPortrait);
 		res.put("note", this.note);
-		res.put("type", this.type);
+		res.put("type", this.relation);
 		res.put("phone", this.phone);
 		res.putObjects("tags", tags);
 		if (src != null && src != 0) {
@@ -59,10 +57,6 @@ public class Patient implements ISerializableObj {
 
 	public void setPatientId(Integer patientId) {
 		this.patientId = patientId;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
 	}
 
 	public String getName() {
@@ -117,20 +111,12 @@ public class Patient implements ISerializableObj {
 		return tags;
 	}
 
-	public int getType() {
-		return type;
-	}
-
 	public String getPhone() {
 		return phone;
 	}
 
 	public String getNote() {
 		return note;
-	}
-
-	public void setType(int type) {
-		this.type = type;
 	}
 
 	public void setPhone(String phone) {
@@ -144,4 +130,13 @@ public class Patient implements ISerializableObj {
 	public void setTags(List<Tag> tags) {
 		this.tags = CollectionUtil.emptyIfNull(tags);
 	}
+
+	public Integer getRelation() {
+		return relation;
+	}
+
+	public void setRelation(Integer relation) {
+		this.relation = relation;
+	}
+
 }

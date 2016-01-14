@@ -1,4 +1,4 @@
-package com.jiuyi.doctor.patients.v2;
+package com.jiuyi.doctor.patients;
 
 import java.util.List;
 
@@ -44,6 +44,7 @@ public class PatientControllerV2 extends ControllerBase {
 	private static final String CMD_NOTE = CMD + "note";// 备注
 
 	private static final String CMD_PATIENT_DETAIL = CMD + "detail";// 患者详细信息
+	private static final String CMD_PATIENT_SEARCH = CMD + "search";// 搜索我的患者
 
 	@Autowired
 	private PatientManagerV2 manager;
@@ -134,6 +135,21 @@ public class PatientControllerV2 extends ControllerBase {
 	@RequestMapping(CMD_MOVE_IN_UNFAMILIAR)
 	public ServerResult moveInUnfamiliar(@TokenUser Doctor doctor, @Param("patientId") Integer patientId) {
 		return manager.moveInUnfamiliar(doctor, patientId);
+	}
+
+	/**
+	 * 搜索我的患者
+	 * 
+	 * @param doctor
+	 * @param key
+	 *            关键字
+	 * @param type
+	 *            0 全部 1常用联系人 2陌生人 3黑名单
+	 * @return
+	 */
+	@RequestMapping(CMD_PATIENT_SEARCH)
+	public ServerResult searchMyPatient(@TokenUser Doctor doctor, @Param("key") String key, @Param("type") Integer type) {
+		return manager.searchMyPatient(doctor, key, type);
 	}
 
 }
