@@ -78,14 +78,12 @@ public class PatientDaoV2 extends DbBase {
 	
 	private static final String SELECT_PERSONAL_DOCTOR = "SELECT COUNT(*) FROM `t_personal_doctor` WHERE `expirationTime`>now() AND `doctorId`=? AND `patientId`=?";
 
-	private static final String SEARCH_MY_PATIENTS = "SELECT patient.id as patientId,patient.*,remark.remark,remark.relation "
+	private static final String SEARCH_MY_PATIENTS_BY_RELATIONS = "SELECT patient.id as patientId,patient.*,remark.remark,remark.relation "
 			+ "FROM `t_patient` patient "
 			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.patientId=patient.id "
-			+ "WHERE (patient.name LIKE :key OR remark.remark LIKE :key) AND remark.doctorId=:doctorId";
-
-	private static final String SEARCH_MY_PATIENTS_BY_RELATION = SEARCH_MY_PATIENTS + " AND remark.relation=:relation";
-	
-	private static final String SEARCH_MY_PATIENTS_BY_RELATIONS = SEARCH_MY_PATIENTS + " AND remark.relation IN(:relation)";
+			+ "WHERE (patient.name LIKE :key OR remark.remark LIKE :key) "
+			+ "AND remark.doctorId=:doctorId "
+			+ "AND remark.relation IN(:relation)";
 	
 	private static final String INSERT_DOCTOR_PATIENT_RELATION = "INSERT `t_doctor_remark_patient`(`doctorId`,`patientId`,`relation`,`src`) VALUE(?,?,?,?) ON DUPLICATE KEY UPDATE `relation`=?";
 
@@ -252,21 +250,6 @@ public class PatientDaoV2 extends DbBase {
 
 	protected List<RelativePatient> loadRelativePatients(Doctor doctor, int patientId) {
 		return queryForList(SELECT_RELATIVE_PATIENT, new Object[] { patientId }, RelativePatient.class);
-	}
-
-	protected List<Patient> searchMyPatient(Doctor doctor, String key) {
-		MapSqlParameterSource param = new MapSqlParameterSource();
-		param.addValue("key", "%" + key + "%");
-		param.addValue("doctorId", doctor.getId());
-		return queryForListPage(SEARCH_MY_PATIENTS, param, Patient.class);
-	}
-
-	protected List<Patient> searchMyPatientByRelation(Doctor doctor, String key, DoctorPatientRelation relation) {
-		MapSqlParameterSource param = new MapSqlParameterSource();
-		param.addValue("key", "%" + key + "%");
-		param.addValue("doctorId", doctor.getId());
-		param.addValue("relation", relation.ordinal());
-		return queryForListPage(SEARCH_MY_PATIENTS_BY_RELATION, param, Patient.class);
 	}
 
 	protected List<Patient> searchMyPatientByRelations(Doctor doctor, String key, DoctorPatientRelation... relations) {
