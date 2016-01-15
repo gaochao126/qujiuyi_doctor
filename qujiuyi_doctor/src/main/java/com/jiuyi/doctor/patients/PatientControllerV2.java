@@ -144,7 +144,7 @@ public class PatientControllerV2 extends ControllerBase {
 	 * @param key
 	 *            关键字
 	 * @param type
-	 *            0 全部 1常用联系人 2陌生人 3黑名单
+	 *            0 全部 1常用联系人 2陌生人 3黑名单 4常用联系人和陌生人
 	 * @return
 	 */
 	@RequestMapping(CMD_PATIENT_SEARCH)

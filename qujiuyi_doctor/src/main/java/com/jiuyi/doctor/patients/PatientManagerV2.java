@@ -152,14 +152,20 @@ public class PatientManagerV2 {
 	 * @return
 	 */
 	protected ServerResult searchMyPatient(Doctor doctor, String key, Integer type) {
-		if (type < 0 || type > 3) {
+		if (type < 0 || type > 4) {
 			return new ServerResult(ResultConst.PARAM_ERROR);
 		}
 		List<Patient> patients = null;
 		if (type == 0) {
-			patients = dao.searchMyPatient(doctor, key);
+			patients = dao.searchMyPatientByRelations(doctor, key, DoctorPatientRelation.values());
+		} else if (type == 1) {
+			patients = dao.searchMyPatientByRelations(doctor, key, DoctorPatientRelation.CONTACT);
+		} else if (type == 2) {
+			patients = dao.searchMyPatientByRelations(doctor, key, DoctorPatientRelation.UNFAMILIAR);
+		} else if (type == 3) {
+			patients = dao.searchMyPatientByRelations(doctor, key, DoctorPatientRelation.BLACKLIST);
 		} else {
-			patients = dao.searchMyPatientByRelation(doctor, key, DoctorPatientRelation.values()[type]);
+			patients = dao.searchMyPatientByRelations(doctor, key, DoctorPatientRelation.CONTACT, DoctorPatientRelation.UNFAMILIAR);
 		}
 		return new ServerResult("list", patients, true);
 	}

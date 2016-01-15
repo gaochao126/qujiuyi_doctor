@@ -85,6 +85,8 @@ public class PatientDaoV2 extends DbBase {
 
 	private static final String SEARCH_MY_PATIENTS_BY_RELATION = SEARCH_MY_PATIENTS + " AND remark.relation=:relation";
 	
+	private static final String SEARCH_MY_PATIENTS_BY_RELATIONS = SEARCH_MY_PATIENTS + " AND remark.relation IN(:relation)";
+	
 	private static final String INSERT_DOCTOR_PATIENT_RELATION = "INSERT `t_doctor_remark_patient`(`doctorId`,`patientId`,`relation`,`src`) VALUE(?,?,?,?) ON DUPLICATE KEY UPDATE `relation`=?";
 
 	private static final String UPDATE_REMARK = "INSERT `t_doctor_remark_patient`(`doctorId`,`patientId`,`remark`) VALUE(?,?,?) ON DUPLICATE KEY UPDATE `remark`=?";
@@ -265,5 +267,17 @@ public class PatientDaoV2 extends DbBase {
 		param.addValue("doctorId", doctor.getId());
 		param.addValue("relation", relation.ordinal());
 		return queryForListPage(SEARCH_MY_PATIENTS_BY_RELATION, param, Patient.class);
+	}
+
+	protected List<Patient> searchMyPatientByRelations(Doctor doctor, String key, DoctorPatientRelation... relations) {
+		List<Integer> relationIds = new ArrayList<>(relations.length);
+		for (DoctorPatientRelation relation : relations) {
+			relationIds.add(relation.ordinal());
+		}
+		MapSqlParameterSource param = new MapSqlParameterSource();
+		param.addValue("key", "%" + key + "%");
+		param.addValue("doctorId", doctor.getId());
+		param.addValue("relation", relationIds);
+		return queryForListPage(SEARCH_MY_PATIENTS_BY_RELATIONS, param, Patient.class);
 	}
 }
