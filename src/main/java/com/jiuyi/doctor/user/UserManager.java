@@ -456,12 +456,14 @@ public class UserManager implements IUserManager {
 		res.put("titleCardPath", "");
 		List<FillDoctor> authInfos = userDao.loadDoctorAuthInfo(doctor);
 		for (FillDoctor authInfo : authInfos) {
-			if (authInfo.getField() == 1) {
-				res.put("headStatus", authInfo.getStatus());
-				res.put("head", authInfo.getHeadPath());
-			} else {
-				res.put("titleStatus", authInfo.getStatus());
-				res.put("titleCardPath", authInfo.getTitleCardPath());
+			if (authInfo.getType() == 1) {
+				if (authInfo.getField() == 1) {
+					res.put("headStatus", authInfo.getStatus());
+					res.put("head", authInfo.getHeadPath());
+				} else {
+					res.put("titleStatus", authInfo.getStatus());
+					res.put("titleCardPath", authInfo.getTitleCardPath());
+				}
 			}
 		}
 		return res;

@@ -122,7 +122,8 @@ public class UserController extends ControllerBase {
 
 	@RequestMapping(CMD_LOGOUT)
 	@ResponseBody
-	public ServerResult handleLogout(@TokenUser @Permission(DoctorStatus.NEED_AUTH) Doctor doctor) {
+	@Permission(DoctorStatus.NEED_AUTH)
+	public ServerResult handleLogout(@TokenUser Doctor doctor) {
 		if (doctor != null) {
 			service.handleLogout(doctor);
 		}
@@ -130,7 +131,8 @@ public class UserController extends ControllerBase {
 	}
 
 	@RequestMapping(CMD_DOCTOR_FILL)
-	public @ResponseBody ServerResult handleFillInfo(@TokenUser @Permission(DoctorStatus.NEED_AUTH) Doctor doctor, @Valid @ModelAttribute FillDoctor newDoctor, BindingResult br,
+	@Permission(DoctorStatus.NEED_AUTH)
+	public @ResponseBody ServerResult handleFillInfo(@TokenUser Doctor doctor, @Valid @ModelAttribute FillDoctor newDoctor, BindingResult br,
 			@RequestParam(value = "head", required = false) MultipartFile head, @RequestParam("idCard") MultipartFile idCard,
 			@RequestParam(value = "titleCard", required = false) MultipartFile titleCard, @RequestParam("licenseCard") MultipartFile licenseCard) {
 		if (br.hasErrors()) {
