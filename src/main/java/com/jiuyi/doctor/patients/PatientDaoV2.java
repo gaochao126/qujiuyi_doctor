@@ -35,7 +35,7 @@ import com.jiuyi.frame.util.StringUtil;
 public class PatientDaoV2 extends DbBase {
 
 	// @formatter:off
-	private static final String SELECT_PERSONAL_PATIENTS_COUNT = "SELECT COUNT(*) FROM `t_personal_doctor` WHERE `doctorId`=?";
+	private static final String SELECT_PERSONAL_PATIENTS_COUNT = "SELECT COUNT(*) FROM `t_personal_doctor` WHERE `expirationTime`>NOW() AND `doctorId`=?";
 
 	private static final String SELECT_UNFAMILIAR_COUNT = "SELECT count(patientId) FROM t_doctor_remark_patient WHERE relation=? AND doctorId=?";
 
@@ -51,8 +51,8 @@ public class PatientDaoV2 extends DbBase {
 	private static final String SELECT_PERSONAL_PATIENTS = "SELECT relation.patientId,p.name,p.gender,p.phone,p.headPortrait,p.birthday AS age,relation.relation,relation.note "
 			+ "FROM `t_personal_doctor` personal "
 			+ "JOIN `t_patient` p ON p.id=personal.patientId "
-			+ "JOIN `t_doctor_remark_patient` relation ON relation.patientId=personal.patientId "
-			+ "WHERE personal.doctorId=?";
+			+ "JOIN `t_doctor_remark_patient` relation ON relation.patientId=personal.patientId AND relation.doctorId=personal.doctorId "
+			+ "WHERE personal.expirationTime>NOW() AND personal.doctorId=?";
 	
 	private static final String SELECT_SIMPLE_PATIENT_BY_TAG = "SELECT c.*,p.`name`,p.`gender`,p.`headPortrait`,p.`birthday` AS age,r.remark,r.note "
 			+ "FROM `t_patient_tags` c "
@@ -69,8 +69,8 @@ public class PatientDaoV2 extends DbBase {
 	
 	private static final String SELECT_PATIENT_BY_PHONE = "SELECT patient.id as patientId,patient.*,remark.remark,remark.relation "
 			+ "FROM `t_patient` patient "
-			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.patientId=patient.id "
-			+ "WHERE patient.phone=? AND remark.doctorId=?";
+			+ "LEFT JOIN `t_doctor_remark_patient` remark ON remark.patientId=patient.id AND remark.doctorId=? "
+			+ "WHERE patient.phone=?";
 
 	private static final String SELECT_TAGS = "SELECT * FROM `t_doctor_tags` WHERE `doctorId`=?";
 	private static final String SELECT_TAGS_PATIENTS = "SELECT * FROM `t_patient_tags` WHERE `tagId` IN (#tagIds#)";
@@ -245,7 +245,7 @@ public class PatientDaoV2 extends DbBase {
 	 * @return
 	 */
 	protected Patient loadPatientByPhone(Doctor doctor, String phone) {
-		return queryForObjectDefaultBuilder(SELECT_PATIENT_BY_PHONE, new Object[] { phone, doctor.getId() }, Patient.class);
+		return queryForObjectDefaultBuilder(SELECT_PATIENT_BY_PHONE, new Object[] { doctor.getId(), phone }, Patient.class);
 	}
 
 	protected List<RelativePatient> loadRelativePatients(Doctor doctor, int patientId) {
