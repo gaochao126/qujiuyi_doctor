@@ -13,7 +13,7 @@ public enum DoctorStatus {
 	
 	// 以下有序，加的时候请在后面加
 	/** 未提交认证信息 */
-	NEED_AUTH(0,1,2,3,4),
+	NEED_AUTH(0,0,1,2,3,4),
 	/** 审核中 */
 	UNDER_VERIFY(1,1),
 	/** 审核失败 */
