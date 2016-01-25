@@ -27,6 +27,12 @@ public class SmsVerifyService {
 	/** 仅供测试使用 */
 	private Set<String> test_phone = new HashSet<>();
 
+	public static void main(String[] args) {
+		SmsResp res = SmsService.instance().sendCode("13983240200");
+		System.err.println(res.getReason());
+
+	}
+
 	@PostConstruct
 	public void init() {
 		test_phone.add("15923330708");
