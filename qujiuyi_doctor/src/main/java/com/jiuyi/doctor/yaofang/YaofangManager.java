@@ -134,4 +134,11 @@ public class YaofangManager {
 		res.putObject(fm);
 		return res;
 	}
+
+	/**
+	 * @return
+	 */
+	protected List<FormatMedicine> loadAllFormatMedicine() {
+		return dao.loadAllFormatMedicine();
+	}
 }

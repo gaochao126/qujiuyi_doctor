@@ -30,4 +30,7 @@ public class YaofangService {
 		return manager.loadFormatMeds(formatIds);
 	}
 
+	public List<FormatMedicine> loadAllFormatMedicine() {
+		return manager.loadAllFormatMedicine();
+	}
 }

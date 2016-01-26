@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.doctor.yaofang.YaofangService;
 import com.jiuyi.doctor.yaofang.model.FormatMedicine;
+import com.jiuyi.frame.front.MapObject;
 import com.jiuyi.frame.front.ServerResult;
+import com.jiuyi.frame.util.CollectionUtil;
 
 @Service
 public class MedicalKitManager {
@@ -81,5 +83,30 @@ public class MedicalKitManager {
 		List<String> formatIds = dao.loadMyList(doctor, page, pageSize);
 		List<FormatMedicine> fm = yaofangService.loadFormatMeds(formatIds);
 		return fm;
+	}
+
+	/**
+	 * @param doctor
+	 * @return
+	 */
+	protected ServerResult loadAll(Doctor doctor) {
+		List<FormatMedicine> myMedical = myMedicalKit(doctor, 1, Integer.MAX_VALUE);// 我的药箱
+		List<FormatMedicine> yaofangMedicine = yaofangService.loadAllFormatMedicine();// 全平台的药
+		List<MapObject> list = new ArrayList<>();
+		putIntoList(myMedical, list, 1);// 通过type区分是药箱还是平台药
+		putIntoList(yaofangMedicine, list, 2);
+		ServerResult res = new ServerResult();
+		res.putObjects("list", list);
+		return res;
+	}
+
+	private void putIntoList(List<FormatMedicine> meds, List<MapObject> list, int type) {
+		if (!CollectionUtil.isNullOrEmpty(meds)) {
+			for (FormatMedicine med : meds) {
+				MapObject mo = med.serializeToMapObject();
+				mo.put("type", type);
+				list.add(mo);
+			}
+		}
 	}
 }
