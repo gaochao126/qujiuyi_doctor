@@ -25,6 +25,7 @@ public class MedicalKitController {
 	private static final String CMD_COLLECT_FORMAT = CMD + "collect";
 	private static final String CMD_MY_LIST = CMD + "my_list";
 	private static final String CMD_SEARCH_MY_LIST = CMD + "search";
+	private static final String CMD_LOAD_ALL_MEDCINE = CMD + "all";
 
 	private @Autowired MedicalKitManager manager;
 
@@ -48,5 +49,16 @@ public class MedicalKitController {
 	@RequestMapping(CMD_SEARCH_MY_LIST)
 	public ServerResult searchMyList(@TokenUser Doctor doctor, @Param("key") String key) {
 		return manager.searchMyList(doctor, key);
+	}
+
+	/***
+	 * 获取药箱+全平台的药品列表
+	 * 
+	 * @param doctor
+	 * @return
+	 */
+	@RequestMapping(CMD_LOAD_ALL_MEDCINE)
+	public ServerResult loadAll(@TokenUser Doctor doctor) {
+		return manager.loadAll(doctor);
 	}
 }

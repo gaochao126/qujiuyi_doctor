@@ -12,14 +12,17 @@ public class TestMain {
 		// String params = String.format("#name#=%s&#reason#=%s", "好的", "\t1.那啥啊；\n\t2.ahdfkdafd；\n\t3.ahdfkdafd");
 		// SmsService.instance().sendSms("18223506390", "7783", params);
 
-		Object obj = new Object();
+		// Object obj = new Object();
+		//
+		// synchronized (obj) {
+		// System.out.println("lock one!!");
+		// synchronized (obj) {
+		// System.out.println("lock two!");
+		// }
+		// }
 
-		synchronized (obj) {
-			System.out.println("lock one!!");
-			synchronized (obj) {
-				System.out.println("lock two!");
-			}
-		}
+		List<Integer> list = new ArrayList<>();
+		list.addAll(null);
 	}
 
 	public static List<Field> getAllFields(Class<?> clazz) {
