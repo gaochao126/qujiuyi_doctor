@@ -12,6 +12,7 @@ public class SmsController {
 
 	private static final String CMD = "sms_";
 	private static final String CMD_SEND_CODE = CMD + "send_code";
+	private static final String CMD_SEND_VOICE_CODE = CMD + "voice_code";
 	private static final String CMD_WHITE_LIST = CMD + "white_list";
 	private static final String CMD_ADD_WHITE_LIST = CMD + "add_white";
 	private static final String CMD_REMOVE_WHITE_LIST = CMD + "remove_white";
@@ -30,6 +31,18 @@ public class SmsController {
 	@RequestMapping(CMD_SEND_CODE)
 	public ServerResult sendCode(@Param("phone") String phone) {
 		return smsVerifyService.sendCode(phone);
+	}
+
+	/**
+	 * 发送语音验证码
+	 * 
+	 * @param phone
+	 *            电话
+	 * @return
+	 */
+	@RequestMapping(CMD_SEND_VOICE_CODE)
+	public ServerResult sendVoiceCode(@Param("phone") String phone) {
+		return smsVerifyService.sendVoiceCode(phone);
 	}
 
 	@RequestMapping(CMD_WHITE_LIST)

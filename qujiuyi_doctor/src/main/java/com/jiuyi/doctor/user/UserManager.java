@@ -303,6 +303,10 @@ public class UserManager implements IUserManager {
 		if (!departmentService.checkId(newDoctor.getDepartmentId()) || !hospitalService.checkId(newDoctor.getHospitalId())) {
 			return new ServerResult(ResultConst.PARAM_ERROR);
 		}
+		Doctor oldInfo = userDao.loadDoctorById(doctor.getId());
+		if (oldInfo == null) {
+			return new ServerResult(ResultConst.NOT_LOGIN);
+		}
 		Integer offlineId = newDoctor.getOfflineId();
 		if (offlineId != null && 0 != offlineId) {
 			/* copy线下医生的特长和执业经历 */

@@ -71,6 +71,18 @@ public class SmsVerifyService {
 		return new ServerResult(resp.getError_code(), resp.getReason());
 	}
 
+	/**
+	 * @param phone
+	 * @return
+	 */
+	protected ServerResult sendVoiceCode(String phone) {
+		if (inWhiteList(phone)) {
+			return new ServerResult();
+		}
+		SmsResp resp = SmsService.instance().sendVoiceCode(phone);
+		return new ServerResult(resp.getError_code(), resp.getReason());
+	}
+
 	/** 电话验证码check */
 	public ServerResult checkCode(String phone, String code) {
 		if (inWhiteList(phone)) {
@@ -122,4 +134,5 @@ public class SmsVerifyService {
 		res.put("list", this.test_phone);
 		return res;
 	}
+
 }
