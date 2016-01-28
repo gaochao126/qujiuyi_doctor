@@ -28,7 +28,7 @@ import com.jiuyi.frame.util.CollectionUtil;
 public class ConsultFinish {
 
 	private volatile boolean running = false;
-	private static final int DELAY = 3600;// 图文咨询结束多久后打款给医生
+	private static final int DELAY = 24 * 60 * 60;// 图文咨询结束多久后打款给医生
 	private static final int EXPIRED_TIME = 3600;// 应该是3600秒，这里为了测试，把时间改长，单位秒哦
 
 	private @Autowired ConsultFinishDao dao;
