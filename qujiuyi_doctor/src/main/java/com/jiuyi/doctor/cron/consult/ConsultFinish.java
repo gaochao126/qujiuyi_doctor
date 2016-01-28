@@ -1,5 +1,6 @@
 package com.jiuyi.doctor.cron.consult;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.jiuyi.doctor.chatserver.ChatServerRequestEntity;
 import com.jiuyi.doctor.chatserver.ChatServerService;
 import com.jiuyi.doctor.cron.CronTime;
+import com.jiuyi.frame.conf.DBConfig;
 import com.jiuyi.frame.helper.Loggers;
 import com.jiuyi.frame.util.CollectionUtil;
 
@@ -27,11 +29,13 @@ public class ConsultFinish {
 
 	private volatile boolean running = false;
 	private static final int DELAY = 3600;// 图文咨询结束多久后打款给医生
-	private static final int EXPIRED_TIME = 360000;// 应该是3600秒，这里为了测试，把时间改长，单位秒哦
+	private static final int EXPIRED_TIME = 3600;// 应该是3600秒，这里为了测试，把时间改长，单位秒哦
 
 	private @Autowired ConsultFinishDao dao;
 
 	private @Autowired ChatServerService chatServerService;
+
+	private @Autowired DBConfig dbConfig;
 
 	@Scheduled(cron = CronTime.CONSULT_INCOMING_TO_BALANCE)
 	public void incoming2Balance() {
@@ -44,6 +48,12 @@ public class ConsultFinish {
 			List<ConsultInfo> consultList = dao.loadSatisfiedConsult(DELAY);
 			if (CollectionUtil.isNullOrEmpty(consultList)) {
 				return;
+			}
+			for (ConsultInfo consultInfo : consultList) {
+				// 平台将会收取一定费用
+				BigDecimal rate = new BigDecimal(dbConfig.getConfig("doctor.order.rates"));
+				BigDecimal shouldIncome = consultInfo.getMoney().multiply(rate);
+				consultInfo.setMoney(shouldIncome);
 			}
 			dao.handleConsult(consultList);
 		} catch (Exception e) {

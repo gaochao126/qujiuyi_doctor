@@ -15,13 +15,37 @@ import org.springframework.jdbc.core.RowMapper;
  */
 public class ConsultInfo {
 
-	public final int orderId;
-	public final int doctorId;
-	public final BigDecimal money;
+	private int orderId;
+	private int doctorId;
+	private BigDecimal money;
 
 	public ConsultInfo(int orderId, int doctorId, BigDecimal money) {
 		this.orderId = orderId;
 		this.doctorId = doctorId;
+		this.money = money;
+	}
+
+	public int getOrderId() {
+		return orderId;
+	}
+
+	public int getDoctorId() {
+		return doctorId;
+	}
+
+	public BigDecimal getMoney() {
+		return money;
+	}
+
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
+	}
+
+	public void setDoctorId(int doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public void setMoney(BigDecimal money) {
 		this.money = money;
 	}
 

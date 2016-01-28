@@ -18,10 +18,15 @@ import com.jiuyi.frame.base.DbBase;
 @Repository
 public class ConsultFinishDao extends DbBase {
 
-	private static final String SELECT = "SELECT o.totalAmount,o.id AS orderId,consult.doctorId FROM t_third_pay_order o,t_patient_consult consult WHERE o.accountArrivalStatus=0 AND unix_timestamp(consult.endTime)+?<=unix_timestamp(now()) AND consult.acceptStatus=1 AND consult.consultStatus=2 AND o.serviceId=consult.id AND o.orderType=2; ";
+	//@formatter:off
+	private static final String SELECT = "SELECT o.totalAmount,o.id AS orderId,consult.doctorId "
+			+ "FROM t_third_pay_order o,t_patient_consult consult "
+			+ "WHERE o.accountArrivalStatus=0 AND unix_timestamp(consult.endTime)+?<=unix_timestamp(now()) AND consult.acceptStatus=1 AND consult.consultStatus=2 AND o.serviceId=consult.id AND o.orderType=2; ";
+	
 	private static final String SELECT_UNHANDLED_CHAT = "SELECT consult.id, consult.doctorId,consult.patientId,doctor.name,o.id as orderId,o.couponId,o.totalAmount " 
-			+ "FROM t_patient_consult consult " //
-			+ "LEFT JOIN t_third_pay_order o ON consult.id = o.serviceId " + "LEFT JOIN t_doctor doctor ON consult.doctorId = doctor.id "
+			+ "FROM t_patient_consult consult " 
+			+ "LEFT JOIN t_third_pay_order o ON consult.id = o.serviceId " 
+			+ "LEFT JOIN t_doctor doctor ON consult.doctorId = doctor.id "
 			+ "WHERE consult.acceptStatus=0 AND `type`=1 AND unix_timestamp(consult.createTime)+?<unix_timestamp(now());";
 
 	private static final String UPDATE_ORDER_STATUS = "UPDATE `t_third_pay_order` SET `accountArrivalStatus`=1 WHERE `id`=?";
@@ -29,6 +34,7 @@ public class ConsultFinishDao extends DbBase {
 	private static final String INSERT_ACCOUNT_DETAIL = "INSERT `t_doctor_account_detail`(`doctorId`,`src`,`srcType`,`type`,`money`) VALUE(?,?,?,?,?)";
 
 	private static final String UPDATE_CONSULT_ACCEPT_STATUS = "UPDATE `t_patient_consult` SET `acceptStatus`=?,`consultStatus`=? WHERE `id`=?";
+	//@formatter:on
 
 	protected List<ConsultInfo> loadSatisfiedConsult(int delay) {
 		return jdbc.query(SELECT, new Object[] { delay }, ConsultInfo.builder);
@@ -61,7 +67,7 @@ public class ConsultFinishDao extends DbBase {
 	public void updateOrderStatus(List<ConsultInfo> consultList) {
 		List<Object[]> args = new ArrayList<>(consultList.size());
 		for (ConsultInfo consult : consultList) {
-			args.add(new Object[] { consult.orderId });
+			args.add(new Object[] { consult.getOrderId() });
 		}
 		jdbc.batchUpdate(UPDATE_ORDER_STATUS, args);
 	}
@@ -70,7 +76,7 @@ public class ConsultFinishDao extends DbBase {
 	public void coming2balance(List<ConsultInfo> consultList) {
 		List<Object[]> args = new ArrayList<>(consultList.size());
 		for (ConsultInfo consult : consultList) {
-			args.add(new Object[] { consult.money, consult.money, consult.money, consult.doctorId });
+			args.add(new Object[] { consult.getMoney(), consult.getMoney(), consult.getMoney(), consult.getDoctorId() });
 		}
 		jdbc.batchUpdate(COMING_TO_BALANCE, args);
 	}
@@ -79,7 +85,7 @@ public class ConsultFinishDao extends DbBase {
 	public void insertAccoutDetail(List<ConsultInfo> consultList) {
 		List<Object[]> args = new ArrayList<>(consultList.size());
 		for (ConsultInfo consult : consultList) {
-			args.add(new Object[] { consult.doctorId, consult.orderId, 1, 1, consult.money });
+			args.add(new Object[] { consult.getDoctorId(), consult.getOrderId(), 1, 1, consult.getMoney() });
 		}
 		jdbc.batchUpdate(INSERT_ACCOUNT_DETAIL, args);
 	}

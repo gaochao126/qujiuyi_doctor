@@ -33,6 +33,7 @@ import com.jiuyi.doctor.patients.model.Patient;
 import com.jiuyi.doctor.services.ServiceStatus;
 import com.jiuyi.doctor.user.model.Doctor;
 import com.jiuyi.frame.base.ManagerBase;
+import com.jiuyi.frame.conf.DBConfig;
 import com.jiuyi.frame.db.RowData;
 import com.jiuyi.frame.front.FailResult;
 import com.jiuyi.frame.front.MapObject;
@@ -64,6 +65,8 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 	private @Autowired CommentService commentService;
 
 	private @Autowired OrderService orderService;
+
+	private @Autowired DBConfig dbConfig;
 
 	private static final String RESPONSE_CONSULT = "consultResponse";
 	private static final String STOP_CONSULT = "endConsultRequest";
@@ -150,7 +153,10 @@ public class ConsultManager extends ManagerBase<Doctor, DoctorChat> {
 		if (consult.getType() == ConsultType.COMMON.ordinal()) {
 			ThirdPayOrder order = orderService.loadOrderByTypeAndServiceId(OrderType.CONSULT, consultId);
 			if (order != null) {
-				BigDecimal money = order.getTotalAmount();// 存入 医生即将到账
+				// 平台收取部分佣金
+				BigDecimal rate = new BigDecimal(dbConfig.getConfig("doctor.order.rates"));
+				BigDecimal money = order.getTotalAmount().multiply(rate);
+				// 存入 医生即将到账
 				accountService.incComing(doctor, money);
 			}
 		}
