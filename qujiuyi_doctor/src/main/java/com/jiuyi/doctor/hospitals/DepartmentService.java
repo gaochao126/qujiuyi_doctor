@@ -46,6 +46,8 @@ public class DepartmentService {
 			for (Department department : departments) {
 				if (department.isRoot()) {
 					temp.add(department);
+					Department all = new Department(department.getId(), department.getName(), department.getId());
+					department.addChild(all);
 				} else {
 					temp_id_info.get(department.getParentId()).addChild(department);
 				}
