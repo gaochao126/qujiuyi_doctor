@@ -64,7 +64,7 @@ public class ConsultFinish {
 
 	}
 
-	@Scheduled(cron = CronTime.CHECK_CONSULT)
+	// @Scheduled(cron = CronTime.CHECK_CONSULT)
 	public void checkConsult() {
 		// 干活
 		List<ConsultOrder> consultOrders = dao.loadExpireConsult(EXPIRED_TIME);
