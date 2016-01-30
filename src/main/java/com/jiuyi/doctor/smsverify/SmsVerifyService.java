@@ -9,9 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.jiuyi.frame.front.ResultConst;
 import com.jiuyi.frame.front.ServerResult;
-import com.jiuyi.frame.sms.SmsCheckService.CheckResult;
-import com.jiuyi.frame.sms.SmsResp;
-import com.jiuyi.frame.sms.SmsService;
+import com.qujiuyi.util.commonres.CommonResult;
+import com.qujiuyi.util.sms.SmsService;
 
 /**
  * 服务端发起验证请求验证移动端(手机)发送的短信
@@ -27,18 +26,11 @@ public class SmsVerifyService {
 	/** 仅供测试使用 */
 	private Set<String> test_phone = new HashSet<>();
 
-	public static void main(String[] args) {
-		SmsResp res = SmsService.instance().sendCode("13983240200");
-		System.err.println(res.getReason());
-
-	}
-
 	@PostConstruct
 	public void init() {
 		test_phone.add("15923330708");
 		test_phone.add("13638357922");
 		test_phone.add("15025467312");
-
 		test_phone.add("18983635464");
 		test_phone.add("13635335741");
 		test_phone.add("13635335742");
@@ -67,8 +59,8 @@ public class SmsVerifyService {
 		if (inWhiteList(phone)) {
 			return new ServerResult();
 		}
-		SmsResp resp = SmsService.instance().sendCode(phone);
-		return new ServerResult(resp.getError_code(), resp.getReason());
+		CommonResult resp = SmsService.instance().sendCode(phone);
+		return new ServerResult(resp.getResultCode(), resp.getResultDesc());
 	}
 
 	/**
@@ -79,8 +71,8 @@ public class SmsVerifyService {
 		if (inWhiteList(phone)) {
 			return new ServerResult();
 		}
-		SmsResp resp = SmsService.instance().sendVoiceCode(phone);
-		return new ServerResult(resp.getError_code(), resp.getReason());
+		CommonResult resp = SmsService.instance().sendVoiceCode(phone);
+		return new ServerResult(resp.getResultCode(), resp.getResultDesc());
 	}
 
 	/** 电话验证码check */
@@ -88,11 +80,11 @@ public class SmsVerifyService {
 		if (inWhiteList(phone)) {
 			return new ServerResult();
 		}
-		CheckResult res = SmsService.instance().checkCode(phone, code);
+		CommonResult res = SmsService.instance().checkCode(phone, code);
 		if (res == null) {
 			return new ServerResult(ResultConst.SERVER_ERR);
 		}
-		return new ServerResult(res.getR(), res.getDesc());
+		return new ServerResult(res.getResultCode(), res.getResultDesc());
 	}
 
 	private boolean inWhiteList(String phone) {

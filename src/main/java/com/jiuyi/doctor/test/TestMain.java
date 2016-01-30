@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class TestMain {
@@ -21,8 +23,18 @@ public class TestMain {
 		// }
 		// }
 
-		List<Integer> list = new ArrayList<>();
-		list.addAll(null);
+		// List<Integer> list = new ArrayList<>();
+		// list.addAll(null);
+
+		// SmsService.instance().sendSms("18223506390", "9822",
+		// "#date#=12345678934567894356789043567890456789045678905678905467890456789&#address#=hesdahfsadhfjkasdfkj&#name#=fjkajfkdjskfjkasjfdkajdfkjaklsdfjklajdfskljaksdfj");
+
+		Date date = new Date(1450160461l);
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+
+		System.out.println(cal.get(Calendar.YEAR));
 	}
 
 	public static List<Field> getAllFields(Class<?> clazz) {

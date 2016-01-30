@@ -25,8 +25,8 @@ public class FrontLogController {
 	private @Autowired FrontLogManager manager;
 
 	@RequestMapping(CMD_LOG)
-	public ServerResult log(@Param("log") FrontLog log) {
-		return manager.insertLog(log);
+	public ServerResult log(@Param("log") FrontLog log, @Param("token") String token) {
+		return manager.insertLog(log, token);
 	}
 
 }

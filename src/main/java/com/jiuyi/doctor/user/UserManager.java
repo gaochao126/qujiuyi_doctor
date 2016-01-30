@@ -133,6 +133,22 @@ public class UserManager implements IUserManager {
 		return this.token_doctor.containsKey(token);
 	}
 
+	/**
+	 * 从新数据库获取医生信息，以此更新缓存信息
+	 * 
+	 * @param doctor
+	 * @return
+	 */
+	protected ServerResult loadInfoNoCache(Doctor doctor) {
+		Doctor info = userDao.loadDoctorById(doctor.getId());
+		info.setAccess_token(doctor.getAccess_token());
+		info.copyInfo(doctor);
+		putDoctor(doctor.getAccess_token(), info);
+		ServerResult res = new ServerResult();
+		res.putObject(info);
+		return res;
+	}
+
 	@Override
 	public Doctor getUserByToken(String token) {
 		if (StringUtil.isNullOrEmpty(token)) {
@@ -250,6 +266,7 @@ public class UserManager implements IUserManager {
 		Doctor doctor = addDoctor(phone, "");
 		ServerResult res = new ServerResult(ResultConst.NEW_USER);
 		res.putToken(doctor.getAccess_token());
+		res.put("id", doctor.getId());
 		putEasemobInfo(doctor, res);
 		return res;
 	}
@@ -461,13 +478,18 @@ public class UserManager implements IUserManager {
 		List<FillDoctor> authInfos = userDao.loadDoctorAuthInfo(doctor);
 		for (FillDoctor authInfo : authInfos) {
 			if (authInfo.getType() == 1) {
-				if (authInfo.getField() == 1) {
+				if (authInfo.getField() == 1) {// 修改的是头像
 					res.put("headStatus", authInfo.getStatus());
 					res.put("head", authInfo.getHeadPath());
 				} else {
 					res.put("titleStatus", authInfo.getStatus());
 					res.put("titleCardPath", authInfo.getTitleCardPath());
 				}
+			} else {
+				res.put("headStatus", authInfo.getStatus());
+				res.put("head", authInfo.getHeadPath());
+				res.put("titleStatus", authInfo.getStatus());
+				res.put("titleCardPath", authInfo.getTitleCardPath());
 			}
 		}
 		return res;
