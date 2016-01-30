@@ -29,6 +29,7 @@ public class UserController extends ControllerBase {
 	private static final String CMD = "user";
 	private static final String PRE = CMD + "_";
 	private static final String CMD_LOAD_INFO = PRE + "info"; // 获取信息
+	private static final String CMD_LOAD_INFO_NO_CACHE = PRE + "info_db"; // 直接从数据库获取信息
 	private static final String CMD_LOAD_BY_NAME = PRE + "load_by_name"; // 获取信息
 	private static final String CMD_LOGIN = PRE + "login"; // 登录
 	private static final String CMD_LOGIN_V2 = PRE + "login_v2"; // 用手机验证码登录
@@ -64,6 +65,12 @@ public class UserController extends ControllerBase {
 		ServerResult res = new ServerResult();
 		res.putObject(doctor);
 		return res;
+	}
+
+	@RequestMapping(CMD_LOAD_INFO_NO_CACHE)
+	@ResponseBody
+	public ServerResult loadInfoNoCache(@TokenUser Doctor doctor) {
+		return manager.loadInfoNoCache(doctor);
 	}
 
 	@RequestMapping(CMD_LOAD_INFO_BY_ID)

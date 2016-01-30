@@ -17,6 +17,7 @@ public class FrontLog {
 	private String os;
 	private int level;
 	private String log;
+	private int userId;
 
 	public long getId() {
 		return id;
@@ -72,6 +73,14 @@ public class FrontLog {
 
 	public void setLog(String log) {
 		this.log = log;
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 }
