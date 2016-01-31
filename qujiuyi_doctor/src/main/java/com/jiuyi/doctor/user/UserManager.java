@@ -120,13 +120,13 @@ public class UserManager implements IUserManager {
 		jobService.submitJob(new JobContext(JobType.SCHEDULED, new ClearRunnable(), 5, 5, TimeUnit.SECONDS));
 
 		// 测试专用
-		Doctor doctor = userDao.loadDoctorByPhone("18725850672");
-		String access_token = "123456";
-		putDoctor(access_token, doctor);
-		doctor.setChannelId("5443637761324926995");
-		doctor.setDeviceType(4);
-		doctor.setAccess_token(access_token);
-		chatServerService.onLogin(doctor);
+		// Doctor doctor = userDao.loadDoctorByPhone("18725850672");
+		// String access_token = "123456";
+		// putDoctor(access_token, doctor);
+		// doctor.setChannelId("5443637761324926995");
+		// doctor.setDeviceType(4);
+		// doctor.setAccess_token(access_token);
+		// chatServerService.onLogin(doctor);
 	}
 
 	public boolean containsDoctor(String token) {
@@ -486,10 +486,14 @@ public class UserManager implements IUserManager {
 					res.put("titleCardPath", authInfo.getTitleCardPath());
 				}
 			} else {
-				res.put("headStatus", authInfo.getStatus());
-				res.put("head", authInfo.getHeadPath());
-				res.put("titleStatus", authInfo.getStatus());
-				res.put("titleCardPath", authInfo.getTitleCardPath());
+				if (StringUtil.isNullOrEmpty(authInfo.getHeadPath())) {
+					res.put("headStatus", authInfo.getStatus());
+					res.put("head", authInfo.getHeadPath());
+				}
+				if (StringUtil.isNullOrEmpty(authInfo.getTitleCardPath())) {
+					res.put("titleStatus", authInfo.getStatus());
+					res.put("titleCardPath", authInfo.getTitleCardPath());
+				}
 			}
 		}
 		return res;
