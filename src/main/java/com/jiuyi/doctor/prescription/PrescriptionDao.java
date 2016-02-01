@@ -27,12 +27,14 @@ import com.jiuyi.frame.base.DbBase;
 @Repository
 public class PrescriptionDao extends DbBase {
 
+	//@formatter:off
 	private static final String SELECT_PRESCRIPTION = "SELECT * FROM `t_prescription` WHERE `doctorId`=? AND `id`=?";
 	private static final String SELECT_PRESCRIPTION_MEDS = "SELECT * FROM `t_prescription_detail` WHERE `prescriptionId`=?";
 	private static final String SELECT_PRESCRIPTION_DETAIL = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead,patient.phone AS patientPhone,patient.gender AS patientGender " // base
 			+ "FROM `t_prescription` pres " // 处方表
 			+ "JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
 			+ "WHERE pres.`doctorId`=? AND pres.`id`=?";
+	
 	private static final String SELECT_PRESCRIPTION_BY_STATUS = "SELECT pres.*,patient.name as patientName,patient.headPortrait as patientHead "// select
 			+ "FROM `t_prescription` pres " // 处方表
 			+ "JOIN `t_patient` patient ON patient.id=pres.patientId " // 患者表
@@ -77,6 +79,7 @@ public class PrescriptionDao extends DbBase {
 	private static final String INSERT_PRESCRIPTION_DETAIL = "INSERT `t_prescription_detail`(prescriptionId,medicineId,formatId,number,`instructions`) VALUE(:prescriptionId,:medicineId,:formatId,:number,:instructions)";
 
 	private static final String DELETE_OLD_PRES_MEDS = "DELETE FROM `t_prescription_detail` WHERE `prescriptionId`=?";
+	//@formatter:on
 
 	/**
 	 * @param doctor
