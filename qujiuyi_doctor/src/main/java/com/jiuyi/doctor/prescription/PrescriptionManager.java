@@ -229,6 +229,8 @@ public class PrescriptionManager {
 		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
 		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
 		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
+		toSelectStatus.add(PrescriptionStatus.REVIEW_SUCCESS.ordinal());
+		toSelectStatus.add(PrescriptionStatus.SENDED.ordinal());
 		List<PatientPres> prescriptions = dao.loadPatientsByPresStatus(doctor, toSelectStatus, page, pageSize);
 		ServerResult res = new ServerResult();
 		res.putObjects("list", prescriptions);
@@ -250,6 +252,8 @@ public class PrescriptionManager {
 		toSelectStatus.add(PrescriptionStatus.CANCEL_PAY.ordinal());
 		toSelectStatus.add(PrescriptionStatus.PAYEDM.ordinal());
 		toSelectStatus.add(PrescriptionStatus.EXPIRED.ordinal());
+		toSelectStatus.add(PrescriptionStatus.REVIEW_SUCCESS.ordinal());
+		toSelectStatus.add(PrescriptionStatus.SENDED.ordinal());
 		List<Prescription> prescriptions = dao.loadByPatientAndStatus(doctor, patientId, toSelectStatus);
 		ServerResult res = new ServerResult();
 		res.putObjects("list", prescriptions);
