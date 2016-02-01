@@ -46,7 +46,9 @@ public class PrescriptionDao extends DbBase {
 			+ "WHERE pres.doctorId=:doctorId AND pres.version=1 AND pres.`patientId`=:patientId AND `status` IN (:status) ORDER BY `createTime` DESC";// where
 
 	private static final String COUNT_PRESCRIPTION_BY_STATUS = "SELECT COUNT(*) FROM `t_prescription` WHERE doctorId=:doctorId AND version=1 AND `status` in (:status)";
-
+	
+	private static final String COUNT_PRESCRIPTION_BY_NUMBER= "SELECT COUNT(*) FROM `t_prescription` WHERE `number`=?";
+	
 	private static final String SELECT_PATIENTS_BY_STATUS = "SELECT COUNT(pres.patientId) as `count`,pres.id,pres.patientId,patient.name AS name,patient.headPortrait,patient.gender,remark.remark "//
 			+ "FROM `t_prescription` pres "//
 			+ "JOIN `t_patient` patient ON pres.`patientId`=patient.id "//
@@ -174,6 +176,17 @@ public class PrescriptionDao extends DbBase {
 		params.addValue("status", toSelectStatus);
 		Integer count = namedJdbc.queryForObject(COUNT_PRESCRIPTION_BY_STATUS, params, Integer.class);
 		return count != null ? count : 0;
+	}
+
+	/**
+	 * count by 处方号
+	 * 
+	 * @param doctor
+	 * @param toSelectStatus
+	 * @return
+	 */
+	protected Integer countByNumber(Doctor doctor, String presNumber) {
+		return queryForInteger(COUNT_PRESCRIPTION_BY_NUMBER, presNumber);
 	}
 
 	/**

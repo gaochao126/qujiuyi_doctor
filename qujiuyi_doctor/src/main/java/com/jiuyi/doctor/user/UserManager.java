@@ -348,7 +348,7 @@ public class UserManager implements IUserManager {
 			newDoctor.setTitleCardPath("");
 		}
 		if (newDoctor.getTitleId() == null) {
-			newDoctor.setTitleId(DoctorTitle.PRIMARY.id);
+			newDoctor.setTitleId(DoctorTitle.YiShi.id);
 		}
 
 		String idFileName = String.format(file_name_format, StringUtil.getRandomStr(10), doctor.getId(), FileUtil.getSuffix(idCard));

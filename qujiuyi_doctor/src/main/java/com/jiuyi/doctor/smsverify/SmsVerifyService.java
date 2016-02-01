@@ -1,10 +1,12 @@
 package com.jiuyi.doctor.smsverify;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jiuyi.frame.front.ResultConst;
@@ -26,26 +28,12 @@ public class SmsVerifyService {
 	/** 仅供测试使用 */
 	private Set<String> test_phone = new HashSet<>();
 
+	private @Autowired SmsDao dao;
+
 	@PostConstruct
 	public void init() {
-		test_phone.add("15923330708");
-		test_phone.add("13638357922");
-		test_phone.add("15025467312");
-		test_phone.add("18983635464");
-		test_phone.add("13635335741");
-		test_phone.add("13635335742");
-		test_phone.add("18520807540");
-		test_phone.add("17784765060");
-		test_phone.add("18523419004");
-		test_phone.add("15812098703");
-		test_phone.add("18983472571");
-		test_phone.add("15823566822");
-		test_phone.add("18223506390");
-		test_phone.add("18725850672");
-		test_phone.add("18100863325");
-		test_phone.add("18100863327");
-		test_phone.add("18100863330");
-		test_phone.add("13370756360");
+		List<String> whiteList = dao.selectAll();
+		test_phone.addAll(whiteList);
 	}
 
 	/**
@@ -100,17 +88,22 @@ public class SmsVerifyService {
 		if (!password.equals(ADMIN_PASSWORD)) {
 			return new ServerResult();
 		}
-		this.test_phone.add(phone);
+		boolean added = this.test_phone.add(phone);
+		if (added) {
+			dao.insert(phone);
+		}
 		return new ServerResult();
 	}
 
 	public ServerResult removeWhiteList(String phone) {
 		this.test_phone.remove(phone);
+		dao.delete(phone);
 		return new ServerResult();
 	}
 
 	public ServerResult clearWhiteList() {
 		this.test_phone.clear();
+		dao.clear();
 		return new ServerResult();
 	}
 
