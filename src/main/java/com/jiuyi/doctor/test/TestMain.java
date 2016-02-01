@@ -35,6 +35,9 @@ public class TestMain {
 		cal.setTime(date);
 
 		System.out.println(cal.get(Calendar.YEAR));
+
+		String head = "http://www.51791.com:51115/files/doctor/head/agPSYzyR1C-313.jpg";
+		System.out.println(head.substring(head.lastIndexOf("/") + 1));
 	}
 
 	public static List<Field> getAllFields(Class<?> clazz) {

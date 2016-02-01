@@ -47,6 +47,8 @@ import com.jiuyi.frame.util.StringUtil;
 @Service
 public class PrescriptionManager {
 
+	private static final int MAX_EDIT_TIME = 3;
+
 	private @Autowired PrescriptionDao dao;
 
 	private @Autowired YaofangService yaofangService;
@@ -161,7 +163,10 @@ public class PrescriptionManager {
 		if (!PrescriptionStatus.statusCanPrescribe(old.getStatus())) {
 			return new FailResult("对不起，该状态下不能修改处方！");
 		}
-
+		int count = dao.countByNumber(doctor, old.getNumber());
+		if (count > MAX_EDIT_TIME) {
+			return new FailResult("对不起，每个处方最多只能修改两次~");
+		}
 		/** 计算价格，库存验证 */
 		List<String> formatIds = getFormatIds(medicines);
 		List<FormatMedicine> formatMedicines = yaofangService.loadFormatMeds(formatIds);

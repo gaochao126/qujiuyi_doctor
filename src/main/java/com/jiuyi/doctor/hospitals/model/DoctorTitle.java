@@ -9,10 +9,8 @@ package com.jiuyi.doctor.hospitals.model;
  */
 public enum DoctorTitle {
 
-	Professor(1, "主任医师"), DeputyChief(2, "副主任医师"), ZhuZhi(3, "主治医师"), YiShi(4, "普通医师"),
-	DirectorPharmacist(5, "主任药师"), DeputyDirectorPharmacist(6, "副主任药师"), CompetentPharmacist(7, "主治药师"), Pharmacist(8, "普通药师"),
-	PRIMARY(9, "医师")
-	;
+	Professor(1, "主任医师"), DeputyChief(2, "副主任医师"), ZhuZhi(3, "主治医师"), YiShi(4, "医师"), DirectorPharmacist(5, "主任药师"), DeputyDirectorPharmacist(6, "副主任药师"), CompetentPharmacist(7, "主治药师"), Pharmacist(8,
+			"普通药师"),;
 
 	public final int id;
 	public final String name;

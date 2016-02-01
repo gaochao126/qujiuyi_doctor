@@ -3,6 +3,8 @@
  */
 package com.jiuyi.doctor.frontlog;
 
+import java.util.Date;
+
 /**
  * 
  * @author xutaoyang
@@ -11,20 +13,26 @@ package com.jiuyi.doctor.frontlog;
 public class FrontLog {
 
 	private long id;
-	private int appVersion;
+	private int appType;
+	private String appVersion;
 	private int deviceType;
 	private String deviceId;
 	private String os;
 	private int level;
 	private String log;
 	private int userId;
+	private Date date;
+
+	public int getAppType() {
+		return appType;
+	}
+
+	public void setAppType(int appType) {
+		this.appType = appType;
+	}
 
 	public long getId() {
 		return id;
-	}
-
-	public int getAppVersion() {
-		return appVersion;
 	}
 
 	public int getDeviceType() {
@@ -49,10 +57,6 @@ public class FrontLog {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public void setAppVersion(int appVersion) {
-		this.appVersion = appVersion;
 	}
 
 	public void setDeviceType(int deviceType) {
@@ -81,6 +85,22 @@ public class FrontLog {
 
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+
+	public String getAppVersion() {
+		return appVersion;
+	}
+
+	public void setAppVersion(String appVersion) {
+		this.appVersion = appVersion;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 }
