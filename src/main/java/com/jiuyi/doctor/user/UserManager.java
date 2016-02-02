@@ -38,6 +38,7 @@ import com.jiuyi.doctor.user.update.UpdateUserInfo;
 import com.jiuyi.frame.conf.DBConfig;
 import com.jiuyi.frame.event.EventService;
 import com.jiuyi.frame.event.events.EventLogout;
+import com.jiuyi.frame.front.FailResult;
 import com.jiuyi.frame.front.ResultConst;
 import com.jiuyi.frame.front.ServerResult;
 import com.jiuyi.frame.helper.Loggers;
@@ -319,6 +320,9 @@ public class UserManager implements IUserManager {
 	protected ServerResult handleFillInfo(Doctor doctor, FillDoctor newDoctor, MultipartFile head, MultipartFile idCard, MultipartFile titleCard, MultipartFile licenseCard) {
 		if (!departmentService.checkId(newDoctor.getDepartmentId()) || !hospitalService.checkId(newDoctor.getHospitalId())) {
 			return new ServerResult(ResultConst.PARAM_ERROR);
+		}
+		if (newDoctor.getName().length() > 10) {
+			return new FailResult("对不起，姓名太长了哦~");
 		}
 		Doctor oldInfo = userDao.loadDoctorById(doctor.getId());
 		if (oldInfo == null) {
