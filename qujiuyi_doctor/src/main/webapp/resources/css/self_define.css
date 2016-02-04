@@ -1,35 +1,35 @@
-
-.result{margin-top:10px; border-top:#CCC solid thin; margin-bottom:-12px;}
-.cankao{margin-top:10px;border-top:#CCC solid thin;}
-.result_tr{padding-left:15px; padding-top:5px; padding-bottom:5px;}
-.span_margin{margin-left:20px;}
-.docotor_info{background-color:#5CB85C; color:#FFF; padding-left:40px; font-size:18px; margin-top:-7px;}
-.right_menu{color:#090;}
-.drug_title{background-color:#EBEBEB; width:100%; text-align:center; padding-top:5px; padding-bottom:5px; font-weight:bold; margin-top:5px;}
-.drug_tr{border-bottom:#CCC solid thin; margin:1px; text-align:center; padding-bottom:3px; padding-top:3px;}
-.drug_info{
-	text-align:center;
-	}
-.total{background-color:#5CB85C;color:#FFF;padding:5px; font-size:16px;}
-.lastresult{ border:#EBEBEB solid thin; margin-bottom:5px;}
-.zhenduanshu{
-	padding-left:10px;}
-.drug_container{display:none; height:300px; overflow-y:auto;}
-.p_info{
-	border-bottom:#CCC solid thin;
-	border-left:#CCC solid thin;
-	border-right:#CCC solid thin;
-	padding:15px;}
-.requried{
-	color:#F00;}
-.form_in{
-	margin-left:10px;
-	width:250px;}
-.div_marginT{
-	margin-top:10px;}
-.showPatient{
-	margin-left:10px;
-	margin-right:50px;}
-.P_info{
-margin-right:40px;
+
+.result{margin-top:10px; border-top:#CCC solid thin; margin-bottom:-12px;}
+.cankao{margin-top:10px;border-top:#CCC solid thin;}
+.result_tr{padding-left:15px; padding-top:5px; padding-bottom:5px;}
+.span_margin{margin-left:20px;}
+.docotor_info{background-color:#5CB85C; color:#FFF; padding-left:40px; font-size:18px; margin-top:-7px;}
+.right_menu{color:#090;}
+.drug_title{background-color:#EBEBEB; width:100%; text-align:center; padding-top:5px; padding-bottom:5px; font-weight:bold; margin-top:5px;}
+.drug_tr{border-bottom:#CCC solid thin; margin:1px; text-align:center; padding-bottom:3px; padding-top:3px;}
+.drug_info{
+	text-align:center;
+	}
+.total{background-color:#5CB85C;color:#FFF;padding:5px; font-size:16px;}
+.lastresult{ border:#EBEBEB solid thin; margin-bottom:5px;}
+.zhenduanshu{
+	padding-left:10px;}
+.drug_container{display:none; height:300px; overflow-y:auto;}
+.p_info{
+	border-bottom:#CCC solid thin;
+	border-left:#CCC solid thin;
+	border-right:#CCC solid thin;
+	padding:15px;}
+.requried{
+	color:#F00;}
+.form_in{
+	margin-left:10px;
+	width:250px;}
+.div_marginT{
+	margin-top:10px;}
+.showPatient{
+	margin-left:10px;
+	margin-right:50px;}
+.P_info{
+margin-right:40px;
 }
