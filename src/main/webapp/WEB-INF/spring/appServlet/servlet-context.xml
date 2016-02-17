@@ -50,8 +50,6 @@
 		<beans:property name="url" value="jdbc:mysql://222.177.141.83:51101/qujiuyi?characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull"></beans:property>
 		<beans:property name="username" value="root"></beans:property>
 		<beans:property name="password" value="jiuyi791"></beans:property>
-		<beans:property name="removeAbandoned" value="true"></beans:property>
-		<beans:property name="logAbandoned" value="true"></beans:property>
 		<beans:property name="maxIdle" value="10"></beans:property>
 		<beans:property name="minIdle" value="5"></beans:property>
 		<beans:property name="maxActive" value="50"></beans:property>
@@ -71,8 +69,6 @@
 		<beans:property name="url" value="jdbc:mysql://222.177.141.83:51101/JiuYiShop?characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull"></beans:property>
 		<beans:property name="username" value="root"></beans:property>
 		<beans:property name="password" value="jiuyi791"></beans:property>
-		<beans:property name="removeAbandoned" value="true"></beans:property>
-		<beans:property name="logAbandoned" value="true"></beans:property>
 		<beans:property name="maxIdle" value="10"></beans:property>
 		<beans:property name="minIdle" value="5"></beans:property>
 		<beans:property name="maxActive" value="50"></beans:property>
