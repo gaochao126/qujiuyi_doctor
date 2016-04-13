@@ -4,9 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+
+import com.jiuyi.frame.util.StringUtil;
 
 public class TestMain {
 
@@ -29,15 +29,19 @@ public class TestMain {
 		// SmsService.instance().sendSms("18223506390", "9822",
 		// "#date#=12345678934567894356789043567890456789045678905678905467890456789&#address#=hesdahfsadhfjkasdfkj&#name#=fjkajfkdjskfjkasjfdkajdfkjaklsdfjklajdfskljaksdfj");
 
-		Date date = new Date(1450160461l);
-
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-
-		System.out.println(cal.get(Calendar.YEAR));
-
-		String head = "http://www.51791.com:51115/files/doctor/head/agPSYzyR1C-313.jpg";
-		System.out.println(head.substring(head.lastIndexOf("/") + 1));
+//		Date date = new Date(1450160461l);
+//
+//		Calendar cal = Calendar.getInstance();
+//		cal.setTime(date);
+//
+//		System.out.println(cal.get(Calendar.YEAR));
+//
+//		String head = "http://www.51791.com:51115/files/doctor/head/agPSYzyR1C-313.jpg";
+//		System.out.println(head.substring(head.lastIndexOf("/") + 1));
+		
+		
+		System.out.println(StringUtil.md5Str(StringUtil.md5Str(String.valueOf(246))));
+		System.out.println(StringUtil.md5Str(String.valueOf(246)));
 	}
 
 	public static List<Field> getAllFields(Class<?> clazz) {

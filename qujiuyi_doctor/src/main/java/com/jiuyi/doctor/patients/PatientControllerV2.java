@@ -31,10 +31,11 @@ public class PatientControllerV2 extends ControllerBase {
 	private static final String CMD_DELETE_TAG = CMD + "del_tag";// 删除标签
 	private static final String CMD_SET_TAG = CMD + "set_tag";// 设置患者的标签
 	private static final String CMD_LOAD_PATIENT_BY_TAG = CMD + "load_by_tag";// 获取标签下的患者
+	
 	private static final String CMD_LOAD_PATIENT_BY_PHONE = CMD + "load_by_phone";// 根据电话搜索全平台的患者
 
 	private static final String CMD_UNFAMILIAR = CMD + "unfamiliar";// 陌生患者
-	private static final String CMD_BLACKLIST = CMD + "blacklist";// 陌生患者
+	private static final String CMD_BLACKLIST = CMD + "blacklist";// 黑名单患者
 	private static final String CMD_MOVE_IN_CONTACTS = CMD + "move_in_contact";// 加入常用联系人
 	private static final String CMD_MOVE_IN_BLACKLIST = CMD + "move_in_blacklist";// 加黑名单
 	private static final String CMD_MOVE_IN_UNFAMILIAR = CMD + "move_in_unfamiliar";// 加入陌生联系人

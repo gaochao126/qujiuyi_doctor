@@ -1,5 +1,7 @@
 package com.jiuyi.doctor.user.model;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -44,6 +46,9 @@ public class FillDoctor {
 	@ConfigPrefix("doctor.titlecard.path")
 	private String titleCardPath;
 	private String licenseCardPath;
+
+	/** 注册日期 */
+	private Date registerDate;
 
 	/** 0注册时提交 1信息修改 */
 	private int type;
@@ -189,6 +194,14 @@ public class FillDoctor {
 
 	public void setHeadPath(String headPath) {
 		this.headPath = headPath;
+	}
+
+	public Date getRegisterDate() {
+		return registerDate;
+	}
+
+	public void setRegisterDate(Date registerDate) {
+		this.registerDate = registerDate;
 	}
 
 }
