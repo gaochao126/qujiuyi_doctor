@@ -1,6 +1,7 @@
 package com.jiuyi.doctor.user;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -121,7 +122,7 @@ public class UserManager implements IUserManager {
 		jobService.submitJob(new JobContext(JobType.SCHEDULED, new ClearRunnable(), 5, 5, TimeUnit.SECONDS));
 
 		// 测试专用
-		// Doctor doctor = userDao.loadDoctorByPhone("18725850672");
+		// Doctor doctor = userDao.loadDoctorByPhone("18223506390");
 		// String access_token = "123456";
 		// putDoctor(access_token, doctor);
 		// doctor.setChannelId("5443637761324926995");
@@ -361,6 +362,7 @@ public class UserManager implements IUserManager {
 		FileUtil.writeFile(LICENSE_CARD_FILE_PATH, licenseFileName, licenseCard);
 		newDoctor.setIdCardPath(idFileName);
 		newDoctor.setLicenseCardPath(licenseFileName);
+		newDoctor.setRegisterDate(new Date());
 		Doctor afterFill = userDao.fillDoctor(doctor, newDoctor);
 		/* 插入认证信息 */
 		newDoctor.setType(0);
@@ -515,7 +517,10 @@ public class UserManager implements IUserManager {
 		doctor.getNeedUpdateToken().set(false);
 		this.token_doctor.put(newToken, doctor);
 		userDao.setToken(doctor, StringUtil.md5Str(newToken));
-		/* 把失效的token加入到待移除队列中，暂时还不从内存中移除的原因是客户端可能会多线程请求，当第一个线程还没来得及更新token的时候，第二个线程请求的token是old Token，但是不能返回未登录 */
+		/*
+		 * 把失效的token加入到待移除队列中，暂时还不从内存中移除的原因是客户端可能会多线程请求，当第一个线程还没来得及更新token的时候，
+		 * 第二个线程请求的token是old Token，但是不能返回未登录
+		 */
 		ExpiredToken expiredToken = new ExpiredToken(oldToken);
 		expiredTokens.add(expiredToken);
 		/** 同步到聊天服 */

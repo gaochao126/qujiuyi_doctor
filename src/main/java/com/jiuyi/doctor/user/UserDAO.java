@@ -37,6 +37,7 @@ public class UserDAO extends DbBase {
 	@Autowired
 	RecognizeDoctorBuilder recognizeDoctorBuilder;
 
+	//@formatter:off
 	private static final String SELECT_BY_TOKEN = "SELECT * FROM `t_doctor` where `token`=?";
 	private static final String SELECT_BY_PHONE = "SELECT * FROM `t_doctor` where `phone`=?";
 	private static final String SELECT_PHONE = "SELECT count(`id`) FROM `t_doctor` where `phone`=?";
@@ -48,8 +49,25 @@ public class UserDAO extends DbBase {
 	private static final String SELECT_AUTH_INFO = "SELECT * FROM `t_doctor_auth` WHERE `doctorId`=?";
 
 	private static final String INSERT_DOCTOR = "INSERT INTO `t_doctor`(`phone`,`password`,`status`) VALUES(?,?,?)";
-	private static final String INSERT_AUTH = "INSERT `t_doctor_auth`(`doctorId`,`name`,`hospitalId`,`departmentId`,`officePhone`,`head`,`idCardPath`,`titleCardPath`,`licenseCardPath`,`type`,`field`) VALUE(?,?,?,?,?,?,?,?,?,?,?)";
-	private static final String FILL_DOCTOR = "UPDATE `t_doctor` SET `name`=?,`hospitalId`=?,`departmentId`=?,`officePhone`=?,`titleId`=?,`status`=?, `head`=?,`idCardPath`=?,`titleCardPath`=?,`licenseCardPath`=?,skill=?,experience=?,offlineId=? WHERE `id`=?";
+	private static final String INSERT_AUTH = "INSERT `t_doctor_auth`"
+			+ "(`doctorId`,`name`,`hospitalId`,`departmentId`,`officePhone`,`head`,`idCardPath`,`titleCardPath`,`licenseCardPath`,`type`,`field`) " 
+			+ "VALUE(?,?,?,?,?,?,?,?,?,?,?)";
+	private static final String FILL_DOCTOR = "UPDATE `t_doctor` "
+			+ "SET `name`=?,"
+			+ "`hospitalId`=?,"
+			+ "`departmentId`=?,"
+			+ "`officePhone`=?,"
+			+ "`titleId`=?,"
+			+ "`status`=?,"
+			+ "`head`=?,"
+			+ "`idCardPath`=?,"
+			+ "`titleCardPath`=?,"
+			+ "`licenseCardPath`=?,"
+			+ "`skill`=?,"
+			+ "`experience`=?,"
+			+ "`offlineId`=?,"
+			+ "`registerDate`=? "
+			+ "WHERE `id`=?";
 	private static final String UPDATE_DOCTOR = "UPDATE `t_doctor` SET `name`=?,`hospitalId`=? WHERE `id`=?";
 	private static final String UPDATE_PHONE = "UPDATE `t_doctor` SET `phone`=? WHERE `id`=?";
 	private static final String UPDATE_PASSWORD = "UPDATE `t_doctor` SET `password`=? WHERE `id`=?";
@@ -57,6 +75,7 @@ public class UserDAO extends DbBase {
 	private static final String UPDATE_HEAD = "UPDATE `t_doctor` SET `head`=? WHERE `id`=?";
 	private static final String UPDATE_QRCODE = "UPDATE `t_doctor` SET `qrCodeImg`=? WHERE `id`=?";
 	private static final String UPDATE_TOKEN = "UPDATE `t_doctor` SET `token`=? WHERE `id`=?";
+	//@formatter:on
 
 	public Doctor updateSingleCol(Doctor doctor, String dbField, Object value) {
 		String sql = UPDATE_COL.replace("#col#", dbField);
@@ -81,7 +100,7 @@ public class UserDAO extends DbBase {
 		/** 插入医生信息表 */
 		jdbc.update(FILL_DOCTOR, fillDoctor.getName(), fillDoctor.getHospitalId(), fillDoctor.getDepartmentId(), fillDoctor.getOfficePhone(), fillDoctor.getTitleId(),
 				DoctorStatus.UNDER_VERIFY.ordinal(), fillDoctor.getHeadPath(), fillDoctor.getIdCardPath(), fillDoctor.getTitleCardPath(), fillDoctor.getLicenseCardPath(), fillDoctor.getSkill(),
-				fillDoctor.getExperience(), fillDoctor.getOfflineId(), doctor.getId());
+				fillDoctor.getExperience(), fillDoctor.getOfflineId(), fillDoctor.getRegisterDate(), doctor.getId());
 		return loadDoctorById(doctor.getId());
 	}
 
