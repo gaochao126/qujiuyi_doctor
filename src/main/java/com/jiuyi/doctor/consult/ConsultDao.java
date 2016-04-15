@@ -27,6 +27,7 @@ import com.jiuyi.frame.db.RowData;
 @Repository
 public class ConsultDao extends DbBase {
 
+	//@formatter:off
 	private static final String SELECT_CHAT_SERVICE = "SELECT * FROM `t_doctor_chat` WHERE `doctorId`=?";
 
 	private static final String SELECT_ALL_CONSULT_BY_PATIENTID = "SELECT * FROM `t_patient_consult` WHERE `patientId`=? AND `doctorId`=?";
@@ -62,7 +63,7 @@ public class ConsultDao extends DbBase {
 			+ "WHERE consult.`doctorId`=? ORDER BY `createTime` DESC";
 
 	private static final String SELECT_UNHANDLED_CHAT = CONSULT_FULL_INFO /* 未接收的咨询 */
-			+ "WHERE consult.`acceptStatus`=0 AND `consultStatus`=0 AND consult.`payStatus`=1 AND consult.`doctorId`=? ORDER BY `createTime` DESC LIMIT ?,?";
+			+ "WHERE orders.payStatus=1 AND consult.`acceptStatus`=0 AND `consultStatus`=0 AND consult.`payStatus`=1 AND consult.`doctorId`=? ORDER BY `createTime` DESC LIMIT ?,?";
 
 	private static final String SELECT_CHATING = CONSULT_FULL_INFO /* 正在咨询 */
 			+ "WHERE consult.`acceptStatus`=1 AND consult.`consultStatus`=1 AND consult.`doctorId`=? ORDER BY `createTime` DESC LIMIT ?,?";
@@ -124,6 +125,8 @@ public class ConsultDao extends DbBase {
 	private static final String UPDATE_CHAT_PRICE = "INSERT `t_doctor_chat`(`doctorId`,`status`,`price`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `price`=?";
 	private static final String INSERT_CHAT_PRICE = "INSERT `t_doctor_chat`(`doctorId`,`status`,`price`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `status`=?,`price`=?";
 	private static final String UPDATE_CHAT_HIS_READ_STATUS = "UPDATE `t_chat_his` SET `readStatus`=1 WHERE `serviceType`=1 AND `serviceId`=?";
+	
+	//@formatter:on
 
 	protected DoctorChat loadDoctorChat(Doctor doctor) {
 		return queryForObjectDefaultBuilder(SELECT_CHAT_SERVICE, new Object[] { doctor.getId() }, DoctorChat.class);
