@@ -30,7 +30,6 @@ public class Prescription implements ISerializableObj {
 	/** 处方编号 */
 	private String number;
 	private int doctorId;
-	@NotNull
 	private Integer patientId;
 	private int relativeId;
 

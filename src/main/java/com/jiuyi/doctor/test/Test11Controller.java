@@ -33,4 +33,9 @@ public class Test11Controller {
 		System.err.println("dododododooodo");
 	}
 
+	@RequestMapping("test_handler3")
+	public void testReturnValHandler3(@Param("obj")Parent parent) {
+		System.err.println("dododododooodo");
+	}
+
 }

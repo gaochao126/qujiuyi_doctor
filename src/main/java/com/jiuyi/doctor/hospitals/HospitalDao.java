@@ -17,7 +17,7 @@ import com.jiuyi.frame.base.DbBase;
 @Repository
 public class HospitalDao extends DbBase {
 	private static final String INSERT_HOSPITAL = "INSERT `t_hospital`(`id`,`name`) VALUE(?,?)";
-	private static final String SELECT = "SELECT h.id,h.name,h.city, c.cityName FROM `t_hospital` h,`t_city` c WHERE h.`city`=c.`cityId`";
+	private static final String SELECT = "SELECT h.*, c.cityName FROM `t_hospital` h,`t_city` c WHERE h.`city`=c.`cityId`";
 	private static final String SELECT_MAX_ID = "SELECT MAX(id) FROM `t_hospital`";
 
 	protected void newHospital(final Hospital hospital) {

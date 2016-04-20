@@ -6,6 +6,7 @@ package com.jiuyi.doctor.prescription;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jiuyi.doctor.chatserver.ChatServerService;
 import com.jiuyi.doctor.chatserver.SystemMsg;
 import com.jiuyi.doctor.chatserver.UserType;
+import com.jiuyi.doctor.hospitals.HospitalService;
 import com.jiuyi.doctor.patients.PatientServiceV2;
 import com.jiuyi.doctor.patients.model.DoctorPatient;
 import com.jiuyi.doctor.patients.model.DoctorPatientRelation;
@@ -36,8 +38,10 @@ import com.jiuyi.frame.front.MapObject;
 import com.jiuyi.frame.front.ServerResult;
 import com.jiuyi.frame.idgen.IdGeneratorService;
 import com.jiuyi.frame.util.CollectionUtil;
+import com.jiuyi.frame.util.DateUtil;
 import com.jiuyi.frame.util.ObjectUtil;
 import com.jiuyi.frame.util.StringUtil;
+import com.qujiuyi.util.sms.SmsService;
 
 /**
  * 
@@ -58,6 +62,8 @@ public class PrescriptionManager {
 	private @Autowired PatientServiceV2 patientService;
 
 	private @Autowired IdGeneratorService idGeneratorService;
+
+	private @Autowired HospitalService hospitalService;
 
 	/**
 	 * @param doctor
@@ -126,15 +132,24 @@ public class PrescriptionManager {
 		prescription.setVersion(1);// 1代表当前版本，0表示历史版本
 		dao.insertPrescription(doctor, prescription);
 		dao.insertMedicines(prescription, medicines);
-		String summary = String.format("%s医生为您开了一个处方，正等待您确认", doctor.getName());
-		String weixinMsg = doctor.getName() + "：我给你开了一张处方，请前去确认\n------\n<a href='%s'>查看处方</a>";
-		List<String> url = Arrays.asList("prescription_prescriptionDetail.action?params.id=" + prescription.getId());
-		SystemMsg systemMsg = new SystemMsg(UserType.PATIENT, prescription.getPatientId(), summary, prescription, weixinMsg, url);
-		chatServerService.postMsg(systemMsg);
 
-		/** 把患者加到陌生人列表 */
-		DoctorPatient doctorPatient = new DoctorPatient(doctor.getId(), prescription.getPatientId(), DoctorPatientSrc.SERVICE, DoctorPatientRelation.UNFAMILIAR);
-		patientService.addDoctorPatient(doctor, doctorPatient);
+		if (prescription.getPatientId() != 0) {// 给会员开处方
+			String summary = String.format("%s医生为您开了一个处方，正等待您确认", doctor.getName());
+			String weixinMsg = doctor.getName() + "：我给你开了一张处方，请前去确认\n------\n<a href='%s'>查看处方</a>";
+			List<String> url = Arrays.asList("prescription_prescriptionDetail.action?params.id=" + prescription.getId());
+			SystemMsg systemMsg = new SystemMsg(UserType.PATIENT, prescription.getPatientId(), summary, prescription, weixinMsg, url);
+			chatServerService.postMsg(systemMsg);
+
+			/** 把患者加到陌生人列表 */
+			DoctorPatient doctorPatient = new DoctorPatient(doctor.getId(), prescription.getPatientId(), DoctorPatientSrc.SERVICE, DoctorPatientRelation.UNFAMILIAR);
+			patientService.addDoctorPatient(doctor, doctorPatient);
+		} else {// 给非会员开处方
+			Calendar expireDate = Calendar.getInstance();
+			expireDate.add(Calendar.DATE, 1);
+			String date = DateUtil.date2Str(new Date(expireDate.getTimeInMillis()), "yyyy-MM-dd");
+			String addr = hospitalService.getById(doctor.getHospitalId()).getPharmacyAddress();
+			SmsService.instance().sendSms(prescription.getPatientPhone(), "12818", "#addr#=" + addr + "&#date#=" + date);
+		}
 		return new ServerResult();
 	}
 
@@ -410,6 +425,9 @@ public class PrescriptionManager {
 	 * @return
 	 */
 	private ServerResult checkPrescription(Doctor doctor, Prescription prescription, List<PrescriptionMedicine> medicines) {
+		if (prescription.getPatientId() == null && StringUtil.isNullOrEmpty(prescription.getPatientPhone())) {
+			return new FailResult("患者id与患者电话不能同时为空");
+		}
 		ServerResult res = ObjectUtil.validateResult(prescription);
 		if (!res.isSuccess()) {
 			return res;
@@ -430,6 +448,9 @@ public class PrescriptionManager {
 		}
 		if (patient.getPhone() == doctor.getPhone()) {
 			return new FailResult("对不起，不能给自己开处方~");
+		}
+		if (prescription.getPatientId() == null) {
+			prescription.setPatientId(0);
 		}
 		return new ServerResult();
 	}
