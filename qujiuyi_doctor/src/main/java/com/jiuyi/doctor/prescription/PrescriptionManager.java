@@ -425,8 +425,13 @@ public class PrescriptionManager {
 	 * @return
 	 */
 	private ServerResult checkPrescription(Doctor doctor, Prescription prescription, List<PrescriptionMedicine> medicines) {
-		if (prescription.getPatientId() == null && StringUtil.isNullOrEmpty(prescription.getPatientPhone())) {
-			return new FailResult("患者id与患者电话不能同时为空");
+		if (prescription.getPatientId() == null) {
+			if (StringUtil.isNullOrEmpty(prescription.getPatientPhone())) {
+				return new FailResult("患者id与患者电话不能同时为空");
+			}
+			if (!StringUtil.isPhoneNum(prescription.getPatientPhone())) {
+				return new FailResult("电话格式错误");
+			}
 		}
 		ServerResult res = ObjectUtil.validateResult(prescription);
 		if (!res.isSuccess()) {
