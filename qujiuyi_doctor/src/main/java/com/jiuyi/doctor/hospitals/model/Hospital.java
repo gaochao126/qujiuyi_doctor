@@ -23,6 +23,8 @@ public class Hospital implements ISerializableObj {
 	private int catagoryId;
 	private String catagoryName;
 
+	private String pharmacyAddress;
+
 	public static final RowMapper<Hospital> simple_builder = new RowMapper<Hospital>() {
 		@Override
 		public Hospital mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -39,7 +41,8 @@ public class Hospital implements ISerializableObj {
 			String name = rs.getString("name");
 			int catagoryId = rs.getInt("city");
 			String catagoryName = rs.getString("cityName");
-			return new Hospital(id, name, catagoryId, catagoryName);
+			String pharmacyAddress = rs.getString("pharmacyAddress");
+			return new Hospital(id, name, catagoryId, catagoryName, pharmacyAddress);
 		}
 	};
 
@@ -48,7 +51,7 @@ public class Hospital implements ISerializableObj {
 		this.name = name;
 	}
 
-	public Hospital(int id, String name, int catagoryId, String catagoryName) {
+	public Hospital(int id, String name, int catagoryId, String catagoryName, String pharmacyAddress) {
 		this.id = id;
 		this.name = name;
 		this.catagoryId = catagoryId;
@@ -85,6 +88,14 @@ public class Hospital implements ISerializableObj {
 
 	public void setCatagoryName(String catagoryName) {
 		this.catagoryName = catagoryName;
+	}
+
+	public String getPharmacyAddress() {
+		return pharmacyAddress;
+	}
+
+	public void setPharmacyAddress(String pharmacyAddress) {
+		this.pharmacyAddress = pharmacyAddress;
 	}
 
 	@Override

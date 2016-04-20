@@ -66,6 +66,10 @@ public class HospitalService {
 		catagoryId_hospitals.get(hospital.getCatagoryId()).add(hospital);
 	}
 
+	public Hospital getById(int id) {
+		return this.id_info.get(id);
+	}
+
 	public int getIdByName(String name) {
 		if (!this.name_info.containsKey(name)) {
 			int newId = genId();
